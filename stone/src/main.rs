@@ -22,7 +22,7 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
     // Prove
     let command = "stone-cli";
     let program_path = "programs/fibonacci.cairo".to_string();
-    let program_input = format!("[1 {}]", n).to_string();
+    let program_input = format!("[{}]", n).to_string();
     let output_file = format!("fibonacci_{}_proof.json", n).to_string();
     let args = [
         "prove",

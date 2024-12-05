@@ -1,10 +1,7 @@
 use core::felt252;
 
 fn main(input: Array<felt252>) -> Array<felt252> {
-    let mut input = input.span();
-    let n: felt252 = Serde::deserialize(ref input).unwrap();
-
-    let result = fib(1, 1, n);
+    let result = fib(1, 1, *input.at(0));
     
     let mut output: Array<felt252> = ArrayTrait::new();
     result.serialize(ref output);

@@ -12,18 +12,21 @@ fn main() {
     benchmark(bench_fibonacci, &ns, "../../benchmark_outputs/fibonacci_risczero.csv", "n");
 }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize) {
+fn bench_fibonacci(n: u32) -> (Duration, Duration, usize) {
     let env = ExecutorEnv::builder().write::<u32>(&n).unwrap().build().unwrap();
     let prover = default_prover();
 
     let start = std::time::Instant::now();
     let receipt = prover.prove(env, FIBONACCI_ELF).unwrap().receipt;
     let end = std::time::Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
     let _output: u32 = receipt.journal.decode().unwrap();
+    let verify_start = std::time::Instant::now();
     receipt.verify(FIBONACCI_ID).unwrap();
+    let verify_end = std::time::Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
     
-    (duration, size(&receipt))
+    (prover_time, verifier_time, size(&receipt))
 }
 

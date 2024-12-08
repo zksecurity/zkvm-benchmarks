@@ -51,7 +51,7 @@ fn main() {
     // benchmark(bench_bigmem, &values, "../benchmark_outputs/bigmem_sp1.csv", "value");
 }
 
-fn benchmark_with_shard_size(func: fn(u32) -> (Duration, usize), iters: &[u32], shard_sizes: &[usize], file_name: &str, input_name: &str) {
+fn benchmark_with_shard_size(func: fn(u32) -> (Duration, Duration, usize), iters: &[u32], shard_sizes: &[usize], file_name: &str, input_name: &str) {
     assert_eq!(iters.len(), shard_sizes.len());
     let mut info = Vec::new();
     for bench_i in 0..iters.len() {
@@ -62,7 +62,7 @@ fn benchmark_with_shard_size(func: fn(u32) -> (Duration, usize), iters: &[u32], 
     utils::write_csv(file_name, input_name, iters, &info);
 }
 
-fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
+fn benchmark_sha2_chain(iters: u32) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     let input = [5u8; 32];
     stdin.write(&input);
@@ -74,14 +74,17 @@ fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }
 
-fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
+fn benchmark_sha3_chain(iters: u32) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     let input = [5u8; 32];
     stdin.write(&input);
@@ -93,14 +96,17 @@ fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }
 
-fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
+fn benchmark_sha2(num_bytes: usize) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     let input = vec![5u8; num_bytes];
     stdin.write(&input);
@@ -111,14 +117,17 @@ fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }
 
-fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
+fn benchmark_sha3(num_bytes: usize) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     let input = vec![5u8; num_bytes];
     stdin.write(&input);
@@ -129,14 +138,17 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize) {
+fn bench_fibonacci(n: u32) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
 
@@ -146,14 +158,17 @@ fn bench_fibonacci(n: u32) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }
 
-fn bench_bigmem(value: u32) -> (Duration, usize) {
+fn bench_bigmem(value: u32) -> (Duration, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&value);
 
@@ -163,9 +178,12 @@ fn bench_bigmem(value: u32) -> (Duration, usize) {
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();
     let end = Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
+    let verify_start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
+    let verify_end = Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
 
-    (duration, size(&proof))
+    (prover_time, verifier_time, size(&proof))
 }

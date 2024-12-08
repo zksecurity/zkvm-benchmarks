@@ -9,7 +9,7 @@ fn main() {
     benchmark(bench_sha3, &lengths, "../../benchmark_outputs/sha3_risczero.csv", "n");
 }
 
-fn bench_sha3(num_bytes: usize) -> (Duration, usize) {
+fn bench_sha3(num_bytes: usize) -> (Duration, Duration, usize) {
     let input = vec![5u8; num_bytes];
     let env = ExecutorEnv::builder().write(&input).unwrap().build().unwrap();
     let prover = default_prover();
@@ -17,11 +17,14 @@ fn bench_sha3(num_bytes: usize) -> (Duration, usize) {
     let start = std::time::Instant::now();
     let receipt = prover.prove(env, SHA3_BENCH_ELF).unwrap().receipt;
     let end = std::time::Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
-    let _output: [u8; 32] = receipt.journal.decode().unwrap();
+    let _output: u32 = receipt.journal.decode().unwrap();
+    let verify_start = std::time::Instant::now();
     receipt.verify(SHA3_BENCH_ID).unwrap();
+    let verify_end = std::time::Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
     
-    (duration, size(&receipt))
+    (prover_time, verifier_time, size(&receipt))
 }
 

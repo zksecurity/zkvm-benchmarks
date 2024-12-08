@@ -6,10 +6,10 @@ use utils::{benchmark, size};
 
 fn main() {
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(bench_sha3, &lengths, "../../benchmark_outputs/sha2_risczero.csv", "n");
+    benchmark(bench_sha2, &lengths, "../../benchmark_outputs/sha2_risczero.csv", "n");
 }
 
-fn bench_sha3(num_bytes: usize) -> (Duration, usize) {
+fn bench_sha2(num_bytes: usize) -> (Duration, Duration, usize) {
     let input = vec![5u8; num_bytes];
     let env = ExecutorEnv::builder().write(&input).unwrap().build().unwrap();
     let prover = default_prover();
@@ -17,11 +17,14 @@ fn bench_sha3(num_bytes: usize) -> (Duration, usize) {
     let start = std::time::Instant::now();
     let receipt = prover.prove(env, SHA2_BENCH_ELF).unwrap().receipt;
     let end = std::time::Instant::now();
-    let duration = end.duration_since(start);
+    let prover_time = end.duration_since(start);
 
-    let _output: [u8; 32] = receipt.journal.decode().unwrap();
+    let _output: u32 = receipt.journal.decode().unwrap();
+    let verify_start = std::time::Instant::now();
     receipt.verify(SHA2_BENCH_ID).unwrap();
-
-    (duration, size(&receipt))
+    let verify_end = std::time::Instant::now();
+    let verifier_time = verify_end.duration_since(verify_start);
+    
+    (prover_time, verifier_time, size(&receipt))
 }
 

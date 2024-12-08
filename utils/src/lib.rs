@@ -2,21 +2,21 @@ use std::{fmt::Display, fs::File, io::Write, time::Duration};
 
 use serde::Serialize;
 
-pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, usize), inputs: &[T], file: &str, input_name: &str) {
+pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, Duration, usize), inputs: &[T], file: &str, input_name: &str) {
     let mut results = Vec::new();
     for input in inputs {
-        let (duration, size) = func(input.clone());
-        results.push((duration, size));
+        let (prover_time, verifier_time, proof_size) = func(input.clone());
+        results.push((prover_time, verifier_time, proof_size));
     }
 
     write_csv(file, input_name, inputs, &results);
 }
 
-pub fn write_csv<T: Display>(file: &str, input_name: &str, inputs: &[T], results: &[(Duration, usize)]) {
+pub fn write_csv<T: Display>(file: &str, input_name: &str, inputs: &[T], results: &[(Duration, Duration, usize)]) {
     let mut file = File::create(file).unwrap();
-    file.write_all(format!("{},prover time (ms),proof size (bytes)\n", input_name).as_bytes()).unwrap();
-    inputs.iter().zip(results).for_each(|(input, (duration, size))| {
-        file.write_all(format!("{},{},{}\n", input, duration.as_millis(), size).as_bytes()).unwrap();
+    file.write_all(format!("{},prover time (ms),verifier time (ms),proof size (bytes)\n", input_name).as_bytes()).unwrap();
+    inputs.iter().zip(results).for_each(|(input, (prover_time, verifier_time, proof_size))| {
+        file.write_all(format!("{},{},{},{}\n", input, prover_time.as_millis(), verifier_time.as_millis(), proof_size).as_bytes()).unwrap();
     });
 }
 

@@ -17,7 +17,7 @@ fn main() {
     );
 }
 
-fn benchmark_fib(n: u32) -> (Duration, usize) {
+fn benchmark_fib(n: u32) -> (Duration, Duration, usize) {
 
     // Prove
     let command = "stone-cli";
@@ -114,7 +114,5 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
         );
     }
 
-    println!("verify : {:?}", verify_end.duration_since(verify_start));
-
-    (end.duration_since(start), proof_bytes)
+    (end.duration_since(start), verify_end.duration_since(verify_start), proof_bytes)
 }

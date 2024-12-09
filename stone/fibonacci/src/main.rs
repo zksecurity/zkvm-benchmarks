@@ -8,7 +8,7 @@ use utils::benchmark;
 fn main() {
     // fibonacci
     // let ns = [100, 1000, 10000, 50000];
-    let ns = [50];
+    let ns = [10, 20, 40, 80, 160, 1 << 14, 1 << 15, 1 << 16];
     benchmark(
         run,
         &ns,
@@ -30,6 +30,10 @@ fn run(n: u32) -> (Duration, usize) {
         &program_path,
         "--program_input",
         &program_input,
+        "--n_verifier_friendly_commitment_layers",
+        "0",
+        "--verifier_friendly_channel_updates",
+        "false",
         "--output",
         &output_file,
         "--stone_version",

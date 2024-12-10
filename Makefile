@@ -32,3 +32,4 @@ bench-stone:
 	cd stone/keccak && cargo run --release
 	cd stone/keccak-builtin && cargo run --release
 	cd stone/sha256 && cargo run --release
+	cd stone/sha256-chain && cargo run --release

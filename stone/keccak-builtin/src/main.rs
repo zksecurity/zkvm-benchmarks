@@ -6,18 +6,25 @@ use std::time::Instant;
 use utils::benchmark;
 
 fn main() {
-    let inputs = [1];
+    let inputs = [1, 2, 5, 10];
     benchmark(
         run,
         &inputs,
         "../../benchmark_outputs/keccak_builtin.csv",
-        "",
+        "n",
     );
 }
 
 fn run(n: u32) -> (Duration, usize) {
     let program_path = "programs/keccak.cairo".to_string();
     let output_path = "programs/keccak.json".to_string();
+
+    // Generate input json file based on n
+    // the format should be {"iterations": 10}
+    // and save it to programs/input.json
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "programs/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
 
     // Compile Cairo code
     let status = Command::new("cairo-compile")
@@ -42,8 +49,6 @@ fn run(n: u32) -> (Duration, usize) {
     // Prove
     let command = "stone-cli";
 
-    // let program_input = format!("[{}]", n).to_string();
-    let program_input = "programs/keccak_input.json";
     let output_file = format!("keccak_builtin_proof.json").to_string();
     let args = [
         "prove",
@@ -54,7 +59,7 @@ fn run(n: u32) -> (Duration, usize) {
         "--layout",
         "starknet-with-keccak",
         "--program_input_file",
-        program_input,
+        &program_input,
         "--output",
         &output_file,
         "--stone_version",

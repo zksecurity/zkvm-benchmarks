@@ -22,7 +22,11 @@ func repeat_hash{keccak_ptr: KeccakBuiltin*}(state: KeccakBuiltinState, n: felt)
 
 // The main function now accepts a parameter `n` that indicates how many times to hash.
 func main{keccak_ptr: KeccakBuiltin*}() {
-    let iterations = 100;
+    alloc_locals;
+
+    local iterations;
+    %{ ids.iterations = program_input['iterations'] %}
+
     // Define an initial Keccak state (can be replaced with your desired initial input).
     let initial_state = KeccakBuiltinState(1, 2, 3, 4, 5, 6, 7, 8);
 

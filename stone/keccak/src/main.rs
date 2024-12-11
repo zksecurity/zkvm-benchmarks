@@ -7,12 +7,12 @@ use utils::benchmark;
 
 fn main() {
 
-    let inputs = [1];
+    let inputs = [32, 256, 512, 1024, 2048];
     benchmark(
         run,
         &inputs,
         "../../benchmark_outputs/cairo_keccak.csv",
-        "",
+        "bytes",
     );
 }
 
@@ -20,6 +20,10 @@ fn main() {
 fn run(n: u32) -> (Duration, usize) {
     let program_path = "programs/cairo_keccak.cairo".to_string();
     let output_path = "programs/cairo_keccak.json".to_string();
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "programs/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
+
 
     // Compile Cairo code
     let status = Command::new("cairo-compile")
@@ -44,8 +48,6 @@ fn run(n: u32) -> (Duration, usize) {
     // Prove
     let command = "stone-cli";
 
-    // let program_input = format!("[{}]", n).to_string();
-    let program_input = "programs/keccak_input.json";
     let output_file = format!("keccak_proof.json").to_string();
     let args = [
         "prove",

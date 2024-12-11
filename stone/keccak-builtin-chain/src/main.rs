@@ -6,12 +6,24 @@ use std::time::Instant;
 use utils::benchmark;
 
 fn main() {
-    // representing bytes 200, 400, 1000, 2000
-    // as each iteration of the keccak builtin processes 200 bytes
-    let inputs = [1, 2, 5, 10];
+    // other programs use:
+    // 32 bytes * 230 = 7360 bytes
+    // 32 bytes * 460 = 14720 bytes
+    // 32 bytes * 920 = 29440 bytes
+    // 32 bytes * 1840 = 58880 bytes
+    // 32 bytes * 3680 = 117760 bytes
+
+    // to adapt to the 200 bytes per iteration of the keccak builtin,
+    // the number of equivalent iterations is:
+    // 7360 / 200 = 36.8
+    // 14720 / 200 = 73.6
+    // 29440 / 200 = 147.2
+    // 58880 / 200 = 294.4
+    // 117760 / 200 = 588.8
+    let iters = [37, 74, 148, 295, 589];
     benchmark(
         run,
-        &inputs,
+        &iters,
         "../../benchmark_outputs/keccak_builtin.csv",
         "n",
     );

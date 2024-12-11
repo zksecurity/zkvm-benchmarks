@@ -1,45 +1,75 @@
+use serde_json::Value;
+use std::fs;
 use std::process::Command;
 use std::time::Duration;
 use std::time::Instant;
 use utils::benchmark;
-use serde_json::Value;
-use std::fs;
 
 fn main() {
-    // fibonacci
-    // let ns = [100, 1000, 10000, 50000];
-    let ns = [10, 20, 40, 80, 160, 1 << 14, 1 << 15, 1 << 16];
+    let inputs = [1, 2, 5, 10];
     benchmark(
-        benchmark_fib,
-        &ns,
-        "../benchmark_outputs/fibonacci_stone.csv",
+        run,
+        &inputs,
+        "../../benchmark_outputs/keccak_builtin.csv",
         "n",
     );
 }
 
-fn benchmark_fib(n: u32) -> (Duration, usize) {
+fn run(n: u32) -> (Duration, usize) {
+    let program_path = "programs/keccak.cairo".to_string();
+    let output_path = "programs/keccak.json".to_string();
 
+    // Generate input json file based on n
+    // the format should be {"iterations": 10}
+    // and save it to programs/input.json
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "programs/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
+
+    // Compile Cairo code
+    let status = Command::new("cairo-compile")
+        .arg(&program_path) // Path to the Cairo program
+        .arg("--output")
+        .arg(&output_path) // Output file path
+        .arg("--proof_mode")
+        .status();
+
+    match status {
+        Ok(status) if status.success() => {
+            println!("Compilation successful! Compiled file saved to: {}", output_path);
+        }
+        Ok(status) => {
+            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-compile: {}", err);
+        }
+    }
+    
     // Prove
     let command = "stone-cli";
-    let program_path = "programs/fibonacci.cairo".to_string();
-    let program_input = format!("[{}]", n).to_string();
-    let output_file = format!("fibonacci_{}_proof.json", n).to_string();
+
+    let output_file = format!("keccak_builtin_proof.json").to_string();
     let args = [
         "prove",
+        "--cairo_version",
+        "cairo0",
         "--cairo_program",
-        &program_path,
-        "--program_input",
+        &output_path,
+        "--layout",
+        "starknet-with-keccak",
+        "--program_input_file",
         &program_input,
-        "--n_verifier_friendly_commitment_layers",
-        "0",
-        "--verifier_friendly_channel_updates",
-        "false",
         "--output",
         &output_file,
         "--stone_version",
         "v6",
     ];
 
+    prove_and_verify(command, args.to_vec(), output_file.clone())
+}
+
+fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (Duration, usize) {
     println!("Running Prove command: {} {}", command, args.join(" "));
 
     let start = Instant::now();
@@ -68,11 +98,9 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
     // Proof Size
     let file_path = &output_file;
 
-    let file_content = fs::read_to_string(file_path)
-        .expect("Failed to read the JSON file");
+    let file_content = fs::read_to_string(file_path).expect("Failed to read the JSON file");
 
-    let json: Value = serde_json::from_str(&file_content)
-        .expect("Failed to parse JSON");
+    let json: Value = serde_json::from_str(&file_content).expect("Failed to parse JSON");
 
     let mut proof_bytes = 0;
     if let Some(proof_hex) = json.get("proof_hex").and_then(|v| v.as_str()) {
@@ -83,18 +111,18 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
 
     // Verify
     let verify_command = "stone-cli";
-    let verify_args = [
-        "verify",
-        "--proof",
-        &output_file,
-    ];
+    let verify_args = ["verify", "--proof", &output_file];
 
-    println!("Running Verify command: {} {}", verify_command, verify_args.join(" "));
+    println!(
+        "Running Verify command: {} {}",
+        verify_command,
+        verify_args.join(" ")
+    );
 
     let verify_start = Instant::now();
 
     let verify_output = Command::new(verify_command)
-        .args(&verify_args)
+        .args(verify_args)
         .output()
         .expect("Failed to execute the Verify command");
 

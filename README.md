@@ -30,6 +30,11 @@ cd stone-cli
 cargo install --path .
 ```
 
+Also we will need to install the python module _cairo-lang_ in order to compile cairo0 programs.
+```
+pip install cairo-lang
+```
+
 ## Running
 To run all benchmarks run:
 ```bash

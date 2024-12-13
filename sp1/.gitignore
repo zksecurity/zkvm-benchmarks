@@ -17,3 +17,6 @@ pgo-data.profdata
 
 # ELF Files
 **/riscv32im-succinct-zkvm-elf
+
+*.zst
+*.json

@@ -25,3 +25,7 @@ fn bench_sha3(num_bytes: usize) -> (Duration, usize) {
     (duration, size(&receipt))
 }
 
+// refactor benchmark
+// create a benchmark binary
+// - run cargo build --release in the current folder
+// - run benchmark [binary], the built binary

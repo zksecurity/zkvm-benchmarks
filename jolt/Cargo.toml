@@ -29,6 +29,8 @@ sha3-guest = { path = "./sha3-guest" }
 fibonacci-guest = { path = "./fibonacci-guest" }
 bigmem-guest = { path = "./bigmem-guest" }
 
+clap = { version = "4.0.5", features = ["derive"] } 
+
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "optimize/field-from-u64" }
 ark-ec = { git = "https://github.com/a16z/arkworks-algebra", branch = "optimize/field-from-u64" }

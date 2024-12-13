@@ -1,44 +1,52 @@
-use serde_json::Value;
+// use serde_json::Value;
+// use std::fs;
+// use std::process::Command;
+// use std::time::Duration;
+// use std::time::Instant;
+// use utils::benchmark;
+
+// fn main() {
+//     // other programs use:
+//     // 32 bytes * 230 = 7360 bytes
+//     // 32 bytes * 460 = 14720 bytes
+//     // 32 bytes * 920 = 29440 bytes
+//     // 32 bytes * 1840 = 58880 bytes
+//     // 32 bytes * 3680 = 117760 bytes
+
+//     // to adapt to the 200 bytes per iteration of the keccak builtin,
+//     // the number of equivalent iterations is:
+//     // 7360 / 200 = 36.8
+//     // 14720 / 200 = 73.6
+//     // 29440 / 200 = 147.2
+//     // 58880 / 200 = 294.4
+//     // 117760 / 200 = 588.8
+//     let iters = [37, 74, 148, 295, 589];
+//     benchmark(
+//         run,
+//         &iters,
+//         "../../benchmark_outputs/keccak_builtin.csv",
+//         "n",
+//     );
+// }
+use clap::{Parser};
+use common::{prove_and_verify, Cli};
 use std::fs;
 use std::process::Command;
-use std::time::Duration;
-use std::time::Instant;
-use utils::benchmark;
 
 fn main() {
-    // other programs use:
-    // 32 bytes * 230 = 7360 bytes
-    // 32 bytes * 460 = 14720 bytes
-    // 32 bytes * 920 = 29440 bytes
-    // 32 bytes * 1840 = 58880 bytes
-    // 32 bytes * 3680 = 117760 bytes
+    let cli = Cli::parse();
 
-    // to adapt to the 200 bytes per iteration of the keccak builtin,
-    // the number of equivalent iterations is:
-    // 7360 / 200 = 36.8
-    // 14720 / 200 = 73.6
-    // 29440 / 200 = 147.2
-    // 58880 / 200 = 294.4
-    // 117760 / 200 = 588.8
-    let iters = [37, 74, 148, 295, 589];
-    benchmark(
-        run,
-        &iters,
-        "../../benchmark_outputs/keccak_builtin.csv",
-        "n",
-    );
+    run(cli.n, cli.bench_mem);
 }
 
-fn run(n: u32) -> (Duration, usize) {
+
+fn run(n: u32, bench_mem: bool) {
     let program_path = "programs/keccak.cairo".to_string();
     let output_path = "programs/keccak.json".to_string();
-
-    // Generate input json file based on n
-    // the format should be {"iterations": 10}
-    // and save it to programs/input.json
     let input = format!("{{\"iterations\": {}}}", n);
     let program_input = "programs/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
+
 
     // Compile Cairo code
     let status = Command::new("cairo-compile")
@@ -63,100 +71,43 @@ fn run(n: u32) -> (Duration, usize) {
     // Prove
     let command = "stone-cli";
 
-    let output_file = format!("keccak_builtin_proof.json").to_string();
-    let args = [
-        "prove",
-        "--cairo_version",
-        "cairo0",
-        "--cairo_program",
-        &output_path,
-        "--layout",
-        "starknet-with-keccak",
-        "--program_input_file",
-        &program_input,
-        "--output",
-        &output_file,
-        "--stone_version",
-        "v6",
-    ];
-
-    prove_and_verify(command, args.to_vec(), output_file.clone())
-}
-
-fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (Duration, usize) {
-    println!("Running Prove command: {} {}", command, args.join(" "));
-
-    let start = Instant::now();
-
-    let output = Command::new(command)
-        .args(&args)
-        .output()
-        .expect("Failed to execute the Prove command");
-
-    let end = Instant::now();
-
-    if output.status.success() {
-        println!("Prove Command completed successfully.");
-        println!(
-            "Standard Output:\n{}",
-            String::from_utf8_lossy(&output.stdout)
-        );
-    } else {
-        println!("Prove Command failed with exit code: {}", output.status);
-        println!(
-            "Standard Error:\n{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+    let output_file = format!("keccak_proof_{}.json", n).to_string();
+    let args = if bench_mem {
+        vec![
+            "prove",
+            "--cairo_version",
+            "cairo0",
+            "--cairo_program",
+            &output_path,
+            "--layout",
+            "starknet-with-keccak",
+            "--program_input_file",
+            program_input,
+            "--output",
+            &output_file,
+            "--stone_version",
+            "v6",
+            "--bench-memory",
+            "true",
+        ]
     }
+    else {
+        vec![
+            "prove",
+            "--cairo_version",
+            "cairo0",
+            "--cairo_program",
+            &output_path,
+            "--layout",
+            "starknet-with-keccak",
+            "--program_input_file",
+            program_input,
+            "--output",
+            &output_file,
+            "--stone_version",
+            "v6",
+        ]
+    };
 
-    // Proof Size
-    let file_path = &output_file;
-
-    let file_content = fs::read_to_string(file_path).expect("Failed to read the JSON file");
-
-    let json: Value = serde_json::from_str(&file_content).expect("Failed to parse JSON");
-
-    let mut proof_bytes = 0;
-    if let Some(proof_hex) = json.get("proof_hex").and_then(|v| v.as_str()) {
-        proof_bytes = (proof_hex.len() - 2) / 2;
-    } else {
-        println!("The 'proof_hex' field is not present or not a string.");
-    }
-
-    // Verify
-    let verify_command = "stone-cli";
-    let verify_args = ["verify", "--proof", &output_file];
-
-    println!(
-        "Running Verify command: {} {}",
-        verify_command,
-        verify_args.join(" ")
-    );
-
-    let verify_start = Instant::now();
-
-    let verify_output = Command::new(verify_command)
-        .args(verify_args)
-        .output()
-        .expect("Failed to execute the Verify command");
-
-    let verify_end = Instant::now();
-
-    if verify_output.status.success() {
-        println!("Verify Command completed successfully.");
-        println!(
-            "Standard Output:\n{}",
-            String::from_utf8_lossy(&output.stdout)
-        );
-    } else {
-        println!("Verify Command failed with exit code: {}", output.status);
-        println!(
-            "Standard Error:\n{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
-
-    println!("verify : {:?}", verify_end.duration_since(verify_start));
-
-    (end.duration_since(start), proof_bytes)
+    prove_and_verify(command, args.to_vec(), output_file.clone());
 }

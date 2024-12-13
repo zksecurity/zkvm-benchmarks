@@ -1,10 +1,9 @@
 [package]
-name = "stone"
+name = "common"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 serde_json = "1.0.133"
 utils = { path = "../../utils" }
-common = { path = "../common" }
-clap = { version = "4.0.5", features = ["derive"] } 
+clap = { version = "4.0.5", features = ["derive"] } # CLI library

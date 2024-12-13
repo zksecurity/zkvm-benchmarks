@@ -1,6 +1,12 @@
 # zkVM Benchmarks
 
 ## Installation
+
+### Install heaptrack
+```bash
+apt-get install heaptrack
+```
+
 ### Install Jolt
 ```bash
 rustup target add riscv32i-unknown-none-elf
@@ -25,8 +31,10 @@ sp1up
 
 ### Install stone-cli
 ```bash
-git clone git@github.com:zksecurity/stone-cli.git
+```bash
+git clone -b add-program-input-hint git@github.com:zksecurity/stone-cli.git
 cd stone-cli
+```
 cargo install --path .
 ```
 

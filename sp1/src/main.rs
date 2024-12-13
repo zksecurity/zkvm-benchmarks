@@ -1,7 +1,7 @@
-use std::time::{Duration, Instant};
+use std::{io::Write, time::{Duration, Instant}};
 
 use sp1_sdk::{utils as sp1_utils, ProverClient, SP1Stdin};
-use utils::{benchmark, size};
+use utils::{size};
 
 const FIBONACCI_ELF: &[u8] = include_bytes!("../fibonacci/elf/riscv32im-succinct-zkvm-elf");
 const SHA2_ELF: &[u8] = include_bytes!("../sha2/elf/riscv32im-succinct-zkvm-elf");
@@ -9,6 +9,21 @@ const SHA2_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succin
 const SHA3_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
 const SHA3_ELF: &[u8] = include_bytes!("../sha3/elf/riscv32im-succinct-zkvm-elf");
 const BIGMEM_ELF: &[u8] = include_bytes!("../bigmem/elf/riscv32im-succinct-zkvm-elf");
+
+use clap::{Parser};
+
+/// A tool to build and optionally benchmark a cargo project
+#[derive(Parser, Debug)]
+#[clap()]
+pub struct Cli {
+    #[arg(long)]
+    pub n: u32,
+    
+    /// Run the benchmark under heaptrack for memory profiling
+    #[arg(long)]
+    pub program: String,
+}
+
 
 fn main() {
     sp1_utils::setup_logger();
@@ -44,8 +59,37 @@ fn main() {
     // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_sp1.csv", "byte length");
 
     // let ns = [100, 1000, 10000, 50000];
-    let ns = [50];
-    benchmark(bench_fibonacci, &ns, "../benchmark_outputs/fibonacci_sp1.csv", "n");
+    // let ns = [50];
+    // benchmark(bench_fibonacci, &ns, "../benchmark_outputs/fibonacci_sp1.csv", "n");
+
+    let cli = Cli::parse();
+
+    // let proof_size = if cli.program == "fib" {
+    //     let (_, size) = bench_fibonacci(cli.n);
+    //     size
+    // } else {
+    //     0
+    // };
+
+    let proof_size = match cli.program.as_str() {
+        "fib" => {
+            let (_, size) = bench_fibonacci(cli.n);
+            size
+        },
+        "sha2" => {
+            let (_, size) = benchmark_sha2(cli.n as usize);
+            size
+        },
+        "sha3" => {
+            let (_, size) = benchmark_sha3(cli.n as usize);
+            size
+        },
+        _ => unreachable!()
+
+    };
+
+    let mut file = std::fs::File::create("results.json").unwrap();
+    file.write_all(format!("{{\"proof_size\": {}}}", proof_size).as_bytes()).unwrap();
 
     // let values = [5u32];
     // benchmark(bench_bigmem, &values, "../benchmark_outputs/bigmem_sp1.csv", "value");

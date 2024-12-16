@@ -71,25 +71,22 @@ fn main() {
     //     0
     // };
 
-    let proof_size = match cli.program.as_str() {
+    let (duration, proof_size) = match cli.program.as_str() {
         "fib" => {
-            let (_, size) = bench_fibonacci(cli.n);
-            size
+            bench_fibonacci(cli.n)
         },
         "sha2" => {
-            let (_, size) = benchmark_sha2(cli.n as usize);
-            size
+            benchmark_sha2(cli.n as usize)
         },
         "sha3" => {
-            let (_, size) = benchmark_sha3(cli.n as usize);
-            size
+            benchmark_sha3(cli.n as usize)
         },
         _ => unreachable!()
 
     };
 
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}}}", proof_size).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
     // let values = [5u32];
     // benchmark(bench_bigmem, &values, "../benchmark_outputs/bigmem_sp1.csv", "value");

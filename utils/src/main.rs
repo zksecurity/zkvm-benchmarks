@@ -40,7 +40,7 @@ struct Cli {
 struct Record {
     n: String,
     #[serde(rename = "time(ms)")]
-    time_ms: u128,
+    time_ms: u64,
     #[serde(rename = "proof size(bytes)")]
     proof_size: u64,
     #[serde(rename = "peak memory")]
@@ -60,8 +60,6 @@ fn main() {
         .arg("--release")
         .status()
         .expect("Failed to build the program binary");
-
-    let start = Instant::now();
 
     if cli.bench_mem {
         if name.contains("stone") {
@@ -125,9 +123,6 @@ fn main() {
             .status()
             .expect("Failed to run the benchmark");
 
-        let end = Instant::now();
-        let duration = end.duration_since(start);
-
         // read the proof size from the output file
         let file_content =
             std::fs::read_to_string("results.json").expect("Failed to read the JSON file");
@@ -140,6 +135,12 @@ fn main() {
             .as_u64()
             .expect("Failed to convert proof size to u64");
 
+        let duration = json
+            .get("duration")
+            .expect("Failed to get duration")
+            .as_u64()
+            .expect("Failed to convert duration to u64");
+
         update_or_insert_record(&file, &bench_arg, Some(duration), Some(proof_size), None)
             .expect("Failed to update or insert record");
     }
@@ -148,7 +149,7 @@ fn main() {
 fn update_or_insert_record(
     file_path: &str,
     bench_arg: &str,
-    duration: Option<Duration>,
+    duration: Option<u64>,
     proof_size: Option<u64>,
     memory: Option<String>,
 ) -> Result<(), Box<dyn Error>> {
@@ -171,7 +172,7 @@ fn update_or_insert_record(
     for record in &mut records {
         if record.n == bench_arg {
             if let Some(duration) = duration {
-                record.time_ms = duration.as_millis();
+                record.time_ms = duration;
             }
             if let Some(proof_size) = proof_size {
                 record.proof_size = proof_size;
@@ -186,7 +187,7 @@ fn update_or_insert_record(
 
     // If not found, append a new record
     if !updated {
-        let duration = duration.map(|d| d.as_millis()).unwrap_or(0);
+        let duration = duration.unwrap_or(0);
         let proof_size = proof_size.unwrap_or(0);
         let memory = memory.unwrap_or(0.to_string());
         records.push(Record {

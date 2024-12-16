@@ -92,10 +92,11 @@ pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> 
 
     println!("verify : {:?}", verify_end.duration_since(verify_start));
 
+    let duration = end.duration_since(start);
     // save proof size in a json file
     let proof_size_file = "results.json";
-    let proof_size_json = format!("{{\"proof_size\": {}}}", proof_bytes);
+    let proof_size_json = format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_bytes, duration.as_millis());
     fs::write(proof_size_file, proof_size_json).expect("Failed to write the JSON file");
 
-    (end.duration_since(start), proof_bytes)
+    (duration, proof_bytes)
 }

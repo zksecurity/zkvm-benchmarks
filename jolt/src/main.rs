@@ -20,36 +20,28 @@ fn main() {
     // read args from cli
     let cli = Cli::parse();
 
-    // if cli.program == "fib" {
-    //     benchmark_fib(cli.n);
-    // }
-    let proof_size = match cli.program.as_str() {
+    let (duration, proof_size) = match cli.program.as_str() {
         "fib" => {
-            let (_, size) = benchmark_fib(cli.n);
-            size
+            benchmark_fib(cli.n)
         },
         "sha2" => {
-            let (_, size) = benchmark_sha2(cli.n as usize);
-            size
+            benchmark_sha2(cli.n as usize)
         },
         "sha2-chain" => {
-            let (_, size) = benchmark_sha2_chain(cli.n);
-            size
+            benchmark_sha2_chain(cli.n)
         },
         "sha3" => {
-            let (_, size) = benchmark_sha3(cli.n as usize);
-            size
+            benchmark_sha3(cli.n as usize)
         },
         "sha3-chain" => {
-            let (_, size) = benchmark_sha3_chain(cli.n);
-            size
+            benchmark_sha3_chain(cli.n)
         },
         _ => unreachable!()
 
     };
 
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}}}", proof_size).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration:\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
 }
 

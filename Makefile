@@ -83,15 +83,15 @@ bench-jolt-mat-mul:
 
 bench-jolt-mat-mul-time:
 	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 100 -- --program mat-mul
-	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 200 -- --program mat-mul
 	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 500 -- --program mat-mul
 	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 1000 -- --program mat-mul
+	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 10000 -- --program mat-mul
 
 bench-jolt-mat-mul-mem:
-	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 100 -- --program mat-mul --bench-mem
-	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 200 -- --program mat-mul --bench-mem
-	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 500 -- --program mat-mul --bench-mem
-	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 1000 -- --program mat-mul --bench-mem
+	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 100 --bench-mem -- --program mat-mul 
+	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 500 --bench-mem -- --program mat-mul 
+	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 1000 --bench-mem -- --program mat-mul 
+	-cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 10000 --bench-mem -- --program mat-mul 
 
 #####
 # sp1

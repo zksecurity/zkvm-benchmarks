@@ -36,10 +36,14 @@ fn main() {
         "sha3-chain" => {
             benchmark_sha3_chain(cli.n)
         },
+        "mat-mul" => {
+            benchmark_mat_mul(cli.n)
+        },
         _ => unreachable!()
 
     };
 
+    println!("Duration: {:?}", duration);
     let mut file = std::fs::File::create("results.json").unwrap();
     file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
@@ -111,3 +115,17 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
 
 //     (end.duration_since(start), proof.size().unwrap())
 // }
+
+
+fn benchmark_mat_mul(size: u32) -> (Duration, usize) {
+    println!("building matrix mul");
+    let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul();
+
+    println!("proving matrix mul");
+    let start = Instant::now();
+    let (_output, proof) = prove_mat_mul();
+    let end = Instant::now();
+    println!("done proving matrix mul");
+
+    (end.duration_since(start), proof.size().unwrap())
+}

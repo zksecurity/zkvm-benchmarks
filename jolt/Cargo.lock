@@ -1585,6 +1585,7 @@ dependencies = [
  "clap",
  "fibonacci-guest",
  "jolt-sdk",
+ "mat-mul-guest",
  "sha2-chain-guest",
  "sha2-guest",
  "sha3-chain-guest",
@@ -1761,6 +1762,13 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
+
+[[package]]
+name = "mat-mul-guest"
+version = "0.1.0"
+dependencies = [
+ "jolt-sdk",
+]
 
 [[package]]
 name = "matchers"

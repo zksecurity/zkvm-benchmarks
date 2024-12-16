@@ -41,7 +41,7 @@ fn main() {
     };
 
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}, \"duration:\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
 }
 

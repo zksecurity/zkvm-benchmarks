@@ -45,17 +45,17 @@ bench-jolt-sha2:
 
 bench-jolt-sha2-time:
 	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2
 
 bench-jolt-sha2-mem:
 	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2
 
 bench-jolt-sha3:
 	make bench-jolt-sha3-time
@@ -63,17 +63,17 @@ bench-jolt-sha3:
 
 bench-jolt-sha3-time:
 	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha3
 
 bench-jolt-sha3-mem:
 	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
 
 #####
 # sp1
@@ -120,10 +120,10 @@ bench-sp1-fib-mem:
 
 bench-sp1-sha2-time:
 	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2
 
 bench-sp1-sha2-mem:
 	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha2
@@ -134,17 +134,17 @@ bench-sp1-sha2-mem:
 
 bench-sp1-sha3-time:
 	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha3
 
 bench-sp1-sha3-mem:
 	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
-	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
 
 
 #####
@@ -152,31 +152,31 @@ bench-sp1-sha3-mem:
 #####
 
 bench-risczero:
-	# cd risczero/sha2-chain && cargo run --release
-	# cd risczero/fibonacci && cargo build --release
-	# cd risczero/sha3-chain && cargo run --release
-	# cd risczero/sha2 && cargo run --release
-	# cd risczero/sha3 && cargo run --release
-	# cd risczero/bigmem && cargo run --release
-
-	make bench-risczero-fib
-
-bench-risczero-fib:
+	cd risczero/sha2-chain && cargo run --release
 	cd risczero/fibonacci && cargo build --release
-	make bench-risczero-fib-time
-	make bench-risczero-fib-mem
+	cd risczero/sha3-chain && cargo run --release
+	cd risczero/sha2 && cargo run --release
+	cd risczero/sha3 && cargo run --release
+	cd risczero/bigmem && cargo run --release
 
-bench-risczero-fib-time:
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
+	# make bench-risczero-fib
 
-bench-risczero-fib-mem:
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
+# bench-risczero-fib:
+# 	cd risczero/fibonacci && cargo build --release
+# 	make bench-risczero-fib-time
+# 	make bench-risczero-fib-mem
+
+# bench-risczero-fib-time:
+# 	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
+
+# bench-risczero-fib-mem:
+# 	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
+# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
 #####
 # stone
@@ -190,7 +190,6 @@ bench-stone:
 	# cd stone/sha256 && cargo run --release
 	# cd stone/sha256-chain && cargo run --release
 
-	# make bench-stone-fib-compile
 	make bench-stone-time
 	make bench-stone-mem
 
@@ -228,32 +227,32 @@ bench-stone-fib-mem:
 
 bench-stone-keccak-time:
 	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 1, $(SHA_ARGS))
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 2, $(SHA_ARGS))
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 3, $(SHA_ARGS))
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 4, $(SHA_ARGS))
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 5, $(SHA_ARGS))
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 2, $(SHA_ARGS))
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 3, $(SHA_ARGS))
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 4, $(SHA_ARGS))
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 5, $(SHA_ARGS))
 
 bench-stone-keccak-mem:
 	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem
-	# cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem
+	cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem
 
 bench-stone-keccak-builtin-time:
 	# representing bytes 200, 400, 1000, 2000
 	# as each iteration of the keccak builtin processes 200 bytes
 	# let inputs = [1, 2, 5, 10];
 	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 1
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 2
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 5
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 2
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 5
 	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 10
 
 bench-stone-keccak-builtin-mem:
 	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 1 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 2 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 5 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 10 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 2 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 5 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 10 --bench-mem
 
 bench-stone-keccak-builtin-chain-time:
 	# other programs use:
@@ -271,31 +270,31 @@ bench-stone-keccak-builtin-chain-time:
     # 58880 / 200 = 294.4
     # 117760 / 200 = 588.8
 	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 37
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589
 
 bench-stone-keccak-builtin-chain-mem:
 	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 37 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295 --bench-mem
-	# cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295 --bench-mem
+	cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589 --bench-mem
 
 bench-stone-sha256-time:
 	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 1, $(SHA_ARGS))
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 2, $(SHA_ARGS))
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 3, $(SHA_ARGS))
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 4, $(SHA_ARGS))
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 5, $(SHA_ARGS))
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 2, $(SHA_ARGS))
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 3, $(SHA_ARGS))
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 4, $(SHA_ARGS))
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 5, $(SHA_ARGS))
 
 bench-stone-sha256-mem:
 	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem
-	# cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem
+	cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem
 
 bench-stone-sha256-chain-time:
 	# can't run this on my machine, it crashes due to out of memory

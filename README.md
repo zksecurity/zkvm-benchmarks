@@ -14,9 +14,8 @@ rustup target add riscv32i-unknown-none-elf
 
 ### Install Risc Zero
 ```bash
-cargo install cargo-binstall
-cargo binstall cargo-risczero
-cargo risczero install
+curl -L https://risczero.com/install | bash
+rzup install
 ```
 
 ### Install SP1

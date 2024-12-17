@@ -143,6 +143,9 @@ fn main() {
 
         update_or_insert_record(&file, &bench_arg, Some(duration), Some(proof_size), None)
             .expect("Failed to update or insert record");
+
+        // remove json file
+        fs::remove_file("results.json").expect("Failed to remove the JSON file");
     }
 }
 

@@ -17,7 +17,7 @@ fn matrix_mul(size: usize) -> u32 {
     let a = vec![vec![2u32; size]; size];
     let b = vec![vec![3u32; size]; size];
     
-    let result = vec![vec![0u32; size]; size];
+    let mut result = vec![vec![0u32; size]; size];
     let mut sum = 0;
     for i in 0..size {
         for j in 0..size {

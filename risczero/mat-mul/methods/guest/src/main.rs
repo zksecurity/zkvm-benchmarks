@@ -29,21 +29,23 @@ fn matrix_mul_100() -> u32 {
     let a = [[2u32; SIZE]; SIZE];
     let b = [[3u32; SIZE]; SIZE];
 
-    //`Result::unwrap()` on an `Err` value: Trap: StoreAccessFault, pc: 0x0008025c(0x00200970)
-    // let mut result = [[0u32; SIZE]; SIZE];
-
+    let mut result = [[0u32; SIZE]; SIZE];
     
-    let mut sum = 0;
+    let mut total = 0;
+
     for i in 0..SIZE {
+        let mut new_row = [0u32; SIZE];
         for j in 0..SIZE {
+            let mut sum = 0;
             for k in 0..SIZE {
-                // result[i][j] += a[i][k] * b[k][j];
+                result[i][j] += a[i][k] * b[k][j];
                 sum += a[i][k] * b[k][j];
             }
+            total += sum;
         }
     }
 
-    sum
+    total
 }
 
 fn matrix_mul_500() -> u32 {

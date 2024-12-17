@@ -15,9 +15,9 @@ fn main() {
         .parse::<u32>()
         .expect("Invalid number");
 
-    let (_, proof_size) = bench_fibonacci(n);
+    let (duration, proof_size) = bench_fibonacci(n);
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}}}", proof_size).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 }
 
 fn bench_fibonacci(n: u32) -> (Duration, usize) {

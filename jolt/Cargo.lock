@@ -421,6 +421,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "binary-search-guest"
+version = "0.1.0"
+dependencies = [
+ "jolt-sdk",
+]
+
+[[package]]
 name = "bincode"
 version = "1.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1582,6 +1589,7 @@ name = "jolt-benchmarks"
 version = "0.1.0"
 dependencies = [
  "bigmem-guest",
+ "binary-search-guest",
  "clap",
  "fibonacci-guest",
  "jolt-sdk",

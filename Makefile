@@ -1,5 +1,6 @@
 FIB_ARGS = 100 1000 10000 50000
 SHA_ARGS = 32 256 512 1024 2048
+BINARY_SEARCH_ARGS = 4 8 16 32 64
 
 
 bench-all:
@@ -22,6 +23,7 @@ bench-jolt:
 	make bench-jolt-fib
 	make bench-jolt-sha2
 	make bench-jolt-sha3
+	make bench-jolt-binary-search
 
 bench-jolt-fib:
 	make bench-jolt-fib-time
@@ -74,6 +76,26 @@ bench-jolt-sha3-mem:
 	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
 	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
 	# cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
+
+bench-jolt-binary-search:
+	make bench-jolt-binary-search-time
+	make bench-jolt-binary-search-mem
+
+bench-jolt-binary-search-time:
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(BINARY_SEARCH_ARGS)) -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(BINARY_SEARCH_ARGS)) -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) -- --program fib
+
+
+bench-jolt-binary-search-mem:
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(BINARY_SEARCH_ARGS)) --bench-mem -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(BINARY_SEARCH_ARGS)) --bench-mem -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) --bench-mem -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) --bench-mem -- --program fib
+	cd jolt && RUST_LOG=info ../utils/target/debug/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) --bench-mem -- --program fib
+
 
 #####
 # sp1

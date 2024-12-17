@@ -36,12 +36,18 @@ fn main() {
         "sha3-chain" => {
             benchmark_sha3_chain(cli.n)
         },
+        "binary-search" => {
+            benchmark_binary_search(cli.n as usize)
+        },
         _ => unreachable!()
 
     };
+    println!("duration: {:?}", duration);
+    println!("proof size: {:?}", proof_size);
+
 
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}, \"duration:\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
 }
 
@@ -111,3 +117,15 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
 
 //     (end.duration_since(start), proof.size().unwrap())
 // }
+
+fn benchmark_binary_search(n: usize) -> (Duration, usize) {
+    let (prove_bs, _verify_bs) = binary_search_guest::build_find();
+
+    let input: Vec<usize> = (1..=n).collect();
+
+    let start = Instant::now();
+    let (_output, proof) = prove_bs(&input);
+    let end = Instant::now();
+
+    (end.duration_since(start), proof.size().unwrap())
+}

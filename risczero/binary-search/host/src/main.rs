@@ -15,9 +15,9 @@ fn main() {
         .parse::<usize>()
         .expect("Invalid number");
 
-    let (_, proof_size) = bench_binary_search(n);
+    let (duration, proof_size) = bench_binary_search(n);
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}}}", proof_size).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 }
 
 fn bench_binary_search(n: usize) -> (Duration, usize) {

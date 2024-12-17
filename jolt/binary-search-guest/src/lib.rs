@@ -2,7 +2,7 @@
 #![no_main]
 
 #[jolt::provable]
-fn find(search_array: &[usize]) -> usize {
+fn find(search_array: &[u8]) -> u32 {
     let value = search_array[0];
 
     let mut left: usize = 0;
@@ -24,6 +24,6 @@ fn find(search_array: &[usize]) -> usize {
     }
 
     assert_eq!(res, 0);
-    res as usize
+    res
 }
 

@@ -9,6 +9,7 @@ const SHA2_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succin
 const SHA3_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
 const SHA3_ELF: &[u8] = include_bytes!("../sha3/elf/riscv32im-succinct-zkvm-elf");
 const BIGMEM_ELF: &[u8] = include_bytes!("../bigmem/elf/riscv32im-succinct-zkvm-elf");
+const BINARY_SEARCH_ELF: &[u8] = include_bytes!("../binary-search/elf/riscv32im-succinct-zkvm-elf");
 
 use clap::{Parser};
 
@@ -81,6 +82,9 @@ fn main() {
         "sha3" => {
             benchmark_sha3(cli.n as usize)
         },
+        "binary-search" => {
+            benchmark_binary_search(cli.n as usize)
+        }
         _ => unreachable!()
 
     };
@@ -200,6 +204,25 @@ fn bench_bigmem(value: u32) -> (Duration, usize) {
 
     let client = ProverClient::new();
     let (pk, vk) = client.setup(BIGMEM_ELF);
+
+    let start = Instant::now();
+    let proof = client.prove(&pk, stdin).run().unwrap();
+    let end = Instant::now();
+    let duration = end.duration_since(start);
+
+    client.verify(&proof, &vk).expect("verification failed");
+
+    (duration, size(&proof))
+}
+
+fn benchmark_binary_search(n: usize) -> (Duration, usize) {
+    let input: Vec<usize> = (1..=n).collect();
+    
+    let mut stdin = SP1Stdin::new();
+    stdin.write(&input);
+
+    let client = ProverClient::new();
+    let (pk, vk) = client.setup(BINARY_SEARCH_ELF);
 
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();

@@ -80,19 +80,21 @@ bench-jolt-sha3-mem:
 #####
 
 build-sp1:
-	cd sp1 && cargo build --release
+	#cd sp1 && cargo build --release
 	cd sp1/fibonacci && cargo prove build
 	cd sp1/sha2-chain && cargo prove build
 	cd sp1/sha3-chain && cargo prove build
 	cd sp1/sha2 && cargo prove build
 	cd sp1/sha3 && cargo prove build
 	cd sp1/bigmem && cargo prove build
+	cd sp1/binary-search && cargo prove build
 
 bench-sp1:
 	make build-sp1
-	make bench-sp1-fib
-	make bench-sp1-sha2
-	make bench-sp1-sha3
+	# make bench-sp1-fib
+	# make bench-sp1-sha2
+	# make bench-sp1-sha3
+	make bench-sp1-binary-search
 
 bench-sp1-fib:
 	make bench-sp1-fib-time
@@ -105,6 +107,10 @@ bench-sp1-sha2:
 bench-sp1-sha3:
 	make bench-sp1-sha3-time
 	make bench-sp1-sha3-mem
+
+bench-sp1-binary-search:
+	make bench-sp1-binary-search-time
+	# make bench-sp1-binary-search-mem
 
 bench-sp1-fib-time:
 	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg $(word 1, $(FIB_ARGS)) -- --program fib
@@ -146,6 +152,18 @@ bench-sp1-sha3-mem:
 	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
 	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
 
+bench-sp1-binary-search-time:
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 4 -- --program binary-search
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 8 -- --program binary-search
+	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 16 -- --program binary-search
+	# cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 32 -- --program binary-search
+
+bench-sp1-binary-search-mem:
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 4 --bench-mem -- --program binary-search 
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 8 --bench-mem -- --program binary-search 
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 16 --bench-mem -- --program binary-search 
+	cd sp1 && RUST_LOG=info ../utils/target/debug/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg 32 --bench-mem -- --program binary-search 
+
 
 #####
 # risczero
@@ -159,7 +177,8 @@ bench-risczero:
 	# cd risczero/sha3 && cargo run --release
 	# cd risczero/bigmem && cargo run --release
 
-	make bench-risczero-fib
+	# make bench-risczero-fib
+	make bench-risczero-binary-search
 
 bench-risczero-fib:
 	cd risczero/fibonacci && cargo build --release
@@ -177,6 +196,23 @@ bench-risczero-fib-mem:
 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
+
+bench-risczero-binary-search:
+	cd risczero/binary-search && cargo build --release
+	make bench-risczero-binary-search-time
+	# make bench-risczero-binary-search-mem
+
+bench-risczero-binary-search-time:
+	cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 4
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 8
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 16
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 32
+
+bench-risczero-binary-search-mem:
+	cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 4 --bench-mem
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 8 --bench-mem
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 16 --bench-mem
+	# cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 32 --bench-mem
 
 #####
 # stone
@@ -201,6 +237,7 @@ bench-stone-time:
 	make bench-stone-keccak-builtin-chain-time
 	make bench-stone-sha256-time
 	make bench-stone-sha256-chain-time
+	make bench-stone-binary-search-time
 
 bench-stone-mem:
 	make bench-stone-fib-mem
@@ -209,6 +246,7 @@ bench-stone-mem:
 	make bench-stone-keccak-builtin-chain-mem
 	make bench-stone-sha256-mem
 	make bench-stone-sha256-chain-mem
+	make bench-stone-binary-search-mem
 
 bench-stone-fib-compile:
 	cd stone/fibonacci && cargo build --release
@@ -303,3 +341,16 @@ bench-stone-sha256-chain-time:
 
 bench-stone-sha256-chain-mem:
 	cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg 230 --bench-mem
+
+bench-stone-binary-search-time:
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 4
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 8
+	# cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 16
+	# cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 32
+
+
+bench-stone-binary-search-mem:
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 4 --bench-mem
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 8 --bench-mem
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 16 --bench-mem
+	cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg 32 --bench-mem

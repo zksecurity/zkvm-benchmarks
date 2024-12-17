@@ -36,6 +36,9 @@ fn main() {
         "sha3-chain" => {
             benchmark_sha3_chain(cli.n)
         },
+        "mat-mul" => {
+            benchmark_mat_mul(cli.n)
+        },
         "binary-search" => {
             benchmark_binary_search(cli.n as usize)
         },
@@ -46,6 +49,7 @@ fn main() {
     println!("proof size: {:?}", proof_size);
 
 
+    println!("Duration: {:?}", duration);
     let mut file = std::fs::File::create("results.json").unwrap();
     file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
@@ -128,4 +132,45 @@ fn benchmark_binary_search(n: usize) -> (Duration, usize) {
     let end = Instant::now();
 
     (end.duration_since(start), proof.size().unwrap())
+}
+
+fn benchmark_mat_mul(size: u32) -> (Duration, usize) {
+    println!("building matrix mul");
+    
+    println!("proving matrix mul");
+    let (duration, proof) = match size {
+        100 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_100();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        500 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_500();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        1000 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_1000();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        10000 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_10000();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        _ => unreachable!()
+    };
+    
+    println!("done proving matrix mul");
+
+    (duration, proof.size().unwrap())
 }

@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::io::Write;
 use methods::{
-    FIBONACCI_ELF, FIBONACCI_ID
+    MAT_MUL_ELF, MAT_MUL_ID
 };
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use utils::{size};
@@ -15,22 +15,22 @@ fn main() {
         .parse::<u32>()
         .expect("Invalid number");
 
-    let (duration, proof_size) = bench_fibonacci(n);
+    let (duration, proof_size) = bench_mat_mul(n);
     let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\":{}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize) {
+fn bench_mat_mul(n: u32) -> (Duration, usize) {
     let env = ExecutorEnv::builder().write::<u32>(&n).unwrap().build().unwrap();
     let prover = default_prover();
 
     let start = std::time::Instant::now();
-    let receipt = prover.prove(env, FIBONACCI_ELF).unwrap().receipt;
+    let receipt = prover.prove(env, MAT_MUL_ELF).unwrap().receipt;
     let end = std::time::Instant::now();
     let duration = end.duration_since(start);
 
     let _output: u32 = receipt.journal.decode().unwrap();
-    receipt.verify(FIBONACCI_ID).unwrap();
+    receipt.verify(MAT_MUL_ID).unwrap();
     
     (duration, size(&receipt))
 }

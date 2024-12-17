@@ -16,6 +16,7 @@ fn find(search_array: &[u8]) -> u32 {
 
         if mid_value == value {
             res = mid as u32;
+            break;
         } else if mid_value < value {
             left = mid + 1;
         } else {

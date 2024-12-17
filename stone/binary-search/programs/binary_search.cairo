@@ -5,6 +5,7 @@ fn main(input: Array<felt252>) -> Array<felt252> {
     let search_array: Array<usize> = Serde::deserialize(ref input).unwrap();
 
     let res = find(@search_array, *search_array.at(0)).unwrap();
+    assert(res == 0, 'Index should be 0');
 
     let mut output: Array<felt252> = ArrayTrait::new();
     res.serialize(ref output);

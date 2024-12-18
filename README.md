@@ -30,15 +30,13 @@ sp1up
 
 ### Install stone-cli
 ```bash
-```bash
 git clone -b add-program-input-hint git@github.com:zksecurity/stone-cli.git
 cd stone-cli
-```
 cargo install --path .
 ```
 
 Also we will need to install the python module _cairo-lang_ in order to compile cairo0 programs.
-```
+```bash
 pip install cairo-lang
 ```
 

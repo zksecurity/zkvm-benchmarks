@@ -1,6 +1,12 @@
 # zkVM Benchmarks
 
 ## Installation
+
+### Install heaptrack
+```bash
+apt-get install heaptrack
+```
+
 ### Install Jolt
 ```bash
 rustup target add riscv32i-unknown-none-elf
@@ -8,9 +14,8 @@ rustup target add riscv32i-unknown-none-elf
 
 ### Install Risc Zero
 ```bash
-cargo install cargo-binstall
-cargo binstall cargo-risczero
-cargo risczero install
+curl -L https://risczero.com/install | bash
+rzup install
 ```
 
 ### Install SP1
@@ -25,13 +30,13 @@ sp1up
 
 ### Install stone-cli
 ```bash
-git clone git@github.com:zksecurity/stone-cli.git
+git clone -b add-program-input-hint git@github.com:zksecurity/stone-cli.git
 cd stone-cli
 cargo install --path .
 ```
 
 Also we will need to install the python module _cairo-lang_ in order to compile cairo0 programs.
-```
+```bash
 pip install cairo-lang
 ```
 

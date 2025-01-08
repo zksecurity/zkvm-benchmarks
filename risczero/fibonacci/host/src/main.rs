@@ -1,15 +1,23 @@
 use std::time::Duration;
-
+use std::io::Write;
 use methods::{
     FIBONACCI_ELF, FIBONACCI_ID
 };
 use risc0_zkvm::{default_prover, ExecutorEnv};
-use utils::{benchmark, size};
+use utils::{size};
 
 fn main() {
-    // let ns = [100, 1000, 10000, 50000];
-    let ns = [50];
-    benchmark(bench_fibonacci, &ns, "../../benchmark_outputs/fibonacci_risczero.csv", "n");
+    // read the first arg
+    let args: Vec<String> = std::env::args().collect();
+    let n = args.iter().position(|arg| arg == "--n")
+        .and_then(|i| args.get(i + 1))
+        .expect("Please provide --n <number>")
+        .parse::<u32>()
+        .expect("Invalid number");
+
+    let (duration, proof_size) = bench_fibonacci(n);
+    let mut file = std::fs::File::create("results.json").unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 }
 
 fn bench_fibonacci(n: u32) -> (Duration, usize) {

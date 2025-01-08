@@ -1,75 +1,107 @@
-use std::{time::{Duration, Instant}, usize};
+use std::{io::Write, time::{Duration, Instant}, usize};
 
-use utils::benchmark;
 use jolt::Serializable;
 
-pub fn main() {
-    // let iters = [230, 460, 920, 1840, 3680];
+use clap::{Parser};
+
+/// A tool to build and optionally benchmark a cargo project
+#[derive(Parser, Debug)]
+#[clap()]
+pub struct Cli {
+    #[arg(long)]
+    pub n: u32,
     
-    // let iters = [115];
-    // benchmark(benchmark_sha2_chain, &iters, "../benchmark_outputs/sha2_chain_jolt.csv", "iters");
-    
-    // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
-
-    // let lengths = [32, 256, 512, 1024, 2048];
-    // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_jolt.csv", "byte length");
-    // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "byte length");
-
-    // let ns = [100, 1000, 10000, 50000];
-    let ns = [50];
-    benchmark(benchmark_fib, &ns, "../benchmark_outputs/fibonacci_jolt.csv", "n");
-
-    // let values = [5];
-    // benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_jolt.csv", "value");
+    /// Run the benchmark under heaptrack for memory profiling
+    #[arg(long)]
+    pub program: String,
 }
 
-// fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
-//     let (prove_sha2_chain, _verify_sha2_chain) = sha2_chain_guest::build_sha2_chain();
-//     let input = [5u8; 32];
+fn main() {
+    // read args from cli
+    let cli = Cli::parse();
 
-//     let start = Instant::now();
-//     let (_output, proof) = prove_sha2_chain(input, iters);
-//     let end = Instant::now();
+    let (duration, proof_size) = match cli.program.as_str() {
+        "fib" => {
+            benchmark_fib(cli.n)
+        },
+        "sha2" => {
+            benchmark_sha2(cli.n as usize)
+        },
+        "sha2-chain" => {
+            benchmark_sha2_chain(cli.n)
+        },
+        "sha3" => {
+            benchmark_sha3(cli.n as usize)
+        },
+        "sha3-chain" => {
+            benchmark_sha3_chain(cli.n)
+        },
+        "mat-mul" => {
+            benchmark_mat_mul(cli.n)
+        },
+        "binary-search" => {
+            benchmark_binary_search(cli.n as u8)
+        },
+        _ => unreachable!()
 
-//     (end.duration_since(start), proof.size().unwrap())
-// }
+    };
+    println!("duration: {:?}", duration);
+    println!("proof size: {:?}", proof_size);
 
-// fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
-//     let (prove_sha3_chain, _verify_sha3_chain) = sha3_chain_guest::build_sha3_chain();
-//     let input = [5u8; 32];
 
-//     let start = Instant::now();
-//     let (_output, proof) = prove_sha3_chain(input, iters);
-//     let end = Instant::now();
+    println!("Duration: {:?}", duration);
+    let mut file = std::fs::File::create("results.json").unwrap();
+    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_size, duration.as_millis()).as_bytes()).unwrap();
 
-//     (end.duration_since(start), proof.size().unwrap())
-// }
+}
 
-// fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
-//     let (prove_sha2, _verify_sha2) = sha2_guest::build_sha2();
+fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
+    let (prove_sha2_chain, _verify_sha2_chain) = sha2_chain_guest::build_sha2_chain();
+    let input = [5u8; 32];
 
-//     let input = vec![5u8; num_bytes];
-//     let input = input.as_slice();
+    let start = Instant::now();
+    let (_output, proof) = prove_sha2_chain(input, iters);
+    let end = Instant::now();
 
-//     let start = Instant::now();
-//     let (_output, proof) = prove_sha2(input);
-//     let end = Instant::now();
+    (end.duration_since(start), proof.size().unwrap())
+}
 
-//     (end.duration_since(start), proof.size().unwrap())
-// }
+fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
+    let (prove_sha3_chain, _verify_sha3_chain) = sha3_chain_guest::build_sha3_chain();
+    let input = [5u8; 32];
 
-// fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
-//     let (prove_sha3, _verify_sha3) = sha3_guest::build_sha3();
+    let start = Instant::now();
+    let (_output, proof) = prove_sha3_chain(input, iters);
+    let end = Instant::now();
 
-//     let input = vec![5u8; num_bytes];
-//     let input = input.as_slice();
+    (end.duration_since(start), proof.size().unwrap())
+}
 
-//     let start = Instant::now();
-//     let (_output, proof) = prove_sha3(input);
-//     let end = Instant::now();
+fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
+    let (prove_sha2, _verify_sha2) = sha2_guest::build_sha2();
 
-//     (end.duration_since(start), proof.size().unwrap())
-// }
+    let input = vec![5u8; num_bytes];
+    let input = input.as_slice();
+
+    let start = Instant::now();
+    let (_output, proof) = prove_sha2(input);
+    let end = Instant::now();
+
+    (end.duration_since(start), proof.size().unwrap())
+}
+
+fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
+    let (prove_sha3, _verify_sha3) = sha3_guest::build_sha3();
+
+    let input = vec![5u8; num_bytes];
+    let input = input.as_slice();
+
+    let start = Instant::now();
+    let (_output, proof) = prove_sha3(input);
+    let end = Instant::now();
+
+    (end.duration_since(start), proof.size().unwrap())
+}
 
 fn benchmark_fib(n: u32) -> (Duration, usize) {
     let (prove_fib, _verify_fib) = fibonacci_guest::build_fib();
@@ -89,3 +121,56 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
 
 //     (end.duration_since(start), proof.size().unwrap())
 // }
+
+fn benchmark_binary_search(n: u8) -> (Duration, usize) {
+    let (prove_bs, _verify_bs) = binary_search_guest::build_find();
+
+    let input: Vec<u8> = (1..=n).collect();
+
+    let start = Instant::now();
+    let (_output, proof) = prove_bs(&input);
+    let end = Instant::now();
+
+    (end.duration_since(start), proof.size().unwrap())
+}
+
+fn benchmark_mat_mul(size: u32) -> (Duration, usize) {
+    println!("building matrix mul");
+    
+    println!("proving matrix mul");
+    let (duration, proof) = match size {
+        100 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_100();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        500 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_500();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        1000 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_1000();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        10000 => {
+            let (prove_mat_mul, _verify_mat_mul) = mat_mul_guest::build_matrix_mul_10000();
+            let start = Instant::now();
+            let (_output, proof) = prove_mat_mul();
+            let end = Instant::now();
+            (end.duration_since(start), proof)
+        },
+        _ => unreachable!()
+    };
+    
+    println!("done proving matrix mul");
+
+    (duration, proof.size().unwrap())
+}

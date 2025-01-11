@@ -34,7 +34,7 @@ fn matrix_mul_100() -> u32 {
     let mut total = 0;
 
     for i in 0..SIZE {
-        let mut new_row = [0u32; SIZE];
+        // let mut new_row = [0u32; SIZE];
         for j in 0..SIZE {
             let mut sum = 0;
             for k in 0..SIZE {

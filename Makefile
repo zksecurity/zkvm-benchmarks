@@ -1,7 +1,7 @@
 FIB_ARGS = 100 1000 10000 50000
 SHA_ARGS = 32 256 512 1024 2048
 BINARY_SEARCH_ARGS = 4 8 16 32 64
-
+SHA_CHAIN_ARGS = 230 460 920 1840 3680
 
 bench-all:
 	make build-utils
@@ -229,15 +229,21 @@ bench-sp1-binary-search-mem:
 
 bench-risczero:
 	make build-risczero
-	bench-risczero-mat-mul
+	make bench-risczero-sha2
+	make bench-risczero-sha3
+	make bench-risczero-mat-mul
+	make bench-risczero-fib
+	make bench-risczero-binary-search
+	make bench-risczero-sha2-chain
+	make bench-risczero-sha3-chain
 
 build-risczero:
 	cd risczero/sha2-chain && cargo build --release
+	cd risczero/binary-search && cargo build --release
 	cd risczero/fibonacci && cargo build --release
 	cd risczero/sha3-chain && cargo build --release
 	cd risczero/sha2 && cargo build --release
 	cd risczero/sha3 && cargo build --release
-	cd risczero/bigmem && cargo build --release
 	cd risczero/mat-mul && cargo build --release
 
 bench-risczero-mat-mul:
@@ -261,6 +267,17 @@ bench-risczero-sha2-time:
 	-cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg $(word 4, $(SHA_ARGS))
 	-cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg $(word 5, $(SHA_ARGS))
 
+bench-risczero-sha2-chain:
+	make bench-risczero-sha2-chain-time
+	# make bench-risczero-sha2-chain-mem
+
+bench-risczero-sha2-chain-time:
+	-cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg $(word 1, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg $(word 2, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg $(word 3, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg $(word 4, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg $(word 5, $(SHA_CHAIN_ARGS))
+
 bench-risczero-sha3:
 	make bench-risczero-sha3-time
 	# make bench-risczero-sha3-mem
@@ -272,26 +289,36 @@ bench-risczero-sha3-time:
 	-cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg $(word 4, $(SHA_ARGS))
 	-cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg $(word 5, $(SHA_ARGS))
 
-# bench-risczero-fib:
-# 	cd risczero/fibonacci && cargo build --release
-# 	make bench-risczero-fib-time
-# 	make bench-risczero-fib-mem
+bench-risczero-sha3-chain:
+	make bench-risczero-sha3-chain-time
+	# make bench-risczero-sha3-chain-mem
 
-# bench-risczero-fib-time:
-# 	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
+bench-risczero-sha3-chain-time:
+	-cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg $(word 1, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg $(word 2, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg $(word 3, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg $(word 4, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg $(word 5, $(SHA_CHAIN_ARGS))
+
+bench-risczero-fib:
+	make bench-risczero-fib-time
+	# make bench-risczero-fib-mem
+
+bench-risczero-fib-time:
+	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
+	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
+	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
+	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
 
 # bench-risczero-fib-mem:
-# 	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
-# 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
 bench-risczero-binary-search:
 	make bench-risczero-binary-search-time
-	make bench-risczero-binary-search-mem
+	# make bench-risczero-binary-search-mem
 
 bench-risczero-binary-search-time:
 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 1, $(BINARY_SEARCH_ARGS))
@@ -300,12 +327,12 @@ bench-risczero-binary-search-time:
 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 4, $(BINARY_SEARCH_ARGS))
 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 5, $(BINARY_SEARCH_ARGS))
 
-bench-risczero-binary-search-mem:
-	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 1, $(BINARY_SEARCH_ARGS)) --bench-mem
-	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 2, $(BINARY_SEARCH_ARGS)) --bench-mem
-	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) --bench-mem
-	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) --bench-mem
-	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) --bench-mem
+# bench-risczero-binary-search-mem:
+# 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 1, $(BINARY_SEARCH_ARGS)) --bench-mem
+# 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 2, $(BINARY_SEARCH_ARGS)) --bench-mem
+# 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) --bench-mem
+# 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) --bench-mem
+# 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) --bench-mem
 
 
 #####

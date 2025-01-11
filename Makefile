@@ -10,6 +10,12 @@ bench-all:
 	make bench-risczero
 	make bench-stone
 
+bench-some:
+	make build-utils
+	make bench-jolt
+	make bench-sp1-time
+	make bench-risczero
+
 build-utils:
 	cd utils && cargo build
 
@@ -175,6 +181,16 @@ bench-sp1:
 	make bench-sp1-sha3-chain
 	make bench-sp1-mat-mul
 	make bench-sp1-binary-search
+
+bench-sp1-time:
+	make build-sp1
+	make bench-sp1-fib-time
+	make bench-sp1-sha2-time
+	make bench-sp1-sha2-chain-time
+	make bench-sp1-sha3-time
+	make bench-sp1-sha3-chain-time
+	make bench-sp1-mat-mul-time
+	make bench-sp1-binary-search-time
 
 bench-sp1-fib:
 	make bench-sp1-fib-time

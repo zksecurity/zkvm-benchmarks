@@ -130,9 +130,11 @@ build-sp1:
 
 bench-sp1:
 	make build-sp1
-	# make bench-sp1-fib
+	make bench-sp1-fib
 	make bench-sp1-sha2
+	make bench-sp1-sha2-chain
 	make bench-sp1-sha3
+	make bench-sp1-sha3-chain
 	make bench-sp1-mat-mul
 	make bench-sp1-binary-search
 
@@ -144,9 +146,17 @@ bench-sp1-sha2:
 	make bench-sp1-sha2-time
 	make bench-sp1-sha2-mem
 
+bench-sp1-sha2-chain:
+	make bench-sp1-sha2-chain-time
+	make bench-sp1-sha2-chain-mem
+
 bench-sp1-sha3:
 	make bench-sp1-sha3-time
 	make bench-sp1-sha3-mem
+
+bench-sp1-sha3-chain:
+	make bench-sp1-sha3-chain-time
+	make bench-sp1-sha3-chain-mem
 
 bench-sp1-mat-mul:
 	make bench-sp1-mat-mul-time
@@ -182,6 +192,20 @@ bench-sp1-sha2-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2
 
+bench-sp1-sha2-chain-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+
+bench-sp1-sha2-chain-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+
 bench-sp1-sha3-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha3
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3
@@ -195,6 +219,20 @@ bench-sp1-sha3-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
+
+bench-sp1-sha3-chain-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+
+bench-sp1-sha3-chain-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
 
 bench-sp1-mat-mul-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 100 -- --program mat-mul

@@ -190,6 +190,9 @@ fn bench_fibonacci(n: u32) -> (Duration, usize) {
     stdin.write(&n);
 
     let client = ProverClient::new();
+    let (_, report) = client.execute(FIBONACCI_ELF, stdin.clone()).run().unwrap();
+    println!("executed program with {} cycles", report.total_instruction_count());
+
     let (pk, vk) = client.setup(FIBONACCI_ELF);
 
     let start = Instant::now();

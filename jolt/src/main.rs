@@ -110,6 +110,9 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
     let (_output, proof) = prove_fib(n);
     let end = Instant::now();
 
+    let trace_len = proof.proof.trace_length;
+    println!("trace len: {:?}", trace_len);
+
     (end.duration_since(start), proof.size().unwrap())
 }
 

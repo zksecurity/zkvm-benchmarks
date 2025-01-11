@@ -10,7 +10,7 @@ members = [
     "sha2-guest",
     "sha3-guest",
     "fibonacci-guest",
-    "bigmem-guest",
+    # "bigmem-guest",
     "mat-mul-guest",
     "binary-search-guest"
 ]
@@ -33,7 +33,7 @@ bigmem-guest = { path = "./bigmem-guest" }
 mat-mul-guest = { path = "./mat-mul-guest" }
 binary-search-guest = { path = "./binary-search-guest" }
 
-clap = { version = "4.0.5", features = ["derive"] } 
+clap = { version = "4.5.26", features = ["derive"] } 
 
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "optimize/field-from-u64" }

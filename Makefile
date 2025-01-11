@@ -22,7 +22,9 @@ bench-jolt:
 	cd jolt && cargo build --release
 	make bench-jolt-fib
 	make bench-jolt-sha2
+	make bench-jolt-sha2-chain
 	make bench-jolt-sha3
+	make bench-jolt-sha3-chain
 	make bench-jolt-mat-mul
 	make bench-jolt-binary-search
 
@@ -60,6 +62,24 @@ bench-jolt-sha2-mem:
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2
 
+bench-jolt-sha2-chain:
+	make bench-jolt-sha2-chain-time
+	make bench-jolt-sha2-chain-mem
+
+bench-jolt-sha2-chain-time:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha2-chain
+
+bench-jolt-sha2-chain-mem:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+
 bench-jolt-sha3:
 	make bench-jolt-sha3-time
 	make bench-jolt-sha3-mem
@@ -77,6 +97,24 @@ bench-jolt-sha3-mem:
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3
+
+bench-jolt-sha3-chain:
+	make bench-jolt-sha3-chain-time
+	make bench-jolt-sha3-chain-mem
+
+bench-jolt-sha3-chain-time:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha3-chain
+
+bench-jolt-sha3-chain-mem:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
 
 bench-jolt-mat-mul:
 	make bench-jolt-mat-mul-time

@@ -1,6 +1,6 @@
 FIB_ARGS = 100 1000 10000 50000
 SHA_ARGS = 32 256 512 1024 2048
-BINARY_SEARCH_ARGS = 4 8 16 32 64
+BINARY_SEARCH_ARGS = 128 256 512 1024 2048
 SHA_CHAIN_ARGS = 230 460 920 1840 3680
 
 bench-all:
@@ -12,8 +12,8 @@ bench-all:
 
 bench-some:
 	make build-utils
-	make bench-jolt
-	make bench-sp1-time
+	make bench-jolt-binary-search-time
+	make bench-sp1-binary-search-time
 	make bench-risczero
 
 build-utils:
@@ -425,6 +425,64 @@ bench-risczero-binary-search-time:
 # 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) --bench-mem
 # 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) --bench-mem
 # 	-cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) --bench-mem
+
+
+bench-risczero-mem:
+	make build-risczero
+	make bench-risczero-sha2-mem
+	make bench-risczero-sha3-mem
+	make bench-risczero-mat-mul-mem
+	make bench-risczero-fib-mem
+	make bench-risczero-binary-search-mem
+	make bench-risczero-sha2-chain-mem
+	make bench-risczero-sha3-chain-mem
+
+bench-risczero-binary-search-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 128"' risczero-binary-search.csv 128
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 256"' risczero-binary-search.csv 256
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 512"' risczero-binary-search.csv 512
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 1024"' risczero-binary-search.csv 1024
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 2048"' risczero-binary-search.csv 2048
+
+bench-risczero-fib-mem:  
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 100"' risczero-fib.csv 100
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 1000"' risczero-fib.csv 1000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 10000"' risczero-fib.csv 10000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 50000"' risczero-fib.csv 50000
+
+bench-risczero-mat-mul-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 100"' risczero-mat-mul.csv 100
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 500"' risczero-mat-mul.csv 500
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 1000"' risczero-mat-mul.csv 1000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 10000"' risczero-mat-mul.csv 10000
+
+bench-risczero-sha2-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg 32"' risczero-sha2.csv 32
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg 256"' risczero-sha2.csv 256
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg 512"' risczero-sha2.csv 512
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg 1024"' risczero-sha2.csv 1024
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg 2048"' risczero-sha2.csv 2048
+
+bench-risczero-sha3-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg 32"' risczero-sha3.csv 32
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg 256"' risczero-sha3.csv 256
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg 512"' risczero-sha3.csv 512
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg 1024"' risczero-sha3.csv 1024
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3 && ../../utils/target/debug/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg 2048"' risczero-sha3.csv 2048
+
+bench-risczero-sha2-chain-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg 230"' risczero-sha2-chain.csv 230
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg 460"' risczero-sha2-chain.csv 460
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg 920"' risczero-sha2-chain.csv 920
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg 1840"' risczero-sha2-chain.csv 1840
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha2-chain && ../../utils/target/debug/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg 3680"' risczero-sha2-chain.csv 3680
+
+bench-risczero-sha3-chain-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg 230"' risczero-sha3-chain.csv 230
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg 460"' risczero-sha3-chain.csv 460
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg 920"' risczero-sha3-chain.csv 920
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg 1840"' risczero-sha3-chain.csv 1840
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/sha3-chain && ../../utils/target/debug/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg 3680"' risczero-sha3-chain.csv 3680
 
 
 #####

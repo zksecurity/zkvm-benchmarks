@@ -1,5 +1,4 @@
 use std::fs;
-use std::time::Duration;
 use std::time::Instant;
 use serde_json::Value;
 use std::process::Command;
@@ -17,7 +16,7 @@ pub struct Cli {
     pub bench_mem: bool,
 }
 
-pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (Duration, usize) {
+pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String, n_steps: u64) {
     println!("Running Prove command: {} {}", command, args.join(" "));
 
     let start = Instant::now();
@@ -90,13 +89,11 @@ pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> 
         );
     }
 
-    println!("verify : {:?}", verify_end.duration_since(verify_start));
-
     let duration = end.duration_since(start);
+    let verifier_duration = verify_end.duration_since(verify_start);
+    let cycle_count = n_steps;
     // save proof size in a json file
     let proof_size_file = "results.json";
-    let proof_size_json = format!("{{\"proof_size\": {}, \"duration\": {}}}", proof_bytes, duration.as_millis());
+    let proof_size_json = format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_bytes, duration.as_millis(), verifier_duration.as_millis(), cycle_count);
     fs::write(proof_size_file, proof_size_json).expect("Failed to write the JSON file");
-
-    (duration, proof_bytes)
 }

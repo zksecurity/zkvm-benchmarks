@@ -2,6 +2,7 @@ FIB_ARGS = 100 1000 10000 50000
 SHA_ARGS = 32 256 512 1024 2048
 BINARY_SEARCH_ARGS = 128 256 512 1024 2048
 SHA_CHAIN_ARGS = 230 460 920 1840 3680
+MATMUL_ARGS = 10000 50000 100000 1000000 
 
 bench-all:
 	make build-utils
@@ -127,16 +128,16 @@ bench-jolt-mat-mul:
 	make bench-jolt-mat-mul-mem
 
 bench-jolt-mat-mul-time:
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 100 -- --program mat-mul
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 500 -- --program mat-mul
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 1000 -- --program mat-mul
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 10000 -- --program mat-mul
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(MATMUL_ARGS)) -- --program mat-mul
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(MATMUL_ARGS)) -- --program mat-mul
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(MATMUL_ARGS)) -- --program mat-mul
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(MATMUL_ARGS)) -- --program mat-mul
 
 bench-jolt-mat-mul-mem:
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 100 --bench-mem -- --program mat-mul 
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 500 --bench-mem -- --program mat-mul 
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 1000 --bench-mem -- --program mat-mul 
-	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg 10000 --bench-mem -- --program mat-mul 
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(MATMUL_ARGS)) --bench-mem -- --program mat-mul 
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(MATMUL_ARGS)) --bench-mem -- --program mat-mul 
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(MATMUL_ARGS)) --bench-mem -- --program mat-mul 
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(MATMUL_ARGS)) --bench-mem -- --program mat-mul 
 
 bench-jolt-binary-search:
 	make bench-jolt-binary-search-time
@@ -495,6 +496,7 @@ bench-stone:
 	make bench-stone-mem
 
 bench-stone-time:
+	make build-stone
 	make bench-stone-fib-time
 	make bench-stone-keccak-time
 	make bench-stone-keccak-builtin-time
@@ -515,6 +517,8 @@ bench-stone-mem:
 	make bench-stone-binary-search-mem
 
 build-stone:
+	cd stone/common && cargo build --release
+	cd stone/binary-search && cargo build --release
 	cd stone/fibonacci && cargo build --release
 	cd stone/keccak && cargo build --release
 	cd stone/keccak-builtin && cargo build --release
@@ -522,6 +526,35 @@ build-stone:
 	cd stone/sha256 && cargo build --release
 	cd stone/sha256-chain && cargo build --release
 	cd stone/mat-mul && cargo build --release
+	make build-stone-steps
+
+bench-stone-sha256:
+	make bench-stone-sha256-time
+	make bench-stone-sha256-mem
+
+bench-stone-keccak:
+	make bench-stone-keccak-time
+	make bench-stone-keccak-mem
+
+bench-stone-keccak-builtin:
+	make bench-stone-keccak-builtin-time
+	make bench-stone-keccak-builtin-mem
+
+bench-stone-keccak-builtin-chain:
+	make bench-stone-keccak-builtin-chain-time
+	make bench-stone-keccak-builtin-chain-mem
+
+bench-stone-fib:
+	make bench-stone-fib-time
+	make bench-stone-fib-mem
+
+bench-stone-binary-search:
+	make bench-stone-binary-search-time
+	make bench-stone-binary-search-mem
+
+bench-stone-mat:
+	make bench-stone-mat-time
+	make bench-stone-mat-mem
 
 bench-stone-fib-time:
 	# 100, 1000, 10000, 50000
@@ -592,18 +625,18 @@ bench-stone-keccak-builtin-chain-time:
     # 29440 / 200 = 147.2
     # 58880 / 200 = 294.4
     # 117760 / 200 = 588.8
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 37
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589
 
 bench-stone-keccak-builtin-chain-mem:
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 37 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 74 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 148 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 295 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin --bin target/release/stone --bench-arg 589 --bench-mem
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37 --bench-mem
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74 --bench-mem
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148 --bench-mem
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295 --bench-mem
+	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589 --bench-mem
 
 bench-stone-sha256-time:
 	-cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 1, $(SHA_ARGS))
@@ -639,3 +672,7 @@ bench-stone-binary-search-mem:
 	-cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg $(word 3, $(BINARY_SEARCH_ARGS)) --bench-mem
 	-cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg $(word 4, $(BINARY_SEARCH_ARGS)) --bench-mem
 	-cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg $(word 5, $(BINARY_SEARCH_ARGS)) --bench-mem
+
+build-stone-steps:
+	cd stone && git clone https://github.com/lambdaclass/cairo-vm.git
+	cd stone/cairo-vm/cairo1-run && make deps

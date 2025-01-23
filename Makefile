@@ -171,6 +171,10 @@ build-sp1:
 	cd sp1/bigmem && cargo prove build
 	cd sp1/binary-search && cargo prove build
 	cd sp1/mat-mul && cargo prove build
+	cd sp1/sha2-precompile && cargo prove build
+	cd sp1/sha2-chain-precompile && cargo prove build
+	cd sp1/sha3-precompile && cargo prove build
+	cd sp1/sha3-chain-precompile && cargo prove build
 	cd sp1 && cargo build --release
 
 bench-sp1:
@@ -182,6 +186,10 @@ bench-sp1:
 	make bench-sp1-sha3-chain
 	make bench-sp1-mat-mul
 	make bench-sp1-binary-search
+	make bench-sp1-sha2-precompile
+	make bench-sp1-sha3-precompile
+	make bench-sp1-sha2-chain-precompile
+	make bench-sp1-sha3-chain-precompile
 
 bench-sp1-time:
 	make build-sp1
@@ -192,6 +200,10 @@ bench-sp1-time:
 	make bench-sp1-sha3-chain-time
 	make bench-sp1-mat-mul-time
 	make bench-sp1-binary-search-time
+	make bench-sp1-sha2-precompile-time
+	make bench-sp1-sha3-precompile-time
+	make bench-sp1-sha2-chain-precompile-time
+	make bench-sp1-sha3-chain-precompile-time
 
 bench-sp1-fib:
 	make bench-sp1-fib-time
@@ -220,6 +232,22 @@ bench-sp1-mat-mul:
 bench-sp1-binary-search:
 	make bench-sp1-binary-search-time
 	make bench-sp1-binary-search-mem
+
+bench-sp1-sha2-precompile:
+	make bench-sp1-sha2-precompile-time
+	# make bench-sp1-sha2-precompile-mem
+
+bench-sp1-sha3-precompile:
+	make bench-sp1-sha3-precompile-time
+	# make bench-sp1-sha3-precompile-mem
+
+bench-sp1-sha2-chain-precompile:
+	make bench-sp1-sha2-chain-precompile-time
+	# make bench-sp1-sha2-chain-precompile-mem
+
+bench-sp1-sha3-chain-precompile:
+	make bench-sp1-sha3-chain-precompile-time
+	# make bench-sp1-sha3-chain-precompile-mem
 
 bench-sp1-fib-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg $(word 1, $(FIB_ARGS)) -- --program fib
@@ -260,6 +288,62 @@ bench-sp1-sha2-chain-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain
+
+bench-sp1-sha2-precompile-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2-precompile
+
+bench-sp1-sha2-precompile-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2-precompile
+
+bench-sp1-sha2-chain-precompile-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha2-chain-precompile
+
+bench-sp1-sha2-chain-precompile-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha2-chain-precompile
+
+bench-sp1-sha3-precompile-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha3-precompile
+
+bench-sp1-sha3-precompile-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha3-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha3-precompile
+
+bench-sp1-sha3-chain-precompile-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) -- --program sha3-chain-precompile
+
+bench-sp1-sha3-chain-precompile-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain-precompile
 
 bench-sp1-sha3-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha3
@@ -329,6 +413,10 @@ bench-risczero:
 	make bench-risczero-binary-search
 	make bench-risczero-sha2-chain
 	make bench-risczero-sha3-chain
+	make bench-risczero-sha2-precompile
+	# make bench-risczero-sha3-precompile
+	make bench-risczero-sha2-chain-precompile
+	# make bench-risczero-sha3-chain-precompile
 
 build-risczero:
 	cd risczero/sha2-chain && cargo build --release
@@ -338,6 +426,10 @@ build-risczero:
 	cd risczero/sha2 && cargo build --release
 	cd risczero/sha3 && cargo build --release
 	cd risczero/mat-mul && cargo build --release
+	cd risczero/sha2-chain-precompile && cargo build --release
+	# cd risczero/sha3-chain-precompile && cargo build --release
+	cd risczero/sha2-precompile && cargo build --release
+	# cd risczero/sha3-precompile && cargo build --release
 
 bench-risczero-mat-mul:
 	make bench-risczero-mat-mul-time
@@ -359,6 +451,36 @@ bench-risczero-sha2-time:
 	-cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg $(word 3, $(SHA_ARGS))
 	-cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg $(word 4, $(SHA_ARGS))
 	-cd risczero/sha2 && ../../utils/target/debug/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg $(word 5, $(SHA_ARGS))
+
+bench-risczero-sha2-precompile:
+	make bench-risczero-sha2-precompile-time
+
+bench-risczero-sha2-precompile-time:
+	-cd risczero/sha2-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg $(word 1, $(SHA_ARGS))
+	-cd risczero/sha2-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg $(word 2, $(SHA_ARGS))
+	-cd risczero/sha2-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg $(word 3, $(SHA_ARGS))
+	-cd risczero/sha2-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg $(word 4, $(SHA_ARGS))
+	-cd risczero/sha2-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg $(word 5, $(SHA_ARGS))
+
+# bench-risczero-sha3-precompile:
+# 	make bench-risczero-sha3-precompile-time
+
+# bench-risczero-sha3-precompile-time:
+# 	-cd risczero/sha3-precompile && ../../utils/target/debug/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg $(word 1, $(SHA_ARGS))
+# 	-cd risczero/sha3-precompile && ../../utils/target/debug/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg $(word 2, $(SHA_ARGS))
+# 	-cd risczero/sha3-precompile && ../../utils/target/debug/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg $(word 3, $(SHA_ARGS))
+# 	-cd risczero/sha3-precompile && ../../utils/target/debug/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg $(word 4, $(SHA_ARGS))
+# 	-cd risczero/sha3-precompile && ../../utils/target/debug/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg $(word 5, $(SHA_ARGS))
+
+bench-risczero-sha2-chain-precompile:
+	make bench-risczero-sha2-chain-precompile-time
+
+bench-risczero-sha2-chain-precompile-time:
+	-cd risczero/sha2-chain-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg $(word 1, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg $(word 2, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg $(word 3, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg $(word 4, $(SHA_CHAIN_ARGS))
+	-cd risczero/sha2-chain-precompile && ../../utils/target/debug/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg $(word 5, $(SHA_CHAIN_ARGS))
 
 bench-risczero-sha2-chain:
 	make bench-risczero-sha2-chain-time

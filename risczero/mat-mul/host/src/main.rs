@@ -30,7 +30,7 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     let duration = end.duration_since(start);
 
     let receipt = prove_info.receipt;
-    let cycle_count = prove_info.stats.total_cycles as usize;
+    let cycle_count = prove_info.stats.user_cycles as usize;
 
     let _output: u32 = receipt.journal.decode().unwrap();
     

@@ -42,7 +42,7 @@ fn run(n: u32, bench_mem: bool) {
     // Prove
     let command = "stone-cli";
 
-    let output_file = format!("keccak_proof_{}.json", n).to_string();
+    let output_file = format!("sha2_proof_{}.json", n).to_string();
     let args = if bench_mem {
         vec![
             "prove",

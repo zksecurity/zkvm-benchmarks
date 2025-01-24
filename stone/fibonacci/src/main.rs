@@ -16,7 +16,7 @@ fn run(n: u32, bench_mem: bool) {
     let command = "stone-cli";
     let program_path = "programs/fibonacci.cairo".to_string();
     let program_input = format!("[{}]", n).to_string();
-    let output_file = "proof.json".to_string();
+    let output_file = format!("proof_{}.json", n);
     let layout = "recursive".to_string();
     let args = if bench_mem {
         vec![

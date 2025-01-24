@@ -2,7 +2,7 @@ FIB_ARGS = 100 1000 10000 50000
 SHA_ARGS = 32 256 512 1024 2048
 BINARY_SEARCH_ARGS = 128 256 512 1024 2048
 SHA_CHAIN_ARGS = 230 460 920 1840 3680
-MATMUL_ARGS = 10000 50000 100000 1000000 
+MATMUL_ARGS = 10 20 40 60 
 
 bench-all:
 	make build-utils
@@ -374,10 +374,10 @@ bench-sp1-sha3-chain-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem -- --program sha3-chain
 
 bench-sp1-mat-mul-time:
-	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 100 -- --program mat-mul
-	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 500 -- --program mat-mul
-	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 1000 -- --program mat-mul
-	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 10000 -- --program mat-mul
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 10 -- --program mat-mul
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 20 -- --program mat-mul
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 40 -- --program mat-mul
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 60 -- --program mat-mul
 
 bench-sp1-mat-mul-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg 100 --bench-mem -- -- --program mat-mul
@@ -436,10 +436,10 @@ bench-risczero-mat-mul:
 	# make bench-risczero-mat-mul-mem
 
 bench-risczero-mat-mul-time:
-	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 100 
-	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 500 
-	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 1000 
-	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 10000 
+	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg $(word 1, $(MATMUL_ARGS)) 
+	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg $(word 2, $(MATMUL_ARGS)) 
+	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg $(word 3, $(MATMUL_ARGS)) 
+	-cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg $(word 4, $(MATMUL_ARGS))
 
 bench-risczero-sha2:
 	make bench-risczero-sha2-time
@@ -692,16 +692,16 @@ bench-stone-fib-mem:
 	-cd stone/fibonacci && ../../utils/target/debug/utils --bench-name stone-fib --bin target/release/stone --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
 bench-stone-mat-time:
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 100
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 500
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 1000
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10000
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 20
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 40
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 60
 
 bench-stone-mat-memory:
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 100 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 500 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 1000 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10000 --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10 --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 20 --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 40 --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 60 --bench-mem
 
 bench-stone-keccak-time:
 	-cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 1, $(SHA_ARGS))

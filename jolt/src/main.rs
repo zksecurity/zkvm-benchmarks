@@ -181,7 +181,7 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
     
     println!("proving matrix mul");
     let (duration, proof_size, verifier_duration, cycle_count) = match size {
-        100 => {
+        10 => {
             let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul_100();
             let start = Instant::now();
             let (_output, proof) = prove_mat_mul();
@@ -197,7 +197,7 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
-        500 => {
+        20 => {
             let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul_500();
             let start = Instant::now();
             let (_output, proof) = prove_mat_mul();
@@ -213,7 +213,7 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
-        1000 => {
+        40 => {
             let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul_1000();
             let start = Instant::now();
             let (_output, proof) = prove_mat_mul();
@@ -229,7 +229,7 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
-        10000 => {
+        60 => {
             let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul_10000();
             let start = Instant::now();
             let (_output, proof) = prove_mat_mul();

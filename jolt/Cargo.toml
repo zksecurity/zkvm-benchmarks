@@ -12,7 +12,8 @@ members = [
     "fibonacci-guest",
     # "bigmem-guest",
     "mat-mul-guest",
-    "binary-search-guest"
+    "binary-search-guest",
+    "ec-guest"
 ]
 
 [profile.release]
@@ -32,6 +33,7 @@ fibonacci-guest = { path = "./fibonacci-guest" }
 bigmem-guest = { path = "./bigmem-guest" }
 mat-mul-guest = { path = "./mat-mul-guest" }
 binary-search-guest = { path = "./binary-search-guest" }
+ec-guest = { path = "./ec-guest" }
 
 clap = { version = "4.5.26", features = ["derive"] } 
 

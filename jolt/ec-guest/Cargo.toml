@@ -1,0 +1,11 @@
+[package]
+name = "ec-guest"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+guest = []
+
+[dependencies]
+jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt" }
+ark-secp256k1 = { version = "0.5.0", default-features = false }

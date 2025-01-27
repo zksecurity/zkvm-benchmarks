@@ -42,6 +42,9 @@ fn main() {
         "binary-search" => {
             benchmark_binary_search(cli.n as u8)
         },
+        "ecadd" => {
+            benchmark_ecadd(cli.n)
+        },
         _ => unreachable!()
 
     };
@@ -147,14 +150,23 @@ fn benchmark_fib(n: u32) -> (Duration, usize, Duration, usize) {
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
 
-// fn benchmark_bigmem(value: u32) -> (Duration, usize) {
-//     let (prove_bigmem, verify_bigmem) = bigmem_guest::build_waste_memory();
-//     let start = Instant::now();
-//     let (_output, proof) = prove_bigmem(value);
-//     let end = Instant::now();
+fn benchmark_ecadd(n: u32) -> (Duration, usize, Duration, usize) {
+    let (prove_ecadd, verify_ecadd) = ec_guest::build_ecadd();
+    
+    let start = Instant::now();
+    let (_output, proof) = prove_ecadd(n);
+    let end = Instant::now();
 
-//     (end.duration_since(start), proof.size().unwrap())
-// }
+    let proof_size = proof.size().unwrap();
+    let trace_len = proof.proof.trace_length;
+
+    let verify_start = Instant::now();
+    let is_valid = verify_ecadd(proof);
+    let verify_end = Instant::now();
+    assert!(is_valid);
+
+    (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
+}
 
 fn benchmark_binary_search(n: u8) -> (Duration, usize, Duration, usize) {
     let (prove_bs, verify_bs) = binary_search_guest::build_find();

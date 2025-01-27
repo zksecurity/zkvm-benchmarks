@@ -1,4 +1,5 @@
 FIB_ARGS = 100 1000 10000 50000
+ECADD_ARGS = 2 5 10 20
 SHA_ARGS = 32 256 512 1024 2048
 BINARY_SEARCH_ARGS = 128 256 512 1024 2048
 SHA_CHAIN_ARGS = 230 460 920 1840 3680
@@ -34,6 +35,7 @@ bench-jolt:
 	make bench-jolt-sha3-chain
 	make bench-jolt-mat-mul
 	make bench-jolt-binary-search
+	make bench-jolt-ecadd
 
 bench-jolt-fib:
 	make bench-jolt-fib-time
@@ -50,6 +52,22 @@ bench-jolt-fib-mem:
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem -- --program fib
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem -- --program fib
 	-cd jolt && ../utils/target/debug/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem -- --program fib
+
+bench-jolt-ecadd:
+	make bench-jolt-ecadd-time
+	make bench-jolt-ecadd-mem
+
+bench-jolt-ecadd-time:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(ECADD_ARGS)) -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(ECADD_ARGS)) -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(ECADD_ARGS)) -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(ECADD_ARGS)) -- --program ecadd
+
+bench-jolt-ecadd-mem:
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 1, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 2, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 3, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd jolt && ../utils/target/debug/utils --bench-name jolt-ecadd --bin target/release/jolt-benchmarks --bench-arg $(word 4, $(ECADD_ARGS)) --bench-mem -- --program ecadd
 
 bench-jolt-sha2:
 	make bench-jolt-sha2-time
@@ -175,6 +193,7 @@ build-sp1:
 	cd sp1/sha2-chain-precompile && cargo prove build
 	cd sp1/sha3-precompile && cargo prove build
 	cd sp1/sha3-chain-precompile && cargo prove build
+	cd sp1/ec && cargo prove build
 	cd sp1 && cargo build --release
 
 bench-sp1:
@@ -190,6 +209,7 @@ bench-sp1:
 	make bench-sp1-sha3-precompile
 	make bench-sp1-sha2-chain-precompile
 	make bench-sp1-sha3-chain-precompile
+	make bench-sp1-ec
 
 bench-sp1-time:
 	make build-sp1
@@ -204,10 +224,15 @@ bench-sp1-time:
 	make bench-sp1-sha3-precompile-time
 	make bench-sp1-sha2-chain-precompile-time
 	make bench-sp1-sha3-chain-precompile-time
+	make bench-sp1-ec-time
 
 bench-sp1-fib:
 	make bench-sp1-fib-time
 	make bench-sp1-fib-mem
+
+bench-sp1-ec:
+	make bench-sp1-ec-time
+	#make bench-sp1-ec-mem
 
 bench-sp1-sha2:
 	make bench-sp1-sha2-time
@@ -260,6 +285,18 @@ bench-sp1-fib-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem -- --program fib 
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem -- --program fib 
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem -- --program fib 
+
+bench-sp1-ec-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 1, $(ECADD_ARGS)) -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 2, $(ECADD_ARGS)) -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 3, $(ECADD_ARGS)) -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 4, $(ECADD_ARGS)) -- --program ecadd
+
+bench-sp1-ec-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 1, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 2, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 3, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 4, $(ECADD_ARGS)) --bench-mem -- --program ecadd
 
 bench-sp1-sha2-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2
@@ -417,11 +454,13 @@ bench-risczero:
 	# make bench-risczero-sha3-precompile
 	make bench-risczero-sha2-chain-precompile
 	# make bench-risczero-sha3-chain-precompile
+	make bench-risczero-ecadd
 
 build-risczero:
 	cd risczero/sha2-chain && cargo build --release
 	cd risczero/binary-search && cargo build --release
 	cd risczero/fibonacci && cargo build --release
+	cd risczero/ec && cargo build --release
 	cd risczero/sha3-chain && cargo build --release
 	cd risczero/sha2 && cargo build --release
 	cd risczero/sha3 && cargo build --release
@@ -531,6 +570,15 @@ bench-risczero-fib-time:
 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
 	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
+bench-risczero-ecadd:
+	make bench-risczero-ecadd-time
+
+bench-risczero-ecadd-time:
+	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 1, $(ECADD_ARGS))
+	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 2, $(ECADD_ARGS))
+	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 3, $(ECADD_ARGS))
+	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 4, $(ECADD_ARGS))
+
 bench-risczero-binary-search:
 	make bench-risczero-binary-search-time
 	# make bench-risczero-binary-search-mem
@@ -559,19 +607,26 @@ bench-risczero-mem:
 	make bench-risczero-binary-search-mem
 	make bench-risczero-sha2-chain-mem
 	make bench-risczero-sha3-chain-mem
+	make bench-risczero-ecadd-mem
 
 bench-risczero-binary-search-mem:
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 128"' risczero-binary-search.csv 128
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 256"' risczero-binary-search.csv 256
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 512"' risczero-binary-search.csv 512
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 1024"' risczero-binary-search.csv 1024
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 2048"' risczero-binary-search.csv 2048
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 128"' /benchmark_outputs/risczero-binary-search.csv 128
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 256"' /benchmark_outputs/risczero-binary-search.csv 256
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 512"' /benchmark_outputs/risczero-binary-search.csv 512
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 1024"' /benchmark_outputs/risczero-binary-search.csv 1024
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 2048"' /benchmark_outputs/risczero-binary-search.csv 2048
 
 bench-risczero-fib-mem:  
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 100"' risczero-fib.csv 100
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 1000"' risczero-fib.csv 1000
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 10000"' risczero-fib.csv 10000
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 50000"' risczero-fib.csv 50000
+
+bench-risczero-ecadd-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 1, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 1, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 2, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 2, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 3, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 3, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 4, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 4, $(ECADD_ARGS))
 
 bench-risczero-mat-mul-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 100"' risczero-mat-mul.csv 100

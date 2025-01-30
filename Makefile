@@ -474,12 +474,14 @@ bench-risczero:
 	make bench-risczero-sha2-chain-precompile
 	# make bench-risczero-sha3-chain-precompile
 	make bench-risczero-ecadd
+	make bench-risczero-ecadd-precompile
 
 build-risczero:
 	cd risczero/sha2-chain && cargo build --release
 	cd risczero/binary-search && cargo build --release
 	cd risczero/fibonacci && cargo build --release
 	cd risczero/ec && cargo build --release
+	cd risczero/ec-precompile && cargo build --release
 	cd risczero/sha3-chain && cargo build --release
 	cd risczero/sha2 && cargo build --release
 	cd risczero/sha3 && cargo build --release
@@ -598,6 +600,15 @@ bench-risczero-ecadd-time:
 	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 3, $(ECADD_ARGS))
 	cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 4, $(ECADD_ARGS))
 
+bench-risczero-ecadd-precompile:
+	make bench-risczero-ecadd-precompile-time
+
+bench-risczero-ecadd-precompile-time:
+	cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 1, $(ECADD_ARGS))
+	cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 2, $(ECADD_ARGS))
+	cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 3, $(ECADD_ARGS))
+	cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 4, $(ECADD_ARGS))
+
 bench-risczero-binary-search:
 	make bench-risczero-binary-search-time
 	# make bench-risczero-binary-search-mem
@@ -627,6 +638,7 @@ bench-risczero-mem:
 	make bench-risczero-sha2-chain-mem
 	make bench-risczero-sha3-chain-mem
 	make bench-risczero-ecadd-mem
+	make bench-risczero-ecadd-precompile-mem
 
 bench-risczero-binary-search-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 128"' /benchmark_outputs/risczero-binary-search.csv 128
@@ -646,6 +658,12 @@ bench-risczero-ecadd-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 2, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 2, $(ECADD_ARGS))
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 3, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 3, $(ECADD_ARGS))
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 4, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 4, $(ECADD_ARGS))
+
+bench-risczero-ecadd-precompile-mem:
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 1, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd-precompile.csv $(word 1, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 2, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd-precompile.csv $(word 2, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 3, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd-precompile.csv $(word 3, $(ECADD_ARGS))
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec-precompile && ../../utils/target/debug/utils --bench-name risczero-ecadd-precompile --bin target/release/ec-precompile --bench-arg $(word 4, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd-precompile.csv $(word 4, $(ECADD_ARGS))
 
 bench-risczero-mat-mul-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/mat-mul && ../../utils/target/debug/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg 100"' risczero-mat-mul.csv 100

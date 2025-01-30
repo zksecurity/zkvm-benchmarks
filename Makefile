@@ -194,6 +194,7 @@ build-sp1:
 	cd sp1/sha3-precompile && cargo prove build
 	cd sp1/sha3-chain-precompile && cargo prove build
 	cd sp1/ec && cargo prove build
+	cd sp1/ec-precompile && cargo prove build
 	cd sp1 && cargo build --release
 
 bench-sp1:
@@ -210,6 +211,7 @@ bench-sp1:
 	make bench-sp1-sha2-chain-precompile
 	make bench-sp1-sha3-chain-precompile
 	make bench-sp1-ec
+	make bench-sp1-ec-precompile
 
 bench-sp1-time:
 	make build-sp1
@@ -225,6 +227,7 @@ bench-sp1-time:
 	make bench-sp1-sha2-chain-precompile-time
 	make bench-sp1-sha3-chain-precompile-time
 	make bench-sp1-ec-time
+	make bench-sp1-ec-precompile-time
 
 bench-sp1-fib:
 	make bench-sp1-fib-time
@@ -233,6 +236,10 @@ bench-sp1-fib:
 bench-sp1-ec:
 	make bench-sp1-ec-time
 	#make bench-sp1-ec-mem
+
+bench-sp1-ec-precompile:
+	make bench-sp1-ec-precompile-time
+	#make bench-sp1-ec-precompile-mem
 
 bench-sp1-sha2:
 	make bench-sp1-sha2-time
@@ -297,6 +304,18 @@ bench-sp1-ec-mem:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 2, $(ECADD_ARGS)) --bench-mem -- --program ecadd
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 3, $(ECADD_ARGS)) --bench-mem -- --program ecadd
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd --bin target/release/sp1-script --bench-arg $(word 4, $(ECADD_ARGS)) --bench-mem -- --program ecadd
+
+bench-sp1-ec-precompile-time:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(ECADD_ARGS)) -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(ECADD_ARGS)) -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(ECADD_ARGS)) -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(ECADD_ARGS)) -- --program ecadd-precompile
+
+bench-sp1-ec-precompile-mem:
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 1, $(ECADD_ARGS)) --bench-mem -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 2, $(ECADD_ARGS)) --bench-mem -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 3, $(ECADD_ARGS)) --bench-mem -- --program ecadd-precompile
+	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-ecadd-precompile --bin target/release/sp1-script --bench-arg $(word 4, $(ECADD_ARGS)) --bench-mem -- --program ecadd-precompile
 
 bench-sp1-sha2-time:
 	-cd sp1 && ../utils/target/debug/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2

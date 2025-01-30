@@ -15,6 +15,7 @@ const SHA3_PRECOMPILE_ELF: &[u8] = include_bytes!("../sha3-precompile/elf/riscv3
 const MATMUL_ELF: &[u8] = include_bytes!("../mat-mul/elf/riscv32im-succinct-zkvm-elf");
 const BINARY_SEARCH_ELF: &[u8] = include_bytes!("../binary-search/elf/riscv32im-succinct-zkvm-elf");
 const ECADD_ELF: &[u8] = include_bytes!("../ec/elf/riscv32im-succinct-zkvm-elf");
+const ECADD_PRECOMPILE_ELF: &[u8] = include_bytes!("../ec-precompile/elf/riscv32im-succinct-zkvm-elf");
 
 use clap::Parser;
 
@@ -72,6 +73,9 @@ fn main() {
         },
         "ecadd" => {
             bench_ecadd(cli.n)
+        },
+        "ecadd-precompile" => {
+            bench_ecadd_precompile(cli.n)
         }
         _ => unreachable!()
 
@@ -310,6 +314,28 @@ fn bench_ecadd(n: u32) -> (Duration, usize, Duration, usize) {
     let (_, report) = client.execute(ECADD_ELF, stdin.clone()).run().unwrap();
     let cycle_count =  report.total_instruction_count() as usize;
     let (pk, vk) = client.setup(ECADD_ELF);
+
+    let start = Instant::now();
+    let proof = client.prove(&pk, stdin).run().unwrap();
+    let end = Instant::now();
+    let duration = end.duration_since(start);
+
+    let verifier_start = std::time::Instant::now();
+    client.verify(&proof, &vk).expect("verification failed");
+    let verifier_end = std::time::Instant::now();
+    let verifier_duration = verifier_end.duration_since(verifier_start);
+
+    (duration, size(&proof), verifier_duration, cycle_count)
+}
+
+fn bench_ecadd_precompile(n: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    stdin.write(&n);
+
+    let client = ProverClient::new();
+    let (_, report) = client.execute(ECADD_PRECOMPILE_ELF, stdin.clone()).run().unwrap();
+    let cycle_count =  report.total_instruction_count() as usize;
+    let (pk, vk) = client.setup(ECADD_PRECOMPILE_ELF);
 
     let start = Instant::now();
     let proof = client.prove(&pk, stdin).run().unwrap();

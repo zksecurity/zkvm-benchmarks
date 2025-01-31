@@ -20,3 +20,4 @@ pgo-data.profdata
 
 *.zst
 *.json
+*.data

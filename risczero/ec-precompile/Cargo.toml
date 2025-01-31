@@ -1,0 +1,16 @@
+[package]
+name = "ec-precompile"
+version = "0.1.0"
+edition = "2021"
+
+default-run = "ec-precompile"
+
+[dependencies]
+ecadd = { path = "methods" }
+risc0-zkvm = { version = "1.2.2" }
+utils = { path = "../../utils" }
+
+[features]
+cuda = ["risc0-zkvm/cuda"]
+default = []
+prove = ["risc0-zkvm/prove"]

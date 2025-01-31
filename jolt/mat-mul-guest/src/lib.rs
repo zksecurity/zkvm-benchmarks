@@ -3,7 +3,7 @@
 
 #[jolt::provable]
 fn matrix_mul_100() -> u32 {
-    const SIZE: usize = 100;
+    const SIZE: usize = 10;
 
     let a = [[2u32; SIZE]; SIZE];
     let b = [[3u32; SIZE]; SIZE];
@@ -28,7 +28,7 @@ fn matrix_mul_100() -> u32 {
 
 #[jolt::provable]
 fn matrix_mul_500() -> u32 {
-    const SIZE: usize = 500;
+    const SIZE: usize = 20;
 
     let a = [[2u32; SIZE]; SIZE];
     let b = [[3u32; SIZE]; SIZE];
@@ -47,7 +47,7 @@ fn matrix_mul_500() -> u32 {
 
 #[jolt::provable]
 fn matrix_mul_1000() -> u32 {
-    const SIZE: usize = 1000;
+    const SIZE: usize = 40;
 
     let a = [[2u32; SIZE]; SIZE];
     let b = [[3u32; SIZE]; SIZE];
@@ -66,7 +66,7 @@ fn matrix_mul_1000() -> u32 {
 
 #[jolt::provable]
 fn matrix_mul_10000() -> u32 {
-    const SIZE: usize = 10000;
+    const SIZE: usize = 60;
 
     let a = [[2u32; SIZE]; SIZE];
     let b = [[3u32; SIZE]; SIZE];

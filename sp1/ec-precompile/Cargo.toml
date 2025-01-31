@@ -1,0 +1,13 @@
+[workspace]
+[package]
+version = "0.1.0"
+name = "ec-precompile"
+edition = "2021"
+
+[dependencies]
+sp1-zkvm = "3.0.0-rc4"
+secp256k1 = { version = "0.29.1", features = ["alloc"], default-features = false }
+
+[patch.crates-io]
+secp256k1 = { git = "https://github.com/sp1-patches/rust-secp256k1", tag = "patch-0.29.1-sp1-4.0.0" }
+

@@ -890,3 +890,38 @@ bench-stone-binary-search-mem:
 build-stone-steps:
 	cd stone && git clone https://github.com/lambdaclass/cairo-vm.git
 	cd stone/cairo-vm/cairo1-run && make deps
+
+
+#####
+# stwo
+#####
+
+bench-stwo:
+	make build-stwo
+	make bench-stwo-time
+	make bench-stwo-mem
+
+build-stwo:
+	cd stwo && cargo build --release
+	cd stwo/fibonacci && scarb build
+	# cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
+	cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
+	# cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
+
+bench-stwo-time:
+	make bench-stwo-fibonacci-time
+
+bench-stwo-mem:
+	make bench-stwo-fibonacci-mem
+
+bench-stwo-fibonacci-time:
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 1, $(FIB_ARGS)) -- --program fib
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 2, $(FIB_ARGS)) -- --program fib
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 3, $(FIB_ARGS)) -- --program fib
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 4, $(FIB_ARGS)) -- --program fib
+
+bench-stwo-mem:
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem -- --program fib 
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem -- --program fib
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem -- --program fib
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem -- --program fib

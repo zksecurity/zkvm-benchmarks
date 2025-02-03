@@ -6,3 +6,4 @@
 *.bin
 *.zip
 cairo-vm
+corelib

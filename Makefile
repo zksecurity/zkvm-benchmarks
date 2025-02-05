@@ -910,9 +910,11 @@ build-stwo:
 
 bench-stwo-time:
 	make bench-stwo-fibonacci-time
+	make bench-stwo-sha2-time
 
 bench-stwo-mem:
 	make bench-stwo-fibonacci-mem
+	make bench-stwo-sha2-mem
 
 bench-stwo-fibonacci-time:
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 1, $(FIB_ARGS)) -- --program fib
@@ -920,8 +922,22 @@ bench-stwo-fibonacci-time:
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 3, $(FIB_ARGS)) -- --program fib
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 4, $(FIB_ARGS)) -- --program fib
 
-bench-stwo-mem:
+bench-stwo-fibonacci-mem:
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem -- --program fib 
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem -- --program fib
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem -- --program fib
 	cd stwo && ../utils/target/debug/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem -- --program fib
+
+bench-stwo-sha2-time:
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 1, $(SHA_ARGS)) -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 2, $(SHA_ARGS)) -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 3, $(SHA_ARGS)) -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 4, $(SHA_ARGS)) -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 5, $(SHA_ARGS)) -- --program sha2
+
+bench-stwo-sha2-mem:
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 1, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 2, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 3, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 4, $(SHA_ARGS)) --bench-mem -- --program sha2
+	cd stwo && ../utils/target/debug/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem -- --program sha2

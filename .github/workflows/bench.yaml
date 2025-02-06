@@ -1,0 +1,94 @@
+name: "Benchmark Run"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-bench
+  cancel-in-progress: true
+
+jobs:
+  create-runner:
+    name: Create Hetzner Cloud Runner
+    runs-on: ubuntu-24.04
+    outputs:
+      label: ${{ steps.create-hcloud-runner.outputs.label }}
+      server_id: ${{ steps.create-hcloud-runner.outputs.server_id }}
+    steps:
+      - name: Create Runner
+        id: create-hcloud-runner
+        uses: Cyclenerd/hcloud-github-runner@v1
+        with:
+          name: gh-benchmark-runner # also ensures that we can have at most one runner
+          mode: create
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          server_type: cx22
+          location: hel1
+          ssh_key: 27148616
+          image: ubuntu-24.04
+
+  benchmark:
+    name: Execute on the Benchmarking Machine
+    needs: create-runner # required to start the main job when the runner is ready
+    runs-on: ${{ needs.create-runner.outputs.label }} # run the job on the newly created runner
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Benchmark User
+        run: |
+          sudo useradd -m -s /bin/bash $BENCH_USER
+          sudo usermod -aG sudo $BENCH_USER
+          echo "$BENCH_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$BENCH_USER
+          sudo chown -R $BENCH_USER:$BENCH_USER .
+
+      - name: Setup Benchmark Dependencies
+        run: |
+          sudo -u $BENCH_USER ./setup.sh
+
+      - name: Run Benchmark
+        run: |
+          sudo -u $BENCH_USER ./bench.sh
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            *.txt
+            *.log
+            *.csv
+            *.json
+            *.data
+            *.png
+            *.jpg
+            *.svg
+
+  delete-runner:
+    name: Delete Hetzner Cloud Runner
+    needs:
+      - create-runner # required to get output from the create-runner job
+      - benchmark # required to wait when the main job is done
+    runs-on: ubuntu-24.04
+    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs, or the main job was canceled
+    steps:
+      - name: Delete runner
+        uses: Cyclenerd/hcloud-github-runner@v1
+        with:
+          mode: delete
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          name: ${{ needs.create-runner.outputs.label }}
+          server_id: ${{ needs.create-runner.outputs.server_id }}
+
+  # TODO: introduce a job to retrieve the benchmark results
+  # and generate a nice report + graphs etc.

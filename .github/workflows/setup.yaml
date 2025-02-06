@@ -1,0 +1,23 @@
+name: "Benchmark Setup"
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: Setup Benchmark
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bench
+        run: |
+          ./setup.sh

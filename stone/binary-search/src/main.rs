@@ -1,8 +1,6 @@
 use clap::{Parser};
-use common::{prove_and_verify, Cli};
+use common::{prove_and_verify, Cli, compute_cycle_count};
 use std::fs;
-use std::process::Command;
-use serde_json::Value;
 
 fn main() {
     // read args from cli
@@ -12,17 +10,34 @@ fn main() {
 }
 
 fn run(n: u32, bench_mem: bool) {
-    let command = "stone-cli";
-    let program_path = "programs/binary_search.cairo".to_string();
-    
+    // get cycle count command
+    let program_file = "../../binary-search/programs/binary_search.cairo".to_string();
     let array: Vec<u32> = (1..=n).collect();
     let program_input = format!(
         "[{}]",
         array.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(" ")
     );
+    let steps_command = format!("cargo run {} --layout dynamic --cairo_layout_params_file ../../configs/cairo_layout_params_file.json --cairo_pie_output get_steps.zip --args '{}'", program_file, program_input).to_string();
 
+    // compute cycle count
+    let steps_dir = "../cairo-vm/cairo1-run".to_string();
+    std::env::set_current_dir(&steps_dir).unwrap();
+    let cycle_count = compute_cycle_count(&steps_command);
+
+    // prove and verify command
+    let command = "stone-cli";
+    let program_path = "programs/binary_search.cairo".to_string();
     let output_file = format!("proof_{}.json", n);
-    let layout = "recursive".to_string();
+    let layout = "automatic".to_string();
+    let parameter_file = match n {
+        128 => "../configs/parameter_65536_32.json".to_string(),
+        256 => "../configs/parameter_65536_32.json".to_string(),
+        512 => "../configs/parameter_65536_32.json".to_string(),
+        1024 => "../configs/parameter_65536_32.json".to_string(),
+        2048 => "../configs/parameter_65536_32.json".to_string(),
+        _ => unreachable!("Unexpected value for n: {}", n),
+    };
+    let prover_config_file = "../configs/prover_config.json".to_string();
     let args = if bench_mem {
         vec![
             "prove",
@@ -30,13 +45,17 @@ fn run(n: u32, bench_mem: bool) {
             &program_path,
             "--program_input",
             &program_input,
-            "--output",
-            &output_file,
+            "--parameter_file",
+            &parameter_file,
+            "--prover_config_file",
+            &prover_config_file,
             "--layout",
             &layout,
+            "--output",
+            &output_file,
             "--stone_version",
             "v6",
-            "--bench-memory",
+            "--bench_memory",
             "true",
         ]
     }
@@ -47,6 +66,10 @@ fn run(n: u32, bench_mem: bool) {
             &program_path,
             "--program_input",
             &program_input,
+            "--parameter_file",
+            &parameter_file,
+            "--prover_config_file",
+            &prover_config_file,
             "--output",
             &output_file,
             "--layout",
@@ -55,54 +78,15 @@ fn run(n: u32, bench_mem: bool) {
             "v6",
         ]
     };
-
-    println!("Computing n_steps ...");
-    // Change Dir
-    let steps_dir = "../cairo-vm/cairo1-run".to_string();
-    std::env::set_current_dir(&steps_dir).unwrap();
-
-    // Get PIE Output
-    let steps_command = format!("cargo run ../../binary-search/programs/binary_search.cairo --layout={} --cairo_pie_output get_steps.zip --args '{}'", layout, program_input).to_string();
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(steps_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running steps_command: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
-
-    // Unzip PIE Output
-    let unzip_command = "unzip -o get_steps.zip -d .";
-    let unzip_output = Command::new("sh")
-        .arg("-c")
-        .arg(unzip_command)
-        .output().unwrap();
-    if !unzip_output.status.success() {
-        eprintln!(
-            "Error running unzip_command: {}",
-            String::from_utf8_lossy(&unzip_output.stderr)
-        );
-    }
-
-    // Get n_steps from unzipped file
-    let json_file = "execution_resources.json";
-    let json_content = fs::read_to_string(json_file).unwrap();
-    let json_value: Value = serde_json::from_str(&json_content).unwrap();
-    let n_steps = if let Some(n_steps_value) = json_value.get("n_steps") {
-        println!("n_steps: {:?}", n_steps_value.as_u64());
-        n_steps_value.as_u64() 
-    } else {
-        eprintln!("Field 'n_steps' not found in the JSON file.");
-        None
-    };
-
-    // Change dir
+    
+    // prove and verify
     let prove_dir = "../../binary-search".to_string();
     std::env::set_current_dir(&prove_dir).unwrap();
-    prove_and_verify(command, args.to_vec(), output_file.clone(), n_steps.unwrap());
+    let (proof_bytes, duration, verifier_duration) = prove_and_verify(command, args.to_vec(), output_file.clone());
 
+    // save in a json file
+    let data_file = "results.json";
+    let data_json = format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_bytes, duration.as_millis(), verifier_duration.as_millis(), cycle_count);
+    fs::write(data_file, data_json).expect("Failed to write the JSON file");
 }
 

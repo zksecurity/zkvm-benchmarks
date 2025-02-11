@@ -7,3 +7,6 @@
 *.zip
 cairo-vm
 corelib
+!parameter_*.json
+!prover_config.json
+!cairo_layout_params_file.json

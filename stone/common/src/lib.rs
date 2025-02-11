@@ -2,6 +2,7 @@ use std::fs;
 use std::time::Instant;
 use serde_json::Value;
 use std::process::Command;
+use std::time::Duration;
 use clap::{arg, Parser};
 
 /// A tool to build and optionally benchmark a cargo project
@@ -16,13 +17,16 @@ pub struct Cli {
     pub bench_mem: bool,
 }
 
-pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String, n_steps: u64) {
+pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (usize, Duration, Duration)  {
     println!("Running Prove command: {} {}", command, args.join(" "));
 
     let start = Instant::now();
 
     let output = Command::new(command)
         .args(&args)
+        .env("SHARP_CLIENT_CERT", "/root/sharp-cert/user.crt")
+        .env("SHARP_KEY_PATH", "/root/sharp-cert/user.key")
+        .env("RUST_MIN_STACK", "104857600")
         .output()
         .expect("Failed to execute the Prove command");
 
@@ -91,9 +95,47 @@ pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String, n_s
 
     let duration = end.duration_since(start);
     let verifier_duration = verify_end.duration_since(verify_start);
-    let cycle_count = n_steps;
-    // save proof size in a json file
-    let proof_size_file = "results.json";
-    let proof_size_json = format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_bytes, duration.as_millis(), verifier_duration.as_millis(), cycle_count);
-    fs::write(proof_size_file, proof_size_json).expect("Failed to write the JSON file");
+    (proof_bytes, duration, verifier_duration)
+}
+
+pub fn compute_cycle_count(steps_command: &str) -> u64 {
+    println!("Computing n_steps ...");
+
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(steps_command)
+        .output().unwrap();
+    if !output.status.success() {
+        eprintln!(
+            "Error running steps_command: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    // Unzip PIE Output
+    let unzip_command = "unzip -o get_steps.zip -d .";
+    let unzip_output = Command::new("sh")
+        .arg("-c")
+        .arg(unzip_command)
+        .output().unwrap();
+    if !unzip_output.status.success() {
+        eprintln!(
+            "Error running unzip_command: {}",
+            String::from_utf8_lossy(&unzip_output.stderr)
+        );
+    }
+
+    // Get n_steps from unzipped file
+    let json_file = "execution_resources.json";
+    let json_content = fs::read_to_string(json_file).unwrap();
+    let json_value: Value = serde_json::from_str(&json_content).unwrap();
+    let n_steps = if let Some(n_steps_value) = json_value.get("n_steps") {
+        println!("n_steps: {:?}", n_steps_value.as_u64().unwrap());
+        n_steps_value.as_u64() 
+    } else {
+        eprintln!("Field 'n_steps' not found in the JSON file.");
+        None
+    };
+
+    n_steps.unwrap()
 }

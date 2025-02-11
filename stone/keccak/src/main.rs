@@ -1,8 +1,7 @@
 use clap::{Parser};
-use common::{prove_and_verify, Cli};
+use common::{prove_and_verify, Cli, compute_cycle_count};
 use std::fs;
 use std::process::Command;
-use serde_json::Value;
 
 fn main() {
     let cli = Cli::parse();
@@ -38,11 +37,26 @@ fn run(n: u32, bench_mem: bool) {
             eprintln!("Failed to run cairo-compile: {}", err);
         }
     }
+
+    // compute cycle count
+    let steps_command = format!("cairo-run --program={} --cairo_layout_params_file=../configs/cairo_layout_params_file.json --cairo_pie_output=get_steps.zip --layout=dynamic --program_input={}", output_path, program_input);
+    let cycle_count = compute_cycle_count(&steps_command);
     
-    // Prove
+    // prove and verify command
     let command = "stone-cli";
 
-    let output_file = format!("keccak_proof_{}.json", n).to_string();
+    let output_file = format!("proof_{}.json", n);
+    let layout = "automatic".to_string();
+    let parameter_file = match n {
+        32 => "../configs/parameter_65536_64.json".to_string(),
+        256 => "../configs/parameter_65536_64.json".to_string(),
+        512 => "../configs/parameter_65536_128.json".to_string(),
+        1024 => "../configs/parameter_65536_256.json".to_string(),
+        2048 => "../configs/parameter_131072_256.json".to_string(),
+        _ => unreachable!("Unexpected value for n: {}", n),
+    };
+    let prover_config_file = "../configs/prover_config.json".to_string();
+
     let args = if bench_mem {
         vec![
             "prove",
@@ -51,11 +65,15 @@ fn run(n: u32, bench_mem: bool) {
             "--cairo_program",
             &output_path,
             "--layout",
-            "starknet-with-keccak",
+            &layout,
             "--program_input_file",
             program_input,
             "--output",
             &output_file,
+            "--parameter_file",
+            &parameter_file,
+            "--prover_config_file",
+            &prover_config_file,
             "--stone_version",
             "v6",
             "--bench-memory",
@@ -70,58 +88,27 @@ fn run(n: u32, bench_mem: bool) {
             "--cairo_program",
             &output_path,
             "--layout",
-            "starknet-with-keccak",
+            &layout,
             "--program_input_file",
             program_input,
             "--output",
             &output_file,
+            "--parameter_file",
+            &parameter_file,
+            "--prover_config_file",
+            &prover_config_file,
             "--stone_version",
             "v6",
         ]
     };
 
-    println!("Computing n_steps ...");
-
-    // Get PIE Output
-    let steps_command = "cairo-run --program=programs/cairo_keccak.json --cairo_pie_output=get_steps.zip --layout=starknet_with_keccak --program_input=programs/input.json";
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(steps_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running steps_command: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
-
-    // Unzip PIE Output
-    let unzip_command = "unzip -o get_steps.zip -d .";
-    let unzip_output = Command::new("sh")
-        .arg("-c")
-        .arg(unzip_command)
-        .output().unwrap();
-    if !unzip_output.status.success() {
-        eprintln!(
-            "Error running unzip_command: {}",
-            String::from_utf8_lossy(&unzip_output.stderr)
-        );
-    }
-
-    // Get n_steps from unzipped file
-    let json_file = "execution_resources.json";
-    let json_content = fs::read_to_string(json_file).unwrap();
-    let json_value: Value = serde_json::from_str(&json_content).unwrap();
-    let n_steps = if let Some(n_steps_value) = json_value.get("n_steps") {
-        println!("n_steps: {:?}", n_steps_value.as_u64());
-        n_steps_value.as_u64() 
-    } else {
-        eprintln!("Field 'n_steps' not found in the JSON file.");
-        None
-    };
-
     // prove and verify
-    prove_and_verify(command, args.to_vec(), output_file.clone(), n_steps.unwrap());
+    let (proof_bytes, duration, verifier_duration) = prove_and_verify(command, args.to_vec(), output_file.clone());
+    
+    // save in a json file
+    let data_file = "results.json";
+    let data_json = format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_bytes, duration.as_millis(), verifier_duration.as_millis(), cycle_count);
+    fs::write(data_file, data_json).expect("Failed to write the JSON file");
 
 }
 

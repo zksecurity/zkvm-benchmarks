@@ -6,7 +6,7 @@ whoami
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source "$HOME/.cargo/env"
+. "$HOME/.cargo/env" 
 
 # # Install other dependencies
 # sudo apt update -y
@@ -26,14 +26,12 @@ source "$HOME/.cargo/env"
 
 # Install Risc Zero
 curl -L https://risczero.com/install | bash
-source "$HOME/.bashrc"
-source "$HOME/.rzup/env"
+. "$HOME/.bashrc"
 rzup install
 
 # Install SP1
 curl -L https://sp1.succinct.xyz | bash
-source "$HOME/.bashrc"
-source "$HOME/.sp1up/env"
+. "$HOME/.bashrc"
 sp1up
 
 # # Install stone-cli

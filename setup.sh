@@ -40,6 +40,7 @@ sp1up
 
 # Install stone-cli
 cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
+stone-cli --version || echo "stone-cli installation failed"
 
 # Install cairo
 VENV_PATH="$HOME/python-venv"

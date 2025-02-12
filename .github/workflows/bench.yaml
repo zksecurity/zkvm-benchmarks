@@ -89,6 +89,7 @@ jobs:
           path: |
             *.txt
             *.log
+            ./benchmark_outputs/*.csv
             *.csv
             *.json
             *.data

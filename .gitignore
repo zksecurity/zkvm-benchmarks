@@ -4,3 +4,5 @@ benchmark_outputs/*
 **/*.log
 *.csv
 *.bin
+*.txt
+*.ipynb

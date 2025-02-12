@@ -29,7 +29,7 @@ jobs:
           mode: create
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
-          server_type: cx22
+          server_type: ccx53 # dedicated CPU, 32 cores, 128 GB RAM
           location: hel1
           ssh_key: 27148616
           image: ubuntu-24.04
@@ -53,11 +53,23 @@ jobs:
 
       - name: Setup Benchmark Dependencies
         run: |
-          sudo -u $BENCH_USER ./setup.sh
+          echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
+          echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
+          sudo -u $BENCH_USER \
+            SHARP_CLIENT_CERT=./user-cert.pem \
+            SHARP_KEY_PATH=./user-key.pem \
+            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
+            ./setup.sh
 
       - name: Run Benchmark
         run: |
-          sudo -u $BENCH_USER ./bench.sh
+          echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
+          echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
+          sudo -u $BENCH_USER \
+            SHARP_CLIENT_CERT=./user-cert.pem \
+            SHARP_KEY_PATH=./user-key.pem \
+            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
+            ./bench.sh
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v4

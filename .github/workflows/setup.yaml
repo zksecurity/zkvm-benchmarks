@@ -18,10 +18,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Bench
-        env:
-          AGE_SECRET_KEY: ${{ secrets.AGE_SECRET_KEY }}
-          SHARP_KEY_PASSWD: ${{ secrets.SHARP_KEY_PASSWD }}
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Setup Benchmark Dependencies
         run: |
-          ./setup.sh
+          echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
+          echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
+          sudo -u $BENCH_USER \
+            SHARP_CLIENT_CERT=./user-cert.pem \
+            SHARP_KEY_PATH=./user-key.pem \
+            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
+            ./setup.sh

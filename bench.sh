@@ -4,7 +4,10 @@ echo "Running benchmark..."
 
 whoami
 
-just bench-stone-fib-time
+just build-utils
+just build-stone
+just bench-stone-fib-time!
+just bench-stone-keccak-time!
 
 echo "Finished running bench-stone-fib-time"
 

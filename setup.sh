@@ -12,18 +12,18 @@ export PATH="$HOME/.cargo/env:$PATH"
 rustc --version || echo "Rust installation failed"
 cargo --version || echo "Cargo installation failed"
 
-# # Install other dependencies
-# sudo apt update -y
-# sudo apt install -y heaptrack
-# sudo apt install -y build-essential
-# sudo apt install -y pkg-config
-# sudo apt install -y libssl-dev
-# sudo apt install -y python3-pip
-# sudo apt install -y python3-venv
-# sudo apt install -y libgmp-dev
-# sudo apt install -y clang
-# sudo apt install -y age
-# sudo apt install -y just
+# Install other dependencies
+sudo apt update -y
+sudo apt install -y heaptrack
+sudo apt install -y build-essential
+sudo apt install -y pkg-config
+sudo apt install -y libssl-dev
+sudo apt install -y python3-pip
+sudo apt install -y python3-venv
+sudo apt install -y libgmp-dev
+sudo apt install -y clang
+sudo apt install -y age
+sudo apt install -y just
 
 # # Install Jolt
 # rustup target add riscv32i-unknown-none-elf

@@ -67,14 +67,20 @@ jobs:
 
       - name: Run Benchmark
         run: |
+          WORK_DIR=$(pwd)
           echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
           echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
           chmod 644 user-cert.pem user-key.pem
+          # sudo -u $BENCH_USER \
+          #   SHARP_CLIENT_CERT=./user-cert.pem \
+          #   SHARP_KEY_PATH=./user-key.pem \
+          #   SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
+          #   ./bench.sh
           sudo -u $BENCH_USER \
-            SHARP_CLIENT_CERT=./user-cert.pem \
-            SHARP_KEY_PATH=./user-key.pem \
-            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
-            ./bench.sh
+            SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
+            SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
+            SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
+            bash -c "cd $WORK_DIR && ./bench.sh"
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v4

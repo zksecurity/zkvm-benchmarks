@@ -114,6 +114,9 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Download Benchmark Results
         uses: actions/download-artifact@v4
         with:

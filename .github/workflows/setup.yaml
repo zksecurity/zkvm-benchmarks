@@ -19,5 +19,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Bench
+        env:
+          AGE_SECRET_KEY: ${{ secrets.AGE_SECRET_KEY }}
+          SHARP_KEY_PASSWD: ${{ secrets.SHARP_KEY_PASSWD }}
         run: |
           ./setup.sh

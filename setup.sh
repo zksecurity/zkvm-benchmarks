@@ -27,6 +27,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Install Risc Zero
 curl -L https://risczero.com/install | bash
 . "$HOME/.bashrc"
+echo "PATH after sourcing .bashrc: $PATH"
 rzup install
 
 # Install SP1

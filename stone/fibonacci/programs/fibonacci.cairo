@@ -1,7 +1,7 @@
 use core::felt252;
 
 fn main(input: Array<felt252>) -> Array<felt252> {
-    let result = fib(1, 1, *input.at(0));
+    let result = fib(0, 1, *input.at(0));
     
     let mut output: Array<felt252> = ArrayTrait::new();
     result.serialize(ref output);

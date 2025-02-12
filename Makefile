@@ -721,6 +721,7 @@ bench-stone-time:
 	make bench-stone-binary-search-time
 
 bench-stone-mem:
+	make build-stone
 	make bench-stone-fib-mem
 	make bench-stone-keccak-mem
 	make bench-stone-keccak-builtin-mem
@@ -771,7 +772,6 @@ bench-stone-mat:
 	make bench-stone-mat-mem
 
 bench-stone-fib-time:
-	# 100, 1000, 10000, 50000
 	-cd stone/fibonacci && ../../utils/target/debug/utils --bench-name stone-fib --bin target/release/stone --bench-arg $(word 1, $(FIB_ARGS))
 	-cd stone/fibonacci && ../../utils/target/debug/utils --bench-name stone-fib --bin target/release/stone --bench-arg $(word 2, $(FIB_ARGS))
 	-cd stone/fibonacci && ../../utils/target/debug/utils --bench-name stone-fib --bin target/release/stone --bench-arg $(word 3, $(FIB_ARGS))
@@ -784,16 +784,16 @@ bench-stone-fib-mem:
 	-cd stone/fibonacci && ../../utils/target/debug/utils --bench-name stone-fib --bin target/release/stone --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
 bench-stone-mat-time:
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 20
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 40
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 60
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 1, $(MATMUL_ARGS))
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 2, $(MATMUL_ARGS))
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 3, $(MATMUL_ARGS))
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 4, $(MATMUL_ARGS))
 
 bench-stone-mat-memory:
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 10 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 20 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 40 --bench-mem
-	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg 60 --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 1, $(MATMUL_ARGS)) --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 2, $(MATMUL_ARGS)) --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 3, $(MATMUL_ARGS)) --bench-mem
+	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 4, $(MATMUL_ARGS)) --bench-mem
 
 bench-stone-keccak-time:
 	-cd stone/keccak && ../../utils/target/debug/utils --bench-name stone-keccak --bin target/release/stone --bench-arg $(word 1, $(SHA_ARGS))
@@ -839,18 +839,18 @@ bench-stone-keccak-builtin-chain-time:
     # 29440 / 200 = 147.2
     # 58880 / 200 = 294.4
     # 117760 / 200 = 588.8
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589
 
 bench-stone-keccak-builtin-chain-mem:
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295 --bench-mem
-	-cd stone/keccak-builtin && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589 --bench-mem
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 37 --bench-mem
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 74 --bench-mem
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 148 --bench-mem
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 295 --bench-mem
+	-cd stone/keccak-builtin-chain && ../../utils/target/debug/utils --bench-name stone-keccak-builtin-chain --bin target/release/stone --bench-arg 589 --bench-mem
 
 bench-stone-sha256-time:
 	-cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 1, $(SHA_ARGS))
@@ -867,11 +867,18 @@ bench-stone-sha256-mem:
 	-cd stone/sha256 && ../../utils/target/debug/utils --bench-name stone-sha256 --bin target/release/sha256 --bench-arg $(word 5, $(SHA_ARGS)) --bench-mem
 
 bench-stone-sha256-chain-time:
-	# can't run this on my machine, it crashes due to out of memory
-	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg 230
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 1, $(SHA_CHAIN_ARGS))
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 2, $(SHA_CHAIN_ARGS))
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 3, $(SHA_CHAIN_ARGS))
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 4, $(SHA_CHAIN_ARGS))
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 5, $(SHA_CHAIN_ARGS))
 
 bench-stone-sha256-chain-mem:
-	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg 230 --bench-mem
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 1, $(SHA_CHAIN_ARGS)) --bench-mem
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 2, $(SHA_CHAIN_ARGS)) --bench-mem
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 3, $(SHA_CHAIN_ARGS)) --bench-mem
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 4, $(SHA_CHAIN_ARGS)) --bench-mem
+	-cd stone/sha256-chain && ../../utils/target/debug/utils --bench-name stone-sha256-chain --bin target/release/sha256-chain --bench-arg $(word 5, $(SHA_CHAIN_ARGS)) --bench-mem
 
 bench-stone-binary-search-time:
 	-cd stone/binary-search && ../../utils/target/debug/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg $(word 1, $(BINARY_SEARCH_ARGS))

@@ -13,10 +13,19 @@ jobs:
   benchmark:
     name: Setup Benchmark
     runs-on: ubuntu-latest
+    env:
+      BENCH_USER: shodan
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      
+      - name: Create Benchmark User
+        run: |
+          sudo useradd -m -s /bin/bash $BENCH_USER
+          sudo usermod -aG sudo $BENCH_USER
+          echo "$BENCH_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$BENCH_USER
+          sudo chown -R $BENCH_USER:$BENCH_USER .
 
       - name: Setup Benchmark Dependencies
         run: |

@@ -51,7 +51,7 @@ fn run(n: u32, bench_mem: bool) {
     let parameter_file = match n {
         230 => "../configs/parameter_4194304_128.json".to_string(),
         460 => "../configs/parameter_16777216_64.json".to_string(),
-        920 => "../configs/parameter_16777216_64.json".to_string(),
+        920 => "../configs/parameter_33554432.json".to_string(),
         1840 => "../configs/parameter_16777216_64.json".to_string(),
         3680 => "../configs/parameter_16777216_64.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),

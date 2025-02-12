@@ -22,6 +22,7 @@ echo "Start benchmarking Stone"
 make build-stone
 make bench-stone-fib-time
 make bench-stone-keccak-time
+make bench-stone-keccak-builtin-time
 echo "Finished benchmarking Stone"
 
 echo "Results" > results.txt

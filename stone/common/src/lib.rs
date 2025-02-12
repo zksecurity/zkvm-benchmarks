@@ -22,10 +22,12 @@ pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> 
 
     let start = Instant::now();
 
+    let sharp_client_cert = env::var("SHARP_CLIENT_CERT").expect("Missing SHARP_CLIENT_CERT");
+    let sharp_key_path = env::var("SHARP_KEY_PATH").expect("Missing SHARP_KEY_PATH");
     let output = Command::new(command)
         .args(&args)
-        .env("SHARP_CLIENT_CERT", "/root/sharp-cert/user.crt")
-        .env("SHARP_KEY_PATH", "/root/sharp-cert/user.key")
+        .env("SHARP_CLIENT_CERT", &sharp_client_cert)
+        .env("SHARP_KEY_PATH", &sharp_key_path)
         .env("RUST_MIN_STACK", "104857600")
         .output()
         .expect("Failed to execute the Prove command");

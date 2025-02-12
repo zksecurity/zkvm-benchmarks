@@ -25,5 +25,5 @@ jobs:
           sudo -u $BENCH_USER \
             SHARP_KEY_PATH=./user-key.pem \
             SHARP_API_CERT=./user-cert.pem \
-            SHARP_KEY_PASSWD=${{ secrets.SHARP_API_KEY_PASSWORD }} \
+            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
             ./setup.sh

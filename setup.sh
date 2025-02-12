@@ -18,12 +18,12 @@ sudo apt install -y heaptrack
 sudo apt install -y build-essential
 sudo apt install -y pkg-config
 sudo apt install -y libssl-dev
-sudo apt install -y python3-pip
-sudo apt install -y python3-venv
+sudo apt install -y python3.10 python3.10-venv python3.10-distutils
 sudo apt install -y libgmp-dev
 sudo apt install -y clang
 sudo apt install -y age
 sudo apt install -y just
+sudo apt install -y unzip
 
 # Install Jolt
 rustup target add riscv32i-unknown-none-elf
@@ -38,17 +38,18 @@ curl -L https://sp1.succinct.xyz | bash
 export PATH="$HOME/.sp1/bin:$PATH"
 sp1up
 
-# Install stone-cli
-cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
-stone-cli --version || echo "stone-cli installation failed"
-
 # Install cairo
 VENV_PATH="$HOME/python-venv"
 echo "Creating virtual environment in $VENV_PATH..."
-python3 -m venv "$VENV_PATH"
+python3.10 -m venv "$VENV_PATH"
 echo "Activating virtual environment..."
 source "$VENV_PATH/bin/activate"
 echo "Upgrading pip..."
 pip install --upgrade pip
 echo "Installing cairo-lang..."
 pip install cairo-lang
+cairo-run --version || echo "Cairo installation failed"
+
+# Install stone-cli
+cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
+stone-cli --version || echo "stone-cli installation failed"

@@ -22,5 +22,6 @@ jobs:
         env:
           AGE_SECRET_KEY: ${{ secrets.AGE_SECRET_KEY }}
           SHARP_KEY_PASSWD: ${{ secrets.SHARP_KEY_PASSWD }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           ./setup.sh

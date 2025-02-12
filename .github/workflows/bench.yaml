@@ -56,8 +56,8 @@ jobs:
           echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
           echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
           sudo -u $BENCH_USER \
+            SHARP_CLIENT_CERT=./user-cert.pem \
             SHARP_KEY_PATH=./user-key.pem \
-            SHARP_API_CERT=./user-cert.pem \
             SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
             ./setup.sh
 
@@ -66,8 +66,8 @@ jobs:
           echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
           echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
           sudo -u $BENCH_USER \
+            SHARP_CLIENT_CERT=./user-cert.pem \
             SHARP_KEY_PATH=./user-key.pem \
-            SHARP_API_CERT=./user-cert.pem \
             SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
             ./bench.sh
 

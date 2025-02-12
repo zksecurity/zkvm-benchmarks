@@ -25,21 +25,21 @@ sudo apt install -y clang
 sudo apt install -y age
 sudo apt install -y just
 
-# # Install Jolt
-# rustup target add riscv32i-unknown-none-elf
+# Install Jolt
+rustup target add riscv32i-unknown-none-elf
 
-# # Install Risc Zero
-# curl -L https://risczero.com/install | bash
-# export PATH="$HOME/.risc0/bin:$PATH"
-# rzup install
+# Install Risc Zero
+curl -L https://risczero.com/install | bash
+export PATH="$HOME/.risc0/bin:$PATH"
+rzup install
 
-# # Install SP1
-# curl -L https://sp1.succinct.xyz | bash
-# export PATH="$HOME/.sp1/bin:$PATH"
-# sp1up
+# Install SP1
+curl -L https://sp1.succinct.xyz | bash
+export PATH="$HOME/.sp1/bin:$PATH"
+sp1up
 
-# # Install stone-cli
-# cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
+# Install stone-cli
+cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
 
 # Install cairo
 VENV_PATH="$HOME/python-venv"

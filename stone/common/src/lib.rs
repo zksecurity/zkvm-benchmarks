@@ -4,6 +4,7 @@ use serde_json::Value;
 use std::process::Command;
 use std::time::Duration;
 use clap::{arg, Parser};
+use std::env;
 
 /// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]

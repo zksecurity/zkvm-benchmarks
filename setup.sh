@@ -6,7 +6,11 @@ whoami
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source $HOME/.cargo/env
 export PATH="$HOME/.cargo/env:$PATH"
+
+rustc --version || echo "Rust installation failed"
+cargo --version || echo "Cargo installation failed"
 
 # Install other dependencies
 sudo apt update -y

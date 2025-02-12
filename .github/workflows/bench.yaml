@@ -32,7 +32,7 @@ jobs:
           # ccx13: dedicated CPU,  2 cores,   8 GB RAM
           # ccx53: dedicated CPU, 32 cores, 128 GB RAM
           # ccx63: dedicated CPU, 48 cores, 192 GB RAM
-          server_type: ccx13 
+          server_type: ccx13
           location: hel1
           ssh_key: 27148616
           image: ubuntu-24.04
@@ -107,5 +107,23 @@ jobs:
           name: ${{ needs.create-runner.outputs.label }}
           server_id: ${{ needs.create-runner.outputs.server_id }}
 
-  # TODO: introduce a job to retrieve the benchmark results
-  # and generate a nice report + graphs etc.
+  analyze:
+    name: Analyze Benchmark Results
+    needs:
+      - benchmark
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Benchmark Results
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+
+      - name: Run Analysis
+        run: |
+          ./analyze.sh

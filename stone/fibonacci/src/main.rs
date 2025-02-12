@@ -26,12 +26,12 @@ fn run(n: u32, bench_mem: bool) {
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
     let parameter_file = match n {
-        100 => "../configs/parameter_65536_32.json".to_string(),
-        1000 => "../configs/parameter_65536_32.json".to_string(),
+        100 | 1000 => "../configs/parameter_65536_32.json".to_string(),
         10000 => "../configs/parameter_65536_64.json".to_string(),
         50000 => "../configs/parameter_524288_64.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
+    
     let prover_config_file = "../configs/prover_config.json".to_string();
     let args = if bench_mem {
         vec![

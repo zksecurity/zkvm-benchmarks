@@ -29,14 +29,15 @@ fn run(n: u32, bench_mem: bool) {
     let program_path = "programs/binary_search.cairo".to_string();
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
-    let parameter_file = match n {
-        128 => "../configs/parameter_65536_32.json".to_string(),
-        256 => "../configs/parameter_65536_32.json".to_string(),
-        512 => "../configs/parameter_65536_32.json".to_string(),
-        1024 => "../configs/parameter_65536_32.json".to_string(),
-        2048 => "../configs/parameter_65536_32.json".to_string(),
-        _ => unreachable!("Unexpected value for n: {}", n),
-    };
+    // let parameter_file = match n {
+    //     128 => "../configs/parameter_65536_32.json".to_string(),
+    //     256 => "../configs/parameter_65536_32.json".to_string(),
+    //     512 => "../configs/parameter_65536_32.json".to_string(),
+    //     1024 => "../configs/parameter_65536_32.json".to_string(),
+    //     2048 => "../configs/parameter_65536_32.json".to_string(),
+    //     _ => unreachable!("Unexpected value for n: {}", n),
+    // };
+    let parameter_file = "../configs/parameter_65536_32.json".to_string();
     let prover_config_file = "../configs/prover_config.json".to_string();
     let args = if bench_mem {
         vec![

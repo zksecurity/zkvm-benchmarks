@@ -21,7 +21,7 @@ make build-utils
 echo "Start benchmarking Stone"
 make build-stone
 make bench-stone-fib-time
-# make bench-stone-keccak-time
+make bench-stone-keccak-time
 echo "Finished benchmarking Stone"
 
 echo "Results" > results.txt

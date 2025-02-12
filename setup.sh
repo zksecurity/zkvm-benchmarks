@@ -6,38 +6,41 @@ whoami
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
 
-# Install other dependencies
-sudo apt update -y
-sudo apt install -y heaptrack
-sudo apt install -y build-essential
-sudo apt install -y pkg-config
-sudo apt install -y libssl-dev
-sudo apt install -y python3-pip
-sudo apt install -y python3-venv
-sudo apt install -y libgmp-dev
-sudo apt install -y clang
-sudo apt install -y age
-sudo apt install -y just
+# # Install other dependencies
+# sudo apt update -y
+# sudo apt install -y heaptrack
+# sudo apt install -y build-essential
+# sudo apt install -y pkg-config
+# sudo apt install -y libssl-dev
+# sudo apt install -y python3-pip
+# sudo apt install -y python3-venv
+# sudo apt install -y libgmp-dev
+# sudo apt install -y clang
+# sudo apt install -y age
+# sudo apt install -y just
 
-# Install Jolt
-rustup target add riscv32i-unknown-none-elf
+# # Install Jolt
+# rustup target add riscv32i-unknown-none-elf
 
 # Install Risc Zero
 curl -L https://risczero.com/install | bash
-source /home/runner/.bashrc
+source "$HOME/.bashrc"
+source "$HOME/.rzup/env"
 rzup install
 
 # Install SP1
 curl -L https://sp1.succinct.xyz | bash
-source /home/runner/.bashrc
+source "$HOME/.bashrc"
+source "$HOME/.sp1up/env"
 sp1up
 
-# Install stone-cli
-cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
+# # Install stone-cli
+# cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
 
-# Install cairo
-pip install cairo-lang
+# # Install cairo
+# pip install cairo-lang
 
 # Install SHARP certificate for dynamic layout
 REPO_URL="https://x-access-token:${PERSONAL_ACCESS_TOKEN}@github.com/zksecurity/sharp-cert.git"

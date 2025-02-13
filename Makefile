@@ -710,7 +710,6 @@ bench-stone:
 	make bench-stone-mem
 
 bench-stone-time:
-	make build-stone
 	make bench-stone-fib-time
 	make bench-stone-keccak-time
 	make bench-stone-keccak-builtin-time
@@ -721,7 +720,6 @@ bench-stone-time:
 	make bench-stone-binary-search-time
 
 bench-stone-mem:
-	make build-stone
 	make bench-stone-fib-mem
 	make bench-stone-keccak-mem
 	make bench-stone-keccak-builtin-mem

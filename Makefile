@@ -715,7 +715,7 @@ bench-stone-time:
 	make bench-stone-keccak-builtin-time
 	make bench-stone-keccak-builtin-chain-time
 	make bench-stone-sha256-time
-	make bench-stone-sha256-chain-time
+	# make bench-stone-sha256-chain-time
 	make bench-stone-mat-time
 	make bench-stone-binary-search-time
 
@@ -725,7 +725,7 @@ bench-stone-mem:
 	make bench-stone-keccak-builtin-mem
 	make bench-stone-keccak-builtin-chain-mem
 	make bench-stone-sha256-mem
-	make bench-stone-sha256-chain-mem
+	# make bench-stone-sha256-chain-mem
 	make bench-stone-mat-mem
 	make bench-stone-binary-search-mem
 

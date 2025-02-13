@@ -51,7 +51,7 @@ fn run(n: u32, bench_mem: bool) {
         32 | 256 => "../configs/parameter_65536_32.json".to_string(),
         512 => "../configs/parameter_65536_64.json".to_string(),
         1024 => "../configs/parameter_131072.json".to_string(),
-        2048 => "../configs/parameter_262144.json".to_string(),
+        2048 => "../configs/parameter_131072.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();
@@ -75,7 +75,7 @@ fn run(n: u32, bench_mem: bool) {
             &prover_config_file,
             "--stone_version",
             "v6",
-            "--bench-memory",
+            "--bench_memory",
             "true",
         ]
     }

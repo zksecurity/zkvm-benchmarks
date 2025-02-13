@@ -52,8 +52,8 @@ fn run(n: u32, bench_mem: bool) {
         230 => "../configs/parameter_8388608.json".to_string(),
         460 => "../configs/parameter_16777216.json".to_string(),
         920 => "../configs/parameter_33554432.json".to_string(),
-        1840 => "../configs/parameter_33554432.json".to_string(),
-        3680 => "../configs/parameter_33554432.json".to_string(),
+        1840 => "../configs/parameter_67108864.json".to_string(),
+        3680 => "../configs/parameter_134217728.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();
@@ -77,7 +77,7 @@ fn run(n: u32, bench_mem: bool) {
             &prover_config_file,
             "--stone_version",
             "v6",
-            "--bench-memory",
+            "--bench_memory",
             "true",
         ]
     }

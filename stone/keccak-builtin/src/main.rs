@@ -75,7 +75,7 @@ fn run(n: u32, bench_mem: bool) {
             &prover_config_file,
             "--stone_version",
             "v6",
-            "--bench-memory",
+            "--bench_memory",
             "true",
         ]
     }

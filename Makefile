@@ -787,7 +787,7 @@ bench-stone-mat-time:
 	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 3, $(MATMUL_ARGS))
 	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 4, $(MATMUL_ARGS))
 
-bench-stone-mat-memory:
+bench-stone-mat-mem:
 	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 1, $(MATMUL_ARGS)) --bench-mem
 	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 2, $(MATMUL_ARGS)) --bench-mem
 	-cd stone/mat-mul && ../../utils/target/debug/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg $(word 3, $(MATMUL_ARGS)) --bench-mem

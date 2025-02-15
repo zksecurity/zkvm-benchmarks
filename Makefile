@@ -479,7 +479,7 @@ bench-risczero:
 build-risczero:
 	cd risczero/sha2-chain && cargo build --release
 	cd risczero/binary-search && cargo build --release
-	cd risczero/fibonacci && cargo build --release
+	cd risczero/fib && cargo build --release
 	cd risczero/ec && cargo build --release
 	cd risczero/ec-precompile && cargo build --release
 	cd risczero/sha3-chain && cargo build --release
@@ -580,16 +580,16 @@ bench-risczero-fib:
 	# make bench-risczero-fib-mem
 
 bench-risczero-fib-time:
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
-	cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
+	cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS))
+	cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS))
+	cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS))
+	cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS))
 
 # bench-risczero-fib-mem:
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
-	# cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 1, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 2, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 3, $(FIB_ARGS)) --bench-mem
+	# cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg $(word 4, $(FIB_ARGS)) --bench-mem
 
 bench-risczero-ecadd:
 	make bench-risczero-ecadd-time
@@ -648,10 +648,10 @@ bench-risczero-binary-search-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/binary-search && ../../utils/target/debug/utils --bench-name risczero-binary-search --bin target/release/host --bench-arg 2048"' /benchmark_outputs/risczero-binary-search.csv 2048
 
 bench-risczero-fib-mem:  
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 100"' risczero-fib.csv 100
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 1000"' risczero-fib.csv 1000
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 10000"' risczero-fib.csv 10000
-	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fibonacci && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 50000"' risczero-fib.csv 50000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 100"' risczero-fib.csv 100
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 1000"' risczero-fib.csv 1000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 10000"' risczero-fib.csv 10000
+	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/fib && ../../utils/target/debug/utils --bench-name risczero-fib --bin target/release/host --bench-arg 50000"' risczero-fib.csv 50000
 
 bench-risczero-ecadd-mem:
 	./bench_peak_memory.sh './mem.sh bash -c "cd risczero/ec && ../../utils/target/debug/utils --bench-name risczero-ecadd --bin target/release/host --bench-arg $(word 1, $(ECADD_ARGS))"' ./benchmark_outputs/risczero-ecadd.csv $(word 1, $(ECADD_ARGS))

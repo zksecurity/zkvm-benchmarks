@@ -29,13 +29,13 @@ bench-all: build-utils
 bench-jolt:
     cd jolt && cargo build --release
     just bench-jolt-fib
-    just bench-jolt-sha2
-    just bench-jolt-sha2-chain
-    just bench-jolt-sha3
-    just bench-jolt-sha3-chain
-    just bench-jolt-mat-mul
-    just bench-jolt-binary-search
-    just bench-jolt-ec
+    # just bench-jolt-sha2
+    # just bench-jolt-sha2-chain
+    # just bench-jolt-sha3
+    # just bench-jolt-sha3-chain
+    # just bench-jolt-mat-mul
+    # just bench-jolt-binary-search
+    # just bench-jolt-ec
 
 
 bench-jolt-fib:
@@ -154,33 +154,33 @@ bench-sp1: build-sp1
 
 bench-sp1-time:
 	just bench-sp1-fib-time
-	just bench-sp1-sha2-time
-	just bench-sp1-sha2-chain-time
-	just bench-sp1-sha3-time
-	just bench-sp1-sha3-chain-time
-	just bench-sp1-mat-mul-time
-	just bench-sp1-binary-search-time
-	just bench-sp1-sha2-precompile-time
-	just bench-sp1-sha3-precompile-time
-	just bench-sp1-sha2-chain-precompile-time
-	just bench-sp1-sha3-chain-precompile-time
-	just bench-sp1-ec-time
-	just bench-sp1-ec-precompile-time
+	# just bench-sp1-sha2-time
+	# just bench-sp1-sha2-chain-time
+	# just bench-sp1-sha3-time
+	# just bench-sp1-sha3-chain-time
+	# just bench-sp1-mat-mul-time
+	# just bench-sp1-binary-search-time
+	# just bench-sp1-sha2-precompile-time
+	# just bench-sp1-sha3-precompile-time
+	# just bench-sp1-sha2-chain-precompile-time
+	# just bench-sp1-sha3-chain-precompile-time
+	# just bench-sp1-ec-time
+	# just bench-sp1-ec-precompile-time
 
 bench-sp1-mem:
     just bench-sp1-fib-mem
-    just bench-sp1-sha2-mem
-    just bench-sp1-sha2-chain-mem
-    just bench-sp1-sha3-mem
-    just bench-sp1-sha3-chain-mem
-    just bench-sp1-mat-mul-mem
-    just bench-sp1-binary-search-mem
-    just bench-sp1-sha2-precompile-mem
-    just bench-sp1-sha3-precompile-mem
-    just bench-sp1-sha2-chain-precompile-mem
-    just bench-sp1-sha3-chain-precompile-mem
-    just bench-sp1-ec-mem
-    just bench-sp1-ec-precompile-mem
+    # just bench-sp1-sha2-mem
+    # just bench-sp1-sha2-chain-mem
+    # just bench-sp1-sha3-mem
+    # just bench-sp1-sha3-chain-mem
+    # just bench-sp1-mat-mul-mem
+    # just bench-sp1-binary-search-mem
+    # just bench-sp1-sha2-precompile-mem
+    # just bench-sp1-sha3-precompile-mem
+    # just bench-sp1-sha2-chain-precompile-mem
+    # just bench-sp1-sha3-chain-precompile-mem
+    # just bench-sp1-ec-mem
+    # just bench-sp1-ec-precompile-mem
 
 bench-sp1-fib-time:
     -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/debug/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" -- --program fib && cd ..; done
@@ -280,16 +280,16 @@ build-risczero:
 
 bench-risczero: build-risczero
     just bench-risczero-fib
-    just bench-risczero-binary-search
-    just bench-risczero-ec  
-    just bench-risczero-ec-precompile  
-    just bench-risczero-mat-mul  
-    just bench-risczero-sha2  
-    just bench-risczero-sha2-chain  
-    just bench-risczero-sha2-chain-precompile  
-    just bench-risczero-sha2-precompile  
-    just bench-risczero-sha3  
-    just bench-risczero-sha3-chain
+    # just bench-risczero-binary-search
+    # just bench-risczero-ec  
+    # just bench-risczero-ec-precompile  
+    # just bench-risczero-mat-mul  
+    # just bench-risczero-sha2  
+    # just bench-risczero-sha2-chain  
+    # just bench-risczero-sha2-chain-precompile  
+    # just bench-risczero-sha2-precompile  
+    # just bench-risczero-sha3  
+    # just bench-risczero-sha3-chain
 
 bench-risczero-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_r0.sh "fib" "$arg"; done
@@ -334,23 +334,23 @@ bench-stone: build-stone
 
 bench-stone-time:
     just bench-stone-fib-time
-    just bench-stone-keccak-time
-    just bench-stone-keccak-builtin-time
-    just bench-stone-keccak-builtin-chain-time
-    just bench-stone-mat-time
-    just bench-stone-binary-search-time
-    just bench-stone-sha256-time
-    just bench-stone-sha256-chain-time
+    # just bench-stone-keccak-time
+    # just bench-stone-keccak-builtin-time
+    # just bench-stone-keccak-builtin-chain-time
+    # just bench-stone-mat-time
+    # just bench-stone-binary-search-time
+    # just bench-stone-sha256-time
+    # just bench-stone-sha256-chain-time
 
 bench-stone-mem:
     just bench-stone-fib-mem
-    just bench-stone-keccak-mem
-    just bench-stone-keccak-builtin-mem
-    just bench-stone-keccak-builtin-chain-mem
-    just bench-stone-mat-mem
-    just bench-stone-binary-search-mem
-    just bench-stone-sha256-mem
-    just bench-stone-sha256-chain-mem
+    # just bench-stone-keccak-mem
+    # just bench-stone-keccak-builtin-mem
+    # just bench-stone-keccak-builtin-chain-mem
+    # just bench-stone-mat-mem
+    # just bench-stone-binary-search-mem
+    # just bench-stone-sha256-mem
+    # just bench-stone-sha256-chain-mem
 
 build-stone:
     cd stone/common && cargo build --release

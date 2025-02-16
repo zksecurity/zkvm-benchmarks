@@ -29,12 +29,4 @@ jobs:
 
       - name: Setup Benchmark Dependencies
         run: |
-          sudo -u $BENCH_USER bash -c '
-            echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
-            echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
-            chmod 644 user-cert.pem user-key.pem
-            SHARP_CLIENT_CERT=./user-cert.pem \
-            SHARP_KEY_PATH=./user-key.pem \
-            SHARP_KEY_PASSWD=${{ secrets.SHARP_CLIENT_KEY_PASSWORD }} \
-            ./setup.sh
-          '
+          sudo -u $BENCH_USER ./setup.sh

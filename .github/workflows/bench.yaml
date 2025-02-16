@@ -78,6 +78,7 @@ jobs:
             *.txt
             *.log
             ./benchmark_outputs/*.csv
+            ./machine_info/*.txt
             *.csv
             *.json
             *.data

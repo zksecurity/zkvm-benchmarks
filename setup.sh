@@ -52,7 +52,7 @@ echo "Installing cairo-lang..."
 pip install cairo-lang
 
 # Install stone-cli
-cargo install --git https://github.com/zksecurity/stone-cli.git --branch dynamic-layout
+cargo install --git https://github.com/zksecurity/stone-cli.git
 
 # Check Setup
 rustc --version || echo "Rust installation failed"

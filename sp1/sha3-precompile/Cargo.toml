@@ -1,11 +1,11 @@
 [workspace]
 [package]
 version = "0.1.0"
-name = "sha3-bench"
+name = "sha3-precompile"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = "3.0.0-rc4"
+sp1-zkvm = "4.0.1"
 sha3 = { version = "0.10.8", default-features = false }
 
 [patch.crates-io]

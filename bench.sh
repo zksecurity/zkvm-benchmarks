@@ -18,10 +18,8 @@ stone-cli --version || echo "stone-cli installation failed"
 python3.10 --version || echo "Python installation failed"
 cairo-run --version || echo "Cairo installation failed"
 
-make build-utils
-
-echo "Start benchmarking Stone"
-make bench-stone
-echo "Finished benchmarking Stone"
+echo "Start benchmarking"
+just
+echo "Finished benchmarking"
 
 echo "Results" > results.txt

@@ -267,16 +267,16 @@ bench-sp1-binary-search-mem:
 
 build-risczero:
     cd risczero/fib && cargo build --release
-    cd risczero/sha2-chain && cargo build --release
-    cd risczero/binary-search && cargo build --release
-    cd risczero/ec && cargo build --release
-    cd risczero/ec-precompile && cargo build --release
-    cd risczero/sha3-chain && cargo build --release
-    cd risczero/sha2 && cargo build --release
-    cd risczero/sha3 && cargo build --release
-    cd risczero/mat-mul && cargo build --release
-    cd risczero/sha2-chain-precompile && cargo build --release
-    cd risczero/sha2-precompile && cargo build --release
+    # cd risczero/sha2-chain && cargo build --release
+    # cd risczero/binary-search && cargo build --release
+    # cd risczero/ec && cargo build --release
+    # cd risczero/ec-precompile && cargo build --release
+    # cd risczero/sha3-chain && cargo build --release
+    # cd risczero/sha2 && cargo build --release
+    # cd risczero/sha3 && cargo build --release
+    # cd risczero/mat-mul && cargo build --release
+    # cd risczero/sha2-chain-precompile && cargo build --release
+    # cd risczero/sha2-precompile && cargo build --release
 
 bench-risczero: build-risczero
     just bench-risczero-fib
@@ -354,14 +354,14 @@ bench-stone-mem:
 
 build-stone:
     cd stone/common && cargo build --release
-    cd stone/binary-search && cargo build --release
+    # cd stone/binary-search && cargo build --release
     cd stone/fibonacci && cargo build --release
-    cd stone/keccak && cargo build --release
-    cd stone/keccak-builtin && cargo build --release
-    cd stone/keccak-builtin-chain && cargo build --release
-    cd stone/sha256 && cargo build --release
-    cd stone/sha256-chain && cargo build --release
-    cd stone/mat-mul && cargo build --release
+    # cd stone/keccak && cargo build --release
+    # cd stone/keccak-builtin && cargo build --release
+    # cd stone/keccak-builtin-chain && cargo build --release
+    # cd stone/sha256 && cargo build --release
+    # cd stone/sha256-chain && cargo build --release
+    # cd stone/mat-mul && cargo build --release
     -just build-stone-steps
 
 build-stone-steps:

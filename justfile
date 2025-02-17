@@ -150,7 +150,7 @@ build-sp1:
 
 bench-sp1: build-sp1
 	just bench-sp1-time
-	just bench-sp1-mem
+	# just bench-sp1-mem
 
 bench-sp1-time:
 	just bench-sp1-fib-time

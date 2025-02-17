@@ -366,7 +366,7 @@ build-stone:
 
 build-stone-steps:
 	-cd stone && git clone https://github.com/lambdaclass/cairo-vm.git
-	-cd stone/cairo-vm/cairo1-run && just deps
+	-cd stone/cairo-vm/cairo1-run && make deps
 
 bench-stone-fib-time:
     -for arg in {{FIB_ARGS}}; do cd stone/fibonacci && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" && cd ../..; done

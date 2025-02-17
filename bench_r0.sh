@@ -23,7 +23,7 @@ echo "BENCH_DIR: $BENCH_DIR"
 
 # Run the command and capture output
 echo "Running command..."
-./mem.sh bash -c "cd $BENCH_DIR && ../../utils/target/debug/utils --bench-name $R0_BENCH_NAME --bin target/release/host --bench-arg $BENCH_ARG" > "$TMP_FILE" 2>&1
+./mem.sh bash -c "cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $R0_BENCH_NAME --bin target/release/host --bench-arg $BENCH_ARG" > "$TMP_FILE" 2>&1
 
 # Extract the peak memory value
 PEAK_MEMORY=$(grep -oP 'Maximum memory usage: \K[0-9.]+ MB' "$TMP_FILE")

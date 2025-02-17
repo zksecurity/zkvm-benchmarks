@@ -292,37 +292,37 @@ bench-risczero: build-risczero
     # just bench-risczero-sha3-chain
 
 bench-risczero-fib:
-    -for arg in {{FIB_ARGS}}; do sudo ./bench_r0.sh "fib" "$arg"; done
+    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "fib" "$arg"; done
 
 bench-risczero-ec:
-    -for arg in {{EC_ARGS}}; do sudo ./bench_r0.sh "ec" "$arg"; done
+    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "ec" "$arg"; done
 
 bench-risczero-ec-precompile:
-    -for arg in {{EC_ARGS}}; do sudo ./bench_r0.sh "ec-precompile" "$arg"; done
+    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "ec-precompile" "$arg"; done
 
 bench-risczero-binary-search:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do sudo ./bench_r0.sh "binary-search" "$arg"; done
+    -for arg in {{BINARY_SEARCH_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "binary-search" "$arg"; done
 
 bench-risczero-mat-mul:
-    -for arg in {{MATMUL_ARGS}}; do sudo ./bench_r0.sh "mat-mul" "$arg"; done
+    -for arg in {{MATMUL_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "mat-mul" "$arg"; done
 
 bench-risczero-sha2:
-    -for arg in {{SHA_ARGS}}; do sudo ./bench_r0.sh "sha2" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2" "$arg"; done
 
 bench-risczero-sha2-precompile:
-    -for arg in {{SHA_ARGS}}; do sudo ./bench_r0.sh "sha2-precompile" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-precompile" "$arg"; done
 
 bench-risczero-sha2-chain:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo ./bench_r0.sh "sha2-chain" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-chain" "$arg"; done
 
 bench-risczero-sha2-chain-precompile:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo ./bench_r0.sh "sha2-chain-precompile" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-chain-precompile" "$arg"; done
 
 bench-risczero-sha3:
-    -for arg in {{SHA_ARGS}}; do sudo ./bench_r0.sh "sha3" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha3" "$arg"; done
 
 bench-risczero-sha3-chain:
-    -for arg in {{SHA_ARGS}}; do sudo ./bench_r0.sh "sha3-chain" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha3-chain" "$arg"; done
 
 #####
 # Stone

@@ -1,5 +1,5 @@
 # Define variables
-FIB_ARGS := "100 1000 10000 50000"
+FIB_ARGS := "100 500 1000 5000 10000 50000 100000"
 EC_ARGS := "2 5 10 20"
 SHA_ARGS := "32 256 512 1024 2048"
 BINARY_SEARCH_ARGS := "128 256 512 1024 2048"
@@ -132,7 +132,7 @@ bench-jolt-binary-search-mem:
 #####
 
 build-sp1:
-	cd sp1/fibonacci && cargo prove build
+	cd sp1/fib && cargo prove build
 	cd sp1/sha2-chain && cargo prove build
 	cd sp1/sha3-chain && cargo prove build
 	cd sp1/sha2 && cargo prove build
@@ -149,8 +149,9 @@ build-sp1:
 	cd sp1 && cargo build --release
 
 bench-sp1: build-sp1
-	just bench-sp1-time
-	# just bench-sp1-mem
+    just bench-sp1-fib-script
+    # just bench-sp1-time
+    # just bench-sp1-mem
 
 bench-sp1-time:
 	just bench-sp1-fib-time
@@ -187,6 +188,9 @@ bench-sp1-fib-time:
 
 bench-sp1-fib-mem:
     -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program fib && cd ..; done
+
+bench-sp1-fib-script:
+    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "sp1" "fib" "$arg"; done
 
 bench-sp1-ec-time:
     -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" -- --program ec && cd ..; done
@@ -292,37 +296,37 @@ bench-risczero: build-risczero
     # just bench-risczero-sha3-chain
 
 bench-risczero-fib:
-    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "fib" "$arg"; done
+    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "fib" "$arg"; done
 
 bench-risczero-ec:
-    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "ec" "$arg"; done
+    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "ec" "$arg"; done
 
 bench-risczero-ec-precompile:
-    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "ec-precompile" "$arg"; done
+    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "ec-precompile" "$arg"; done
 
 bench-risczero-binary-search:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "binary-search" "$arg"; done
+    -for arg in {{BINARY_SEARCH_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "binary-search" "$arg"; done
 
 bench-risczero-mat-mul:
-    -for arg in {{MATMUL_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "mat-mul" "$arg"; done
+    -for arg in {{MATMUL_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "mat-mul" "$arg"; done
 
 bench-risczero-sha2:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha2" "$arg"; done
 
 bench-risczero-sha2-precompile:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-precompile" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha2-precompile" "$arg"; done
 
 bench-risczero-sha2-chain:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-chain" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha2-chain" "$arg"; done
 
 bench-risczero-sha2-chain-precompile:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha2-chain-precompile" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha2-chain-precompile" "$arg"; done
 
 bench-risczero-sha3:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha3" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3" "$arg"; done
 
 bench-risczero-sha3-chain:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_r0.sh "sha3-chain" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3-chain" "$arg"; done
 
 #####
 # Stone

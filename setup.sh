@@ -51,6 +51,9 @@ pip install --upgrade pip
 echo "Installing cairo-lang..."
 pip install cairo-lang
 
+# Install notebook to analyze benchmarks
+pip install marimo
+
 # Install stone-cli
 cargo install --git https://github.com/zksecurity/stone-cli.git
 
@@ -60,3 +63,4 @@ cargo --version || echo "Cargo installation failed"
 stone-cli --version || echo "stone-cli installation failed"
 python3.10 --version || echo "Python installation failed"
 cairo-run --version || echo "Cairo installation failed"
+marimo --version || echo "Marimo installation failed"

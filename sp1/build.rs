@@ -1,7 +1,7 @@
 use sp1_build::build_program_with_args;
 
 fn main() {
-    build_program_with_args("fibonacci", Default::default());
+    build_program_with_args("fib", Default::default());
     build_program_with_args("sha2", Default::default());
     build_program_with_args("sha2-precompile", Default::default());
     build_program_with_args("sha2-chain", Default::default());

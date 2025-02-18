@@ -6,7 +6,7 @@ use std::{
 use sp1_sdk::{include_elf, utils as sp1_utils, ProverClient, SP1Stdin};
 use utils::size;
 
-const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci");
+const FIBONACCI_ELF: &[u8] = include_elf!("fib");
 const SHA2_ELF: &[u8] = include_elf!("sha2");
 const SHA2_PRECOMPILE_ELF: &[u8] = include_elf!("sha2-precompile");
 const SHA2_CHAIN_ELF: &[u8] = include_elf!("sha2-chain");

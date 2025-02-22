@@ -6,3 +6,5 @@ benchmark_outputs/*
 *.bin
 *.txt
 *.ipynb
+__pycache__/
+*.png

@@ -43,7 +43,7 @@ grep -E "^(MemTotal|MemFree|MemAvailable|Buffers|Cached|SwapTotal|SwapFree)" /pr
 
 echo "System information captured in $MACHINE_INFO_DIR:"
 
-# # Benchmark
-# echo "Start benchmarking"
-# just
-# echo "Finished benchmarking"
+# Benchmark
+echo "Start benchmarking"
+just
+echo "Finished benchmarking"

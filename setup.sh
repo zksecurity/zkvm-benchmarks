@@ -51,8 +51,10 @@ pip install --upgrade pip
 echo "Installing cairo-lang..."
 pip install cairo-lang
 
-# Install notebook to analyze benchmarks
+# Install packages to analyze benchmarks
 pip install marimo
+pip install pandas
+pip install matplotlib
 
 # Install stone-cli
 cargo install --git https://github.com/zksecurity/stone-cli.git

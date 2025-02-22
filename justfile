@@ -379,31 +379,31 @@ bench-stone-fib-mem:
     -for arg in {{FIB_ARGS}}; do cd stone/fibonacci && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-mat-time:
-    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$$arg" && cd ../..; done
+    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-mat-mem:
-    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-binary-search-time:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do cd stone/binary-search && ../../utils/target/release/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg "$$arg" && cd ../..; done
+    -for arg in {{BINARY_SEARCH_ARGS}}; do cd stone/binary-search && ../../utils/target/release/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-binary-search-mem:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do cd stone/binary-search && ../../utils/target/release/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in {{BINARY_SEARCH_ARGS}}; do cd stone/binary-search && ../../utils/target/release/utils --bench-name stone-binary-search --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-keccak-time:
-    -for arg in {{SHA_ARGS}}; do cd stone/keccak && ../../utils/target/release/utils --bench-name stone-sha3 --bin target/release/stone --bench-arg "$$arg" && cd ../..; done
+    -for arg in {{SHA_ARGS}}; do cd stone/keccak && ../../utils/target/release/utils --bench-name stone-sha3 --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-keccak-mem:
-    -for arg in {{SHA_ARGS}}; do cd stone/keccak && ../../utils/target/release/utils --bench-name stone-sha3 --bin target/release/stone --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in {{SHA_ARGS}}; do cd stone/keccak && ../../utils/target/release/utils --bench-name stone-sha3 --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 # representing bytes 200, 400, 1000, 2000
 # as each iteration of the keccak builtin processes 200 bytes
 # let inputs = [1, 2, 5, 10];
 bench-stone-keccak-builtin-time:
-    -for arg in 1 2 5 10; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-builtin --bin target/release/stone --bench-arg "$$arg" && cd ../..; done
+    -for arg in 1 2 5 10; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-keccak-builtin-mem:
-    -for arg in 1 2 5 10; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-builtin --bin target/release/stone --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in 1 2 5 10; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-builtin --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 # other programs use:
 # 32 bytes * 230 = 7360 bytes
@@ -419,19 +419,19 @@ bench-stone-keccak-builtin-mem:
 # 58880 / 200 = 294.4
 # 117760 / 200 = 588.8
 bench-stone-keccak-builtin-chain-time:
-    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$$arg" && cd ../..; done
+    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-keccak-builtin-chain-mem:
-    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-sha256-time:
-    -for arg in {{SHA_ARGS}}; do cd stone/sha256 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/sha256 --bench-arg "$$arg" && cd ../..; done
+    -for arg in {{SHA_ARGS}}; do cd stone/sha256 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/sha256 --bench-arg "$arg" && cd ../..; done
 
 bench-stone-sha256-mem:
-    -for arg in {{SHA_ARGS}}; do cd stone/sha256 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/sha256 --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in {{SHA_ARGS}}; do cd stone/sha256 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/sha256 --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-sha256-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha256-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/sha256-chain --bench-arg "$$arg" && cd ../..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha256-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/sha256-chain --bench-arg "$arg" && cd ../..; done
 
 bench-stone-sha256-chain-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha256-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/sha256-chain --bench-arg "$$arg" --bench-mem && cd ../..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha256-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/sha256-chain --bench-arg "$arg" --bench-mem && cd ../..; done

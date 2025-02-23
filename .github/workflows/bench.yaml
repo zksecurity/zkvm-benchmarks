@@ -120,9 +120,21 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
+          sudo apt-get update -y
           sudo apt-get install -y python3-pip
 
       - name: Run Analysis
         run: |
           ./analyze.sh
+
+      - name: Upload report artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./report
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./report --project-name=zcjjnygdkpjup

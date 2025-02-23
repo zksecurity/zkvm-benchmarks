@@ -1,6 +1,8 @@
 #!/bin/bash
 
-VENV_PATH="$HOME/analyze-venv"
+set -e
+
+VENV_PATH=".venv"
 echo "Creating virtual environment in $VENV_PATH..."
 python3 -m venv "$VENV_PATH"
 echo "Activating virtual environment..."
@@ -11,11 +13,10 @@ echo "Installing dependencies..."
 pip install marimo
 pip install pandas
 pip install matplotlib
+marimo --version
 
-# check setup
-marimo --version || echo "Marimo installation failed"
-
-echo "Analyzing benchmark results..."
-
-# Run marimo notebook
-# marimo run analyze.py
+# run marimo notebook
+echo "Creating report..."
+rm -rf report
+mkdir -p report
+marimo export html analyze.py -o report/index.html --no-include-code

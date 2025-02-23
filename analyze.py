@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.5"
+__generated_with = "0.11.8"
 app = marimo.App(width="medium")
 
 
@@ -153,7 +153,8 @@ def _(mo):
         plt.figure(figsize=(8, 6))
 
         for (col, color, marker) in zip(df.columns[1:], colors, markers):  # Skip "n" column
-            plt.plot(df["n"], df[col], marker=marker, color=color, label=col, linestyle='-')
+            non_zero = df[col] != 0
+            plt.plot(df["n"][non_zero], df[col][non_zero], marker=marker, color=color, label=col, linestyle='-')
 
         plt.xlabel("n")
         plt.ylabel(y_label)

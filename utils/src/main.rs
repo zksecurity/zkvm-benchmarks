@@ -109,12 +109,11 @@ fn main() {
             .expect("Failed to split peak consumption line")
             .trim();
 
-        let peak_value_num: f64 = peak_value_str
-            .split_whitespace()
-            .next() // Take the numeric part before "GB"
-            .expect("Failed to extract numeric value")
-            .parse()
-            .expect("Failed to parse numeric value");
+        let peak_value_num = peak_value_str
+            .split('G')
+            .next()
+            .expect("Failed to split at 'G'")
+            .trim();
 
         update_or_insert_record(
             &file,

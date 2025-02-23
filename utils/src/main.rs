@@ -109,6 +109,13 @@ fn main() {
             .expect("Failed to split peak consumption line")
             .trim();
 
+        let peak_value_num: f64 = peak_value_str
+            .split_whitespace()
+            .next() // Take the numeric part before "GB"
+            .expect("Failed to extract numeric value")
+            .parse()
+            .expect("Failed to parse numeric value");
+
         update_or_insert_record(
             &file,
             &bench_arg,
@@ -116,7 +123,7 @@ fn main() {
             None,
             None,
             None,
-            Some(peak_value_str.to_string()),
+            Some(peak_value_num.to_string()),
         )
         .expect("Failed to update or insert record");
     } else {

@@ -87,7 +87,7 @@ def _():
                 for txt_file in txt_files:
                     with txt_file.open("r") as file:
                         content = file.read()
-                
+
                     display(HTML(f"<pre style='font-size:14px; color:black;'>{content}</pre>"))
     return (
         HTML,
@@ -141,7 +141,7 @@ def _(mo):
 
         if bench_name == 'sha3-chain' and is_builtin:
             file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-precompile.csv'
-        
+
         combined_df = None  # Start with an empty DataFrame
 
         for name, path in file_paths.items():
@@ -213,28 +213,28 @@ def _(mo):
             show_column_summaries = False,
             selection = None,
         )
-    
+
         verifier_table = mo.ui.table(
             data=verifier_time_df,
             label="Verifier Time (ms)",
             show_column_summaries = False,
             selection = None,
         )
-    
+
         proof_size_table = mo.ui.table(
             data=proof_size_df,
             label="Proof Size (KB)",
             show_column_summaries = False,
             selection = None,
         )
-    
+
         cycle_count_table = mo.ui.table(
             data=cycle_count_df,
             label="Cycle Count",
             show_column_summaries = False,
             selection = None,
         )
-    
+
         peak_memory_table = mo.ui.table(
             data=peak_memory_df,
             label="Peak Memory (GB)",
@@ -252,7 +252,7 @@ def _(mo):
         peak_memory_plot = plot_benchmark(peak_memory_df, "Peak Memory vs n", "Peak Memory", bench_tuple, "peak memory")
 
         return prover_time_plot, verifier_time_plot, proof_size_plot, cycle_count_plot, peak_memory_plot
-    
+
 
     plots_dir = "./plots/"
     os.makedirs(plots_dir, exist_ok=True)
@@ -361,6 +361,100 @@ def _():
 @app.cell
 def _():
     # mo.image(fib_peak_memory_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        """
+        ## Sha2
+
+        Benchmark Sha256 hash of `n` bytes. For Stone, the [cairo implementation of sha256](https://github.com/cartridge-gg/cairo-sha256) by cartridge was used for benchmarking and for other zkvms [sha2 Rust crate](https://crates.io/crates/sha2) was used for benchmarking.
+        """
+    )
+    return
+
+
+@app.cell
+def _(get_plots, get_tables):
+    sha2_tuple = ("sha2", True, True)
+
+    sha2_prover_table, sha2_verifier_table, sha2_proof_size_table, sha2_cycle_count_table, sha2_peak_memory_table = get_tables(sha2_tuple)
+
+    sha2_prover_time_plot, sha2_verifier_time_plot, sha2_proof_size_plot, sha2_cycle_count_plot, sha2_peak_memory_plot = get_plots(sha2_tuple)
+    return (
+        sha2_cycle_count_plot,
+        sha2_cycle_count_table,
+        sha2_peak_memory_plot,
+        sha2_peak_memory_table,
+        sha2_proof_size_plot,
+        sha2_proof_size_table,
+        sha2_prover_table,
+        sha2_prover_time_plot,
+        sha2_tuple,
+        sha2_verifier_table,
+        sha2_verifier_time_plot,
+    )
+
+
+@app.cell
+def _(mo, sha2_prover_table):
+    mo.vstack([sha2_prover_table])
+    return
+
+
+@app.cell
+def _(mo, sha2_prover_time_plot):
+    mo.image(sha2_prover_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha2_verifier_table):
+    mo.vstack([sha2_verifier_table])
+    return
+
+
+@app.cell
+def _(mo, sha2_verifier_time_plot):
+    mo.image(sha2_verifier_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha2_proof_size_table):
+    mo.vstack([sha2_proof_size_table])
+    return
+
+
+@app.cell
+def _(mo, sha2_proof_size_plot):
+    mo.image(sha2_proof_size_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha2_cycle_count_table):
+    mo.vstack([sha2_cycle_count_table])
+    return
+
+
+@app.cell
+def _(mo, sha2_cycle_count_plot):
+    mo.image(sha2_cycle_count_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _():
+    # mo.vstack([sha2_peak_memory_table])
+    return
+
+
+@app.cell
+def _():
+    # mo.image(sha2_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 

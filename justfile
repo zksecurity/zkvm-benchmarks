@@ -29,9 +29,9 @@ bench-all: build-utils
 bench-jolt:
     cd jolt && cargo build --release
     just bench-jolt-fib
-    # just bench-jolt-sha2
+    just bench-jolt-sha2
     # just bench-jolt-sha2-chain
-    # just bench-jolt-sha3
+    just bench-jolt-sha3
     # just bench-jolt-sha3-chain
     # just bench-jolt-mat-mul
     # just bench-jolt-binary-search
@@ -149,20 +149,20 @@ build-sp1:
 	cd sp1 && cargo build --release
 
 bench-sp1: build-sp1
-    just bench-sp1-fib-script
-    # just bench-sp1-time
+    # just bench-sp1-fib-script
+    just bench-sp1-time
     # just bench-sp1-mem
 
 bench-sp1-time:
 	just bench-sp1-fib-time
-	# just bench-sp1-sha2-time
+	just bench-sp1-sha2-time
 	# just bench-sp1-sha2-chain-time
-	# just bench-sp1-sha3-time
+	just bench-sp1-sha3-time
 	# just bench-sp1-sha3-chain-time
 	# just bench-sp1-mat-mul-time
 	# just bench-sp1-binary-search-time
-	# just bench-sp1-sha2-precompile-time
-	# just bench-sp1-sha3-precompile-time
+	just bench-sp1-sha2-precompile-time
+	just bench-sp1-sha3-precompile-time
 	# just bench-sp1-sha2-chain-precompile-time
 	# just bench-sp1-sha3-chain-precompile-time
 	# just bench-sp1-ec-time
@@ -271,10 +271,10 @@ bench-sp1-binary-search-mem:
 
 build-risczero:
     cd risczero/fib && cargo build --release
-    # cd risczero/sha2 && cargo build --release
-    # cd risczero/sha2-precompile && cargo build --release
-    # cd risczero/sha3 && cargo build --release
-    # cd risczero/sha3-precompile && cargo build --release
+    cd risczero/sha2 && cargo build --release
+    cd risczero/sha2-precompile && cargo build --release
+    cd risczero/sha3 && cargo build --release
+    cd risczero/sha3-precompile && cargo build --release
     # cd risczero/sha2-chain && cargo build --release
     # cd risczero/sha2-chain-precompile && cargo build --release
     # cd risczero/sha3-chain && cargo build --release
@@ -286,10 +286,10 @@ build-risczero:
 
 bench-risczero: build-risczero
     just bench-risczero-fib
-    # just bench-risczero-sha2  
-    # just bench-risczero-sha2-precompile
-    # just bench-risczero-sha3
-    # just bench-risczero-sha3-precompile
+    just bench-risczero-sha2  
+    just bench-risczero-sha2-precompile
+    just bench-risczero-sha3
+    just bench-risczero-sha3-precompile
     # just bench-risczero-sha2-chain
     # just bench-risczero-sha2-chain-precompile
     # just bench-risczero-sha3-chain
@@ -348,32 +348,32 @@ bench-stone: build-stone
 
 bench-stone-time:
     just bench-stone-fib-time
-    # just bench-stone-keccak-time
-    # just bench-stone-keccak-builtin-time
+    just bench-stone-keccak-time
+    just bench-stone-keccak-builtin-time
     # just bench-stone-keccak-builtin-chain-time
     # just bench-stone-mat-time
     # just bench-stone-binary-search-time
-    # just bench-stone-sha256-time
+    just bench-stone-sha256-time
     # just bench-stone-sha256-chain-time
 
 bench-stone-mem:
     just bench-stone-fib-mem
-    # just bench-stone-keccak-mem
-    # just bench-stone-keccak-builtin-mem
+    just bench-stone-keccak-mem
+    just bench-stone-keccak-builtin-mem
     # just bench-stone-keccak-builtin-chain-mem
     # just bench-stone-mat-mem
     # just bench-stone-binary-search-mem
-    # just bench-stone-sha256-mem
+    just bench-stone-sha256-mem
     # just bench-stone-sha256-chain-mem
 
 build-stone:
     cd stone/common && cargo build --release
     # cd stone/binary-search && cargo build --release
     cd stone/fibonacci && cargo build --release
-    # cd stone/keccak && cargo build --release
-    # cd stone/keccak-builtin && cargo build --release
+    cd stone/keccak && cargo build --release
+    cd stone/keccak-builtin && cargo build --release
     # cd stone/keccak-builtin-chain && cargo build --release
-    # cd stone/sha256 && cargo build --release
+    cd stone/sha256 && cargo build --release
     # cd stone/sha256-chain && cargo build --release
     # cd stone/mat-mul && cargo build --release
     -just build-stone-steps

@@ -14,11 +14,11 @@ echo "Activating virtual environment..."
 source "$VENV_PATH/bin/activate"
 
 # Check Setup
-rustc --version || echo "Rust installation failed"
-cargo --version || echo "Cargo installation failed"
-stone-cli --version || echo "stone-cli installation failed"
-python3.10 --version || echo "Python installation failed"
-cairo-run --version || echo "Cairo installation failed"
+rustc --version
+cargo --version
+stone-cli --version
+python3.10 --version
+cairo-run --version
 
 # Capture Machine Info
 MACHINE_INFO_DIR="./machine_info"

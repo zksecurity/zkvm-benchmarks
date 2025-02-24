@@ -55,8 +55,8 @@ pip install cairo-lang
 cargo install --git https://github.com/zksecurity/stone-cli.git
 
 # Check Setup
-rustc --version || echo "Rust installation failed"
-cargo --version || echo "Cargo installation failed"
-stone-cli --version || echo "stone-cli installation failed"
-python3.10 --version || echo "Python installation failed"
-cairo-run --version || echo "Cairo installation failed"
+rustc --version
+cargo --version
+stone-cli --version
+python3.10 --version
+cairo-run --version

@@ -7,14 +7,15 @@ use alloc::vec::Vec;
 
 risc0_zkvm::guest::entry!(main);
 
-use sha3::{Digest, Keccak256};
+use tiny_keccak::{Hasher, Keccak};
 
 fn main() {
     let input: Vec<u8> = env::read();
+    let mut output = [0u8; 32];
 
-    let mut hasher = Keccak256::new();
-    hasher.update(input);
-    let result = hasher.finalize();
+    let mut hasher = Keccak::v256();
+    hasher.update(&input);
+    hasher.finalize(&mut output);
 
-    env::commit::<[u8; 32]>(&result.into());
+    env::commit::<[u8; 32]>(&output.into());
 }

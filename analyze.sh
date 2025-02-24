@@ -13,6 +13,7 @@ echo "Installing dependencies..."
 pip install marimo
 pip install pandas
 pip install matplotlib
+pip install ipython
 marimo --version
 
 # run marimo notebook

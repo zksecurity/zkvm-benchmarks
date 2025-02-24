@@ -56,7 +56,6 @@ def _(mo):
                     "table_prover_n_tasks_per_segment": 32
                 }
                 ```
-        - For Sha2-chain benchmarks, Stone prover crashed due to insufficeint memory for higher number of iterations.
         """
     )
     return
@@ -71,32 +70,36 @@ def _(mo):
 @app.cell
 def _():
     import marimo as mo
+    from pathlib import Path
+    from IPython.display import display, HTML
+
     with mo.redirect_stdout():
-
-        # Importing necessary libraries
-        from pathlib import Path
-
-        # Define the folder containing your .txt files
         txt_folder = Path("./machine_info/")
 
-        # Check if the folder exists
         if not txt_folder.exists():
-            print("The folder containing .txt files does not exist. Please ensure the path is correct.")
+            display(HTML("<p style='font-size:20px; color:red;'>The folder containing .txt files does not exist. Please ensure the path is correct.</p>"))
         else:
-            # Iterate through all .txt files in the folder
             txt_files = list(txt_folder.glob("*.txt"))
 
             if not txt_files:
-                print("No .txt files found in the specified folder.")
+                display(HTML("<p style='font-size:20px; color:blue;'>No .txt files found in the specified folder.</p>"))
             else:
                 for txt_file in txt_files:
-                    # Read the content of the file
                     with txt_file.open("r") as file:
-                        content = str(file.read())
-
-                    # Display its content
-                    print(f"{content}\n")
-    return Path, content, file, mo, txt_file, txt_files, txt_folder
+                        content = file.read()
+                
+                    display(HTML(f"<pre style='font-size:14px; color:black;'>{content}</pre>"))
+    return (
+        HTML,
+        Path,
+        content,
+        display,
+        file,
+        mo,
+        txt_file,
+        txt_files,
+        txt_folder,
+    )
 
 
 @app.cell
@@ -104,6 +107,7 @@ def _(mo):
     import os
     import pandas as pd
     import matplotlib.pyplot as plt
+    import itertools
 
     # Function to preprocess the dataframes
     def preprocess_data(df, column_name):
@@ -120,15 +124,24 @@ def _(mo):
         return df[["n", column_name]]
 
     # Function to combine benchmark data
-    def combine_benchmark(bench_name, column_name):
+    def combine_benchmark(bench_tuple, column_name):
         """Combine benchmark data for a given column from multiple sources."""
+        bench_name, is_precompile, is_builtin = bench_tuple
         file_paths = {
             "jolt": f'./benchmark_outputs/jolt-{bench_name}.csv',
             "sp1": f'./benchmark_outputs/sp1-{bench_name}.csv',
             "r0": f'./benchmark_outputs/risczero-{bench_name}.csv',
-            "stone": f'./benchmark_outputs/stone-{bench_name}.csv'
+            "stone": f'./benchmark_outputs/stone-{bench_name}.csv',
+            "stwo": f'./benchmark_outputs/stwo-{bench_name}.csv'
         }
 
+        if is_precompile:
+            file_paths["sp1-precompile"] = f'./benchmark_outputs/sp1-{bench_name}-precompile.csv'
+            file_paths["r0-precompile"] = f'./benchmark_outputs/risczero-{bench_name}-precompile.csv'
+
+        if bench_name == 'sha3-chain' and is_builtin:
+            file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-precompile.csv'
+        
         combined_df = None  # Start with an empty DataFrame
 
         for name, path in file_paths.items():
@@ -145,16 +158,29 @@ def _(mo):
 
         return combined_df
 
-    def plot_benchmark(df, title, y_label, bench_name):
-        """Plot the benchmark data with different colors and markers, and save it as a PNG."""
-        markers = ['o', 's', 'D', '^']  # Different markers for each line
-        colors = ['b', 'r', 'g', 'm']  # Different colors for each line
+    def plot_benchmark(df, title, y_label, bench_tuple, column_name):
+        """Plot the benchmark data with dynamically chosen colors and markers, then save it as a PNG."""
+        bench_name, _, is_builtin = bench_tuple
+
+        # Define a set of markers and colors, then cycle through them if needed
+        marker_list = ['o', 's', 'D', '^', 'v', '*', 'P', 'X']
+        color_list = ['b', 'r', 'g', 'm', 'c', 'y', 'k', '#ff7f0e']
+
+        markers = itertools.cycle(marker_list)  # Cycle through markers if needed
+        colors = itertools.cycle(color_list)  # Cycle through colors if needed
 
         plt.figure(figsize=(8, 6))
 
-        for (col, color, marker) in zip(df.columns[1:], colors, markers):  # Skip "n" column
+        for col in df.columns[1:]:  # Skip "n" column
             non_zero = df[col] != 0
-            plt.plot(df["n"][non_zero], df[col][non_zero], marker=marker, color=color, label=col, linestyle='-')
+            plt.plot(df["n"][non_zero], df[col][non_zero], 
+                     marker=next(markers), color=next(colors), label=col, linestyle='-')
+
+        if bench_name == 'sha3' and is_builtin:
+            path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
+            stone_df = preprocess_data(pd.read_csv(path), column_name)
+            stone_df["n"] *= 200  # Multiply n column by 200
+            plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
 
         plt.xlabel("n")
         plt.ylabel(y_label)
@@ -171,80 +197,77 @@ def _(mo):
 
         return filename  # Return the filename of the saved plot
 
-    bench_name = "fib"
-    prover_time_df = combine_benchmark(bench_name, "prover time(ms)")
-    verifier_time_df = combine_benchmark(bench_name, "verifier time(ms)")
-    proof_size_df = combine_benchmark(bench_name, "proof size(bytes)")
-    cycle_count_df = combine_benchmark(bench_name, "cycle count")
-    peak_memory_df = combine_benchmark(bench_name, "peak memory")
+    def get_data(bench_tuple):
+        prover_time_df = combine_benchmark(bench_tuple, "prover time(ms)")
+        verifier_time_df = combine_benchmark(bench_tuple, "verifier time(ms)")
+        proof_size_df = combine_benchmark(bench_tuple, "proof size(bytes)")
+        cycle_count_df = combine_benchmark(bench_tuple, "cycle count")
+        peak_memory_df = combine_benchmark(bench_tuple, "peak memory")
+        return prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df
 
-    prover_table = mo.ui.table(
-        data=prover_time_df,
-        label="Prover Time (s)",
-        show_column_summaries = False,
-        selection = None,
-    )
+    def get_tables(bench_tuple):
+        prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = get_data(bench_tuple)
+        prover_table = mo.ui.table(
+            data=prover_time_df,
+            label="Prover Time (s)",
+            show_column_summaries = False,
+            selection = None,
+        )
+    
+        verifier_table = mo.ui.table(
+            data=verifier_time_df,
+            label="Verifier Time (ms)",
+            show_column_summaries = False,
+            selection = None,
+        )
+    
+        proof_size_table = mo.ui.table(
+            data=proof_size_df,
+            label="Proof Size (KB)",
+            show_column_summaries = False,
+            selection = None,
+        )
+    
+        cycle_count_table = mo.ui.table(
+            data=cycle_count_df,
+            label="Cycle Count",
+            show_column_summaries = False,
+            selection = None,
+        )
+    
+        peak_memory_table = mo.ui.table(
+            data=peak_memory_df,
+            label="Peak Memory (GB)",
+            show_column_summaries = False,
+            selection = None,
+        )
+        return prover_table, verifier_table, proof_size_table, cycle_count_table, peak_memory_table
 
-    verifier_table = mo.ui.table(
-        data=verifier_time_df,
-        label="Verifier Time (ms)",
-        show_column_summaries = False,
-        selection = None,
-    )
+    def get_plots(bench_tuple):
+        prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = get_data(bench_tuple)
+        prover_time_plot = plot_benchmark(prover_time_df, "Prover Time vs n", "Prover Time (s)", bench_tuple, "prover time(ms)")
+        verifier_time_plot = plot_benchmark(verifier_time_df, "Verifier Time vs n", "Verifier Time (ms)", bench_tuple, "verifier time(ms)")
+        proof_size_plot = plot_benchmark(proof_size_df, "Proof Size vs n", "Proof Size (KB)", bench_tuple, "proof size(bytes)")
+        cycle_count_plot = plot_benchmark(cycle_count_df, "Cycle Count vs n", "Cycle Count", bench_tuple, "cycle count")
+        peak_memory_plot = plot_benchmark(peak_memory_df, "Peak Memory vs n", "Peak Memory", bench_tuple, "peak memory")
 
-    proof_size_table = mo.ui.table(
-        data=proof_size_df,
-        label="Proof Size (KB)",
-        show_column_summaries = False,
-        selection = None,
-    )
+        return prover_time_plot, verifier_time_plot, proof_size_plot, cycle_count_plot, peak_memory_plot
+    
 
-    cycle_count_table = mo.ui.table(
-        data=cycle_count_df,
-        label="Cycle Count",
-        show_column_summaries = False,
-        selection = None,
-    )
-
-    peak_memory_table = mo.ui.table(
-        data=peak_memory_df,
-        label="Peak Memory (GB)",
-        show_column_summaries = False,
-        selection = None,
-    )
-
-    save_dir = "./plots/"
-    os.makedirs(save_dir, exist_ok=True)
-
-    prover_time_plot = plot_benchmark(prover_time_df, "Prover Time vs n", "Prover Time (s)", bench_name)
-    verifier_time_plot = plot_benchmark(verifier_time_df, "Verifier Time vs n", "Verifier Time (ms)", bench_name)
-    proof_size_plot = plot_benchmark(proof_size_df, "Proof Size vs n", "Proof Size (KB)", bench_name)
-    cycle_count_plot = plot_benchmark(cycle_count_df, "Cycle Count vs n", "Cycle Count", bench_name)
-    peak_memory_plot = plot_benchmark(peak_memory_df, "Peak Memory vs n", "Peak Memory", bench_name)
+    plots_dir = "./plots/"
+    os.makedirs(plots_dir, exist_ok=True)
     return (
-        bench_name,
         combine_benchmark,
-        cycle_count_df,
-        cycle_count_plot,
-        cycle_count_table,
+        get_data,
+        get_plots,
+        get_tables,
+        itertools,
         os,
         pd,
-        peak_memory_df,
-        peak_memory_plot,
-        peak_memory_table,
         plot_benchmark,
+        plots_dir,
         plt,
         preprocess_data,
-        proof_size_df,
-        proof_size_plot,
-        proof_size_table,
-        prover_table,
-        prover_time_df,
-        prover_time_plot,
-        save_dir,
-        verifier_table,
-        verifier_time_df,
-        verifier_time_plot,
     )
 
 
@@ -260,63 +283,200 @@ def _(mo):
 
 
 @app.cell
-def _(mo, prover_table):
-    mo.vstack([prover_table])
+def _(get_plots, get_tables):
+    fib_tuple = ("fib", False, False)
+
+    fib_prover_table, fib_verifier_table, fib_proof_size_table, fib_cycle_count_table, fib_peak_memory_table = get_tables(fib_tuple)
+
+    fib_prover_time_plot, fib_verifier_time_plot, fib_proof_size_plot, fib_cycle_count_plot, fib_peak_memory_plot = get_plots(fib_tuple)
+    return (
+        fib_cycle_count_plot,
+        fib_cycle_count_table,
+        fib_peak_memory_plot,
+        fib_peak_memory_table,
+        fib_proof_size_plot,
+        fib_proof_size_table,
+        fib_prover_table,
+        fib_prover_time_plot,
+        fib_tuple,
+        fib_verifier_table,
+        fib_verifier_time_plot,
+    )
+
+
+@app.cell
+def _(fib_prover_table, mo):
+    mo.vstack([fib_prover_table])
+    return
+
+
+@app.cell
+def _(fib_prover_time_plot, mo):
+    mo.image(fib_prover_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(fib_verifier_table, mo):
+    mo.vstack([fib_verifier_table])
+    return
+
+
+@app.cell
+def _(fib_verifier_time_plot, mo):
+    mo.image(fib_verifier_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(fib_proof_size_table, mo):
+    mo.vstack([fib_proof_size_table])
+    return
+
+
+@app.cell
+def _(fib_proof_size_plot, mo):
+    mo.image(fib_proof_size_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(fib_cycle_count_table, mo):
+    mo.vstack([fib_cycle_count_table])
+    return
+
+
+@app.cell
+def _(fib_cycle_count_plot, mo):
+    mo.image(fib_cycle_count_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _():
+    # mo.vstack([fib_peak_memory_table])
+    return
+
+
+@app.cell
+def _():
+    # mo.image(fib_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
 @app.cell
 def _(mo):
-    mo.image("./plots/fib_prover_time_vs_n.png", height=500, width=700, rounded=True)
+    mo.md(
+        r"""
+        ## Sha3
+
+        Benchmark Keccak256 hash of `n` bytes. For Stone, the implementation of Keccak256 from stdlib as well as builtin was benchmarked.
+        """
+    )
     return
 
 
 @app.cell
-def _(mo, verifier_table):
-    mo.vstack([verifier_table])
+def _(get_plots, get_tables):
+    sha3_tuple = ("sha3", True, True)
+
+    sha3_prover_table, sha3_verifier_table, sha3_proof_size_table, sha3_cycle_count_table, sha3_peak_memory_table = get_tables(sha3_tuple)
+
+    sha3_prover_time_plot, sha3_verifier_time_plot, sha3_proof_size_plot, sha3_cycle_count_plot, sha3_peak_memory_plot = get_plots(sha3_tuple)
+    return (
+        sha3_cycle_count_plot,
+        sha3_cycle_count_table,
+        sha3_peak_memory_plot,
+        sha3_peak_memory_table,
+        sha3_proof_size_plot,
+        sha3_proof_size_table,
+        sha3_prover_table,
+        sha3_prover_time_plot,
+        sha3_tuple,
+        sha3_verifier_table,
+        sha3_verifier_time_plot,
+    )
+
+
+@app.cell
+def _(mo, sha3_prover_table):
+    mo.vstack([sha3_prover_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_prover_time_plot):
+    mo.image(sha3_prover_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_verifier_table):
+    mo.vstack([sha3_verifier_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_verifier_time_plot):
+    mo.image(sha3_verifier_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_proof_size_table):
+    mo.vstack([sha3_proof_size_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_proof_size_plot):
+    mo.image(sha3_proof_size_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_cycle_count_table):
+    mo.vstack([sha3_cycle_count_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_cycle_count_plot):
+    mo.image(sha3_cycle_count_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _():
+    # mo.vstack([sha3_peak_memory_table])
+    return
+
+
+@app.cell
+def _():
+    # mo.image(sha3_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
 @app.cell
 def _(mo):
-    mo.image("./plots/fib_verifier_time_vs_n.png", height=500, width=700, rounded=True)
+    mo.md(r"""**Stone benchmark with Keccak Builtin**: The function call to the keccak builtin allows max 200 bytes per iteration. So the following benchmarks are hashing multiples of 200 byts.""")
     return
 
 
 @app.cell
-def _(mo, proof_size_table):
-    mo.vstack([proof_size_table])
-    return
-
-
-@app.cell
-def _(mo):
-    mo.image("./plots/fib_proof_size_vs_n.png", height=500, width=700, rounded=True)
-    return
-
-
-@app.cell
-def _(cycle_count_table, mo):
-    mo.vstack([cycle_count_table])
-    return
-
-
-@app.cell
-def _(mo):
-    mo.image("./plots/fib_cycle_count_vs_n.png", height=500, width=700, rounded=True)
-    return
-
-
-@app.cell
-def _(mo, peak_memory_table):
-    mo.vstack([peak_memory_table])
-    return
-
-
-@app.cell
-def _(mo):
-    mo.image("./plots/fib_peak_memory_vs_n.png", height=500, width=700, rounded=True)
-    return
+def _(mo, pd):
+    path = f'./benchmark_outputs/stone-sha3-builtin.csv'
+    stone_sha3_builtin_df = pd.read_csv(path)
+    stone_sha3_builtin_df["n"] *= 200  # Multiply n column by 200
+    stone_sha3_builtin_table = mo.ui.table(
+            data=stone_sha3_builtin_df,
+            label="Stone benchmark with Keccak Builtin",
+            show_column_summaries = False,
+            selection = None,
+    )
+    mo.vstack([stone_sha3_builtin_table])
+    return path, stone_sha3_builtin_df, stone_sha3_builtin_table
 
 
 if __name__ == "__main__":

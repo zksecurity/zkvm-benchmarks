@@ -445,3 +445,32 @@ bench-stone-sha256-chain-time:
 
 bench-stone-sha256-chain-mem:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha256-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/sha256-chain --bench-arg "$arg" --bench-mem && cd ../..; done
+
+
+#####
+# Stwo
+#####
+
+bench-stwo: build-stwo
+	just bench-stwo-time
+
+build-stwo:
+	cd stwo && cargo build --release
+	cd stwo/fibonacci && scarb build
+	-cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
+	cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
+	cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
+
+bench-stwo-time:
+	just bench-stwo-fibonacci-time
+	just bench-stwo-sha2-time
+	just bench-stwo-sha3-time
+
+bench-stwo-fibonacci-time:
+    -for arg in {{FIB_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg "$arg" -- --program fib && cd ..; done
+
+bench-stwo-sha2-time:
+    -for arg in {{SHA_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg "$arg" -- --program sha2 && cd ..; done
+
+bench-stwo-sha3-time:
+    -for arg in {{SHA_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha3 --bin target/release/stwo-script --bench-arg "$arg" -- --program sha3 && cd ..; done

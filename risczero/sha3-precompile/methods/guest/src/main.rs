@@ -2,11 +2,11 @@
 #![no_std]
 
 extern crate alloc;
-use risc0_zkvm::guest::env;
 use alloc::vec::Vec;
 
 risc0_zkvm::guest::entry!(main);
 
+use risc0_zkvm::guest::env;
 use tiny_keccak::{Hasher, Keccak};
 
 fn main() {

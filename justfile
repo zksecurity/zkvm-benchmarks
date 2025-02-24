@@ -270,30 +270,34 @@ bench-sp1-binary-search-mem:
 #####
 
 build-risczero:
-    cd risczero/fib && cargo build --release
-    # cd risczero/sha2-chain && cargo build --release
-    # cd risczero/binary-search && cargo build --release
-    # cd risczero/ec && cargo build --release
-    # cd risczero/ec-precompile && cargo build --release
-    # cd risczero/sha3-chain && cargo build --release
+    # cd risczero/fib && cargo build --release
     # cd risczero/sha2 && cargo build --release
-    # cd risczero/sha3 && cargo build --release
-    # cd risczero/mat-mul && cargo build --release
-    # cd risczero/sha2-chain-precompile && cargo build --release
     # cd risczero/sha2-precompile && cargo build --release
+    cd risczero/sha3 && cargo build --release
+    cd risczero/sha3-precompile && cargo build --release
+    # cd risczero/sha2-chain && cargo build --release
+    # cd risczero/sha2-chain-precompile && cargo build --release
+    # cd risczero/sha3-chain && cargo build --release
+    # cd risczero/sha3-chain-precompile && cargo build --release
+    # cd risczero/ec && cargo build --release
+    # cd risczero/ec-precompile && cargo build --release    
+    # cd risczero/binary-search && cargo build --release
+    # cd risczero/mat-mul && cargo build --release
 
 bench-risczero: build-risczero
-    just bench-risczero-fib
-    # just bench-risczero-binary-search
+    # just bench-risczero-fib
+    # just bench-risczero-sha2  
+    # just bench-risczero-sha2-precompile
+    just bench-risczero-sha3
+    just bench-risczero-sha3-precompile
+    # just bench-risczero-sha2-chain
+    # just bench-risczero-sha2-chain-precompile
+    # just bench-risczero-sha3-chain
+    # just bench-risczero-sha3-chain-precompile
     # just bench-risczero-ec  
     # just bench-risczero-ec-precompile  
-    # just bench-risczero-mat-mul  
-    # just bench-risczero-sha2  
-    # just bench-risczero-sha2-chain  
-    # just bench-risczero-sha2-chain-precompile  
-    # just bench-risczero-sha2-precompile  
-    # just bench-risczero-sha3  
-    # just bench-risczero-sha3-chain
+    # just bench-risczero-binary-search
+    # just bench-risczero-mat-mul
 
 bench-risczero-fib:
     -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "fib" "$arg"; done
@@ -325,8 +329,14 @@ bench-risczero-sha2-chain-precompile:
 bench-risczero-sha3:
     -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3" "$arg"; done
 
+bench-risczero-sha3-precompile:
+    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3-precompile" "$arg"; done
+
 bench-risczero-sha3-chain:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3-chain" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3-chain" "$arg"; done
+
+bench-risczero-sha3-chain-precompile:
+    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "sha3-chain-precompile" "$arg"; done
 
 #####
 # Stone

@@ -270,11 +270,11 @@ bench-sp1-binary-search-mem:
 #####
 
 build-risczero:
-    # cd risczero/fib && cargo build --release
+    cd risczero/fib && cargo build --release
     # cd risczero/sha2 && cargo build --release
     # cd risczero/sha2-precompile && cargo build --release
-    cd risczero/sha3 && cargo build --release
-    cd risczero/sha3-precompile && cargo build --release
+    # cd risczero/sha3 && cargo build --release
+    # cd risczero/sha3-precompile && cargo build --release
     # cd risczero/sha2-chain && cargo build --release
     # cd risczero/sha2-chain-precompile && cargo build --release
     # cd risczero/sha3-chain && cargo build --release
@@ -285,11 +285,11 @@ build-risczero:
     # cd risczero/mat-mul && cargo build --release
 
 bench-risczero: build-risczero
-    # just bench-risczero-fib
+    just bench-risczero-fib
     # just bench-risczero-sha2  
     # just bench-risczero-sha2-precompile
-    just bench-risczero-sha3
-    just bench-risczero-sha3-precompile
+    # just bench-risczero-sha3
+    # just bench-risczero-sha3-precompile
     # just bench-risczero-sha2-chain
     # just bench-risczero-sha2-chain-precompile
     # just bench-risczero-sha3-chain

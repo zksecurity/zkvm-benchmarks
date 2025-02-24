@@ -20,6 +20,7 @@ bench-all: build-utils
     just bench-risczero
     just bench-stone
     just bench-sp1
+    just bench-stwo
 
 
 #####

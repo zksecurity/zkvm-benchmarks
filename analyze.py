@@ -77,7 +77,7 @@ def _():
         from pathlib import Path
 
         # Define the folder containing your .txt files
-        txt_folder = Path("./benchmark-results/machine_info/")
+        txt_folder = Path("./machine_info/")
 
         # Check if the folder exists
         if not txt_folder.exists():
@@ -123,10 +123,10 @@ def _(mo):
     def combine_benchmark(bench_name, column_name):
         """Combine benchmark data for a given column from multiple sources."""
         file_paths = {
-            "jolt": f'./benchmark-results/benchmark_outputs/jolt-{bench_name}.csv',
-            "sp1": f'./benchmark-results/benchmark_outputs/sp1-{bench_name}.csv',
-            "r0": f'./benchmark-results/benchmark_outputs/risczero-{bench_name}.csv',
-            "stone": f'./benchmark-results/benchmark_outputs/stone-{bench_name}.csv'
+            "jolt": f'./benchmark_outputs/jolt-{bench_name}.csv',
+            "sp1": f'./benchmark_outputs/sp1-{bench_name}.csv',
+            "r0": f'./benchmark_outputs/risczero-{bench_name}.csv',
+            "stone": f'./benchmark_outputs/stone-{bench_name}.csv'
         }
 
         combined_df = None  # Start with an empty DataFrame
@@ -165,7 +165,7 @@ def _(mo):
         plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
         # Save the plot as a PNG file
-        filename = f"./benchmark-results/plots/{bench_name}_{title.replace(' ', '_').lower()}.png"
+        filename = f"./plots/{bench_name}_{title.replace(' ', '_').lower()}.png"
         plt.savefig(filename, dpi=300)
         plt.close()  # Close the figure to avoid displaying it
 
@@ -213,7 +213,7 @@ def _(mo):
         selection = None,
     )
 
-    save_dir = "./benchmark-results/plots/"
+    save_dir = "./plots/"
     os.makedirs(save_dir, exist_ok=True)
 
     prover_time_plot = plot_benchmark(prover_time_df, "Prover Time vs n", "Prover Time (s)", bench_name)
@@ -267,7 +267,7 @@ def _(mo, prover_table):
 
 @app.cell
 def _(mo):
-    mo.image("./benchmark-results/plots/fib_prover_time_vs_n.png", height=500, width=700, rounded=True)
+    mo.image("./plots/fib_prover_time_vs_n.png", height=500, width=700, rounded=True)
     return
 
 
@@ -279,7 +279,7 @@ def _(mo, verifier_table):
 
 @app.cell
 def _(mo):
-    mo.image("./benchmark-results/plots/fib_verifier_time_vs_n.png", height=500, width=700, rounded=True)
+    mo.image("./plots/fib_verifier_time_vs_n.png", height=500, width=700, rounded=True)
     return
 
 
@@ -291,7 +291,7 @@ def _(mo, proof_size_table):
 
 @app.cell
 def _(mo):
-    mo.image("./benchmark-results/plots/fib_proof_size_vs_n.png", height=500, width=700, rounded=True)
+    mo.image("./plots/fib_proof_size_vs_n.png", height=500, width=700, rounded=True)
     return
 
 
@@ -303,7 +303,7 @@ def _(cycle_count_table, mo):
 
 @app.cell
 def _(mo):
-    mo.image("./benchmark-results/plots/fib_cycle_count_vs_n.png", height=500, width=700, rounded=True)
+    mo.image("./plots/fib_cycle_count_vs_n.png", height=500, width=700, rounded=True)
     return
 
 
@@ -315,7 +315,7 @@ def _(mo, peak_memory_table):
 
 @app.cell
 def _(mo):
-    mo.image("./benchmark-results/plots/fib_peak_memory_vs_n.png", height=500, width=700, rounded=True)
+    mo.image("./plots/fib_peak_memory_vs_n.png", height=500, width=700, rounded=True)
     return
 
 

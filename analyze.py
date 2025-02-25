@@ -132,8 +132,10 @@ def _(mo):
             "sp1": f'./benchmark_outputs/sp1-{bench_name}.csv',
             "r0": f'./benchmark_outputs/risczero-{bench_name}.csv',
             "stone": f'./benchmark_outputs/stone-{bench_name}.csv',
-            "stwo": f'./benchmark_outputs/stwo-{bench_name}.csv'
         }
+
+        if column_name == 'prover time(ms)':
+            file_paths["stwo"] = f'./benchmark_outputs/stwo-{bench_name}.csv'
 
         if is_precompile:
             file_paths["sp1-precompile"] = f'./benchmark_outputs/sp1-{bench_name}-precompile.csv'

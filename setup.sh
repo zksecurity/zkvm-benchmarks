@@ -84,6 +84,7 @@ else
 fi
 
 # Install scarb
+asdf plugin add scarb
 asdf install scarb 2.10.1
 asdf global scarb 2.10.1
 

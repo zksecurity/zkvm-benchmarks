@@ -82,12 +82,11 @@ else
     echo "asdf installation failed. Ensure $INSTALL_DIR is in your PATH."
     exit 1
 fi
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # Install scarb
 asdf plugin add scarb
-asdf install scarb 2.10.1
-source $HOME/.asdf/asdf.sh
-source $HOME/.bashrc 
+asdf install scarb 2.10.1 
 asdf global scarb 2.10.1
 
 # Check Setup

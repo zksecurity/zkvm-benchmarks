@@ -54,9 +54,53 @@ pip install cairo-lang
 # Install stone-cli
 cargo install --git https://github.com/zksecurity/stone-cli.git
 
+# Install asdf
+
+# Define the installation directory and the desired asdf version tag
+ASDF_DIR="$HOME/.asdf"
+ASDF_VERSION="v0.13.1"  # Change this version if you want a different release
+
+# Check if asdf is already installed
+if [ -d "$ASDF_DIR" ]; then
+    echo "asdf is already installed at $ASDF_DIR"
+    exit 0
+fi
+
+# Update package lists and install dependencies
+echo "Updating package lists and installing dependencies..."
+sudo apt update
+sudo apt install -y curl git
+
+# Clone the asdf repository
+echo "Cloning asdf from GitHub..."
+git clone https://github.com/asdf-vm/asdf.git "$ASDF_DIR" --branch "$ASDF_VERSION"
+
+# Add asdf initialization to ~/.bashrc if not already present
+BASHRC="$HOME/.bashrc"
+if ! grep -q "asdf.sh" "$BASHRC"; then
+    echo "Adding asdf initialization to $BASHRC..."
+    {
+        echo ""
+        echo "# asdf initialization"
+        echo ". $ASDF_DIR/asdf.sh"
+        echo ". $ASDF_DIR/completions/asdf.bash"
+    } >> "$BASHRC"
+fi
+
+# Source the updated .bashrc to load asdf immediately
+echo "Sourcing $BASHRC..."
+source "$BASHRC"
+
+echo "asdf installation completed successfully!"
+
+# Install scarb
+asdf install scarb 2.10.1
+asdf global scarb 2.10.1
+
 # Check Setup
 rustc --version
 cargo --version
 stone-cli --version
 python3.10 --version
 cairo-run --version
+asdf --version

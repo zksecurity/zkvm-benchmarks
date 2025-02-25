@@ -4,12 +4,13 @@ echo "Running benchmark..."
 
 whoami
 
-source $HOME/.cargo/env
+source $HOME/.cargo/bin
 source $HOME/.bashrc
-export PATH="$HOME/.cargo/env:$PATH"
-export PATH="$HOME/.risc0/bin:$PATH"
-export PATH="$HOME/.sp1/bin:$PATH"
-export PATH="$HOME/.asdf:$PATH"
+# export PATH="$HOME/.cargo/bin:$PATH"
+# export PATH="$HOME/.risc0/bin:$PATH"
+# export PATH="$HOME/.sp1/bin:$PATH"
+# export PATH="$HOME/.asdf:$PATH"
+# export PATH="/usr/local/bin:$PATH"
 
 VENV_PATH="$HOME/python-venv"
 echo "Activating virtual environment..."

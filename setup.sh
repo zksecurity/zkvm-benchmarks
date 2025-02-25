@@ -87,7 +87,7 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 # Install scarb
 asdf plugin add scarb
 asdf install scarb 2.10.1 
-asdf global scarb 2.10.1
+asdf local scarb 2.10.1
 
 # Check Setup
 # rustc --version

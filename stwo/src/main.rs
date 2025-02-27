@@ -1,9 +1,18 @@
 use clap::Parser;
+use utils::size;
 use std::process::{Command, Stdio};
 use std::io::{BufRead, BufReader};
 use std::time::{Duration, Instant};
 use std::io::Write;
 use std::fs;
+use std::env;
+use std::path::Path;
+use camino::Utf8Path;
+
+use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+use stwo_cairo_prover::cairo_air::CairoProof;
+use stwo_cairo_adapter::vm_import::adapt_vm_output;
+use stwo_cairo_adapter::ProverInput;
 
 /// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
@@ -43,14 +52,24 @@ fn main() {
 
 fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
 
-    println!("Running the `scarb execute` command...");
+    let bench_dir = "fibonacci".to_string();
+    
+    if let Err(e) = env::set_current_dir(Path::new(&bench_dir)) {
+        eprintln!("Failed to change directory: {}", e);
+    } else {
+        println!("Changed directory to: {}", bench_dir);
+    }
+    
+    println!("Running Stwo Prover...");
+    let prover_start = Instant::now();
     let output = Command::new("sh")
         .arg("-c")
-        .arg(format!("cd fibonacci && scarb execute -p fibonacci --print-program-output --arguments {}", n))
-        .stdout(Stdio::piped())  // Capture stdout
-        .stderr(Stdio::piped())  // Capture stderr
-        .output()  // Wait for the command to complete and get the output
-        .expect("Failed to execute scarb command");
+        .arg(format!("scarb prove --execute --print-program-output --arguments {}", n))
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped()) 
+        .output()
+        .expect("Failed to execute scarb prove");
+    let prover_end = Instant::now();
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let reader = BufReader::new(stdout.as_bytes());
@@ -63,7 +82,7 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
             target_path = line.split(':').nth(1).unwrap_or("").trim().to_string();
             break;
         }
-    }    
+    }
 
     // Ensure the target path was found
     if target_path.is_empty() {
@@ -71,26 +90,39 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
         return (Duration::new(0, 0), 0, Duration::new(0, 0), 0);
     }
 
-    println!("Running Stwo Prover...");
-    let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json ./fibonacci/{}/air_public_input.json --priv_json ./fibonacci/{}/air_private_input.json --proof_path ./fibonacci/fib_{}_proof.json --display_components",
-        target_path, target_path, n
-    );
+    let proof_path = format!("{target_path}/proof/proof.json");
+    let priv_inp_path = format!("{target_path}/air_private_input.json");
+    let pub_inp_path = format!("{target_path}/air_public_input.json");
 
-    let prover_start = Instant::now();
+    println!("Running Stwo Verifier...");
+    let verifier_start = Instant::now();
     let _ = Command::new("sh")
         .arg("-c")
-        .arg(adapted_command)
-        .output()  // Execute and wait for the command to complete
-        .expect("Failed to execute adapted_stwo command");
-    let prover_end = Instant::now();
-
-    let verifier_start = Instant::now();
-    // ADD Verifier Code
+        .arg(format!("scarb verify --proof-file {}", proof_path))
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped()) 
+        .output()
+        .expect("Failed to execute scarb prove");
     let verifier_end = Instant::now();
 
-    let proof_size = 0;  // Placeholder for proof size
-    let cycle_count = 0;  // Placeholder for cycle count
+    let proof = load_proof(&proof_path);
+    let proof_size = size(&proof);
+
+    let vm_output: ProverInput =
+        adapt_vm_output(Path::new(&pub_inp_path), Path::new(&priv_inp_path)).unwrap();
+    let casm_states_by_opcode = vm_output.state_transitions.casm_states_by_opcode;
+    let counts = casm_states_by_opcode.counts();
+    let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
+
+    println!("proof size: {:?}", proof_size);
+    println!("cycle_count: {:?}", cycle_count);
+
+    if let Err(e) = env::set_current_dir(Path::new("../")) {
+        eprintln!("Failed to change directory: {}", e);
+    } else {
+        println!("Changed directory to: /stwo");
+    }
+
 
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }
@@ -240,4 +272,15 @@ fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
     let cycle_count = 0;  // Placeholder for cycle count
 
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
+}
+
+fn load_proof(path: &str) -> CairoProof<Blake2sMerkleHasher> {
+    let path = Utf8Path::new(path);
+    assert!(path.exists(), "Proof file does not exist at path: {path}");
+    assert!(path.is_file(), "Path is not a file: {path}");
+
+    let proof_contents =
+        fs::read_to_string(path).unwrap();
+    let proof = serde_json::from_str(&proof_contents).unwrap();
+    proof
 }

@@ -458,9 +458,6 @@ bench-stwo: build-stwo
 build-stwo:
 	cd stwo && cargo build --release
 	cd stwo/fibonacci && scarb build
-	-cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
-	cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
-	cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
 
 bench-stwo-time:
 	just bench-stwo-fibonacci-time

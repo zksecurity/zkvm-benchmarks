@@ -4,4 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.0.5", features = ["derive"] } 
+clap = { version = "4.0.5", features = ["derive"] }
+stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo" }
+stwo-cairo-adapter = { git = "https://github.com/starkware-libs/stwo-cairo" }
+utils = { path = "../utils" }
+camino = { version = "1", features = ["serde1"] }
+serde_json = { version = "1", features = ["raw_value"] }

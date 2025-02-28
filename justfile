@@ -1,7 +1,7 @@
 # Define variables
-FIB_ARGS := "100 500 1000 5000 10000 50000 100000"
-EC_ARGS := "2 5 10 20"
-SHA_ARGS := "32 256 512 1024 2048"
+FIB_ARGS := "5000 10000 50000 100000 500000 1000000"
+EC_ARGS := "8 16 32 64 128"
+SHA_ARGS := "256 512 1024 2048 4096"
 BINARY_SEARCH_ARGS := "128 256 512 1024 2048"
 SHA_CHAIN_ARGS := "230 460 920 1840 3680"
 MATMUL_ARGS := "10 20 40 60"
@@ -456,8 +456,11 @@ bench-stwo: build-stwo
 	just bench-stwo-time
 
 build-stwo:
-	cd stwo && cargo build --release
-	cd stwo/fibonacci && scarb build
+    cd stwo && cargo build --release
+    cd stwo/fibonacci && scarb build
+    -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
+    cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
+    cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
 
 bench-stwo-time:
 	just bench-stwo-fibonacci-time

@@ -9,10 +9,13 @@ use std::env;
 use std::path::Path;
 use camino::Utf8Path;
 
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleHasher;
-use stwo_cairo_prover::cairo_air::CairoProof;
+use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{Blake2sMerkleHasher, Blake2sMerkleChannel};
 use stwo_cairo_adapter::vm_import::adapt_vm_output;
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_prover::cairo_air::{
+    default_prod_prover_parameters, verify_cairo,
+    ProverParameters, CairoProof,
+};
 
 /// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
@@ -143,9 +146,9 @@ fn bench_sha256(n: u32) -> (Duration, usize, Duration, usize) {
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
-        .arg(&program_path) // Path to the Cairo program
+        .arg(&program_path)
         .arg("--output")
-        .arg(&output_path) // Output file path
+        .arg(&output_path)
         .arg("--proof_mode")
         .status();
 
@@ -177,25 +180,34 @@ fn bench_sha256(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
+    let proof_path = format!("./sha256/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path ./sha256/proof_{}.json --display_components",
-        public_input, private_input, n
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        public_input, private_input, proof_path
     );
 
     let prover_start = Instant::now();
     let _ = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()  // Execute and wait for the command to complete
+        .output()
         .expect("Failed to execute adapted_stwo command");
     let prover_end = Instant::now();
 
+    let proof = load_proof(&proof_path);
+    let proof_size = size(&proof);
+    
+    println!("Running Stwo Verifier...");
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
     let verifier_start = Instant::now();
-    // ADD Verifier Code
+    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config).unwrap();
     let verifier_end = Instant::now();
 
-    let proof_size = 0;  // Placeholder for proof size
-    let cycle_count = 0;  // Placeholder for cycle count
+    let vm_output: ProverInput =
+        adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
+    let casm_states_by_opcode = vm_output.state_transitions.casm_states_by_opcode;
+    let counts = casm_states_by_opcode.counts();
+    let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
 
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }
@@ -251,25 +263,34 @@ fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
+    let proof_path = format!("./keccak/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path ./keccak/proof_{}.json --display_components",
-        public_input, private_input, n
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        public_input, private_input, proof_path
     );
 
     let prover_start = Instant::now();
     let _ = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()  // Execute and wait for the command to complete
+        .output()
         .expect("Failed to execute adapted_stwo command");
     let prover_end = Instant::now();
 
+    let proof = load_proof(&proof_path);
+    let proof_size = size(&proof);
+    
+    println!("Running Stwo Verifier...");
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
     let verifier_start = Instant::now();
-    // ADD Verifier Code
+    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config).unwrap();
     let verifier_end = Instant::now();
 
-    let proof_size = 0;  // Placeholder for proof size
-    let cycle_count = 0;  // Placeholder for cycle count
+    let vm_output: ProverInput =
+        adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
+    let casm_states_by_opcode = vm_output.state_transitions.casm_states_by_opcode;
+    let counts = casm_states_by_opcode.counts();
+    let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
 
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }

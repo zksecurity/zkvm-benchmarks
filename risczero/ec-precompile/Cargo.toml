@@ -7,7 +7,7 @@ default-run = "ec-precompile"
 
 [dependencies]
 ecadd = { path = "methods" }
-risc0-zkvm = { version = "1.2.2" }
+risc0-zkvm = { version = "1.2.5" }
 utils = { path = "../../utils" }
 
 [features]

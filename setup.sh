@@ -86,9 +86,9 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # Install scarb
 asdf plugin add scarb
-asdf install scarb 2.10.1+nightly-2025-02-26
+asdf install scarb nightly-2025-02-26
 # asdf global scarb latest:nightly
-echo "scarb 2.10.1+nightly-2025-02-26" >> $HOME/.tool-versions
+echo "scarb nightly-2025-02-26" >> $HOME/.tool-versions
 
 # Check Setup
 rustc --version

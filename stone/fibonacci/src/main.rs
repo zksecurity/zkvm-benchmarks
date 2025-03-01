@@ -30,6 +30,8 @@ fn run(n: u32, bench_mem: bool) {
         10000 => "../configs/parameter_65536_64.json".to_string(),
         50000 => "../configs/parameter_524288.json".to_string(),
         100000 => "../configs/parameter_1048576.json".to_string(),
+        500000 => "../configs/parameter_2097152.json".to_string(),
+        1000000 => "../configs/parameter_4194304.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     

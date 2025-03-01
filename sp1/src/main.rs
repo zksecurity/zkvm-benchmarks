@@ -51,8 +51,8 @@ fn main() {
         "sha3-chain-precompile" => benchmark_sha3_chain_precompile(cli.n),
         "mat-mul" => bench_mat_mul(cli.n),
         "binary-search" => benchmark_binary_search(cli.n as usize),
-        "ecadd" => bench_ecadd(cli.n),
-        "ecadd-precompile" => bench_ecadd_precompile(cli.n),
+        "ec" => bench_ecadd(cli.n),
+        "ec-precompile" => bench_ecadd_precompile(cli.n),
         _ => unreachable!(),
     };
     let mut file = std::fs::File::create("results.json").unwrap();

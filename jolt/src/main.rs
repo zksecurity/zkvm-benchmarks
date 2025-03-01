@@ -42,7 +42,7 @@ fn main() {
         "binary-search" => {
             benchmark_binary_search(cli.n as u8)
         },
-        "ecadd" => {
+        "ec" => {
             benchmark_ecadd(cli.n)
         },
         _ => unreachable!()

@@ -1,9 +1,9 @@
 [package]
-name = "ec-precompile"
+name = "host"
 version = "0.1.0"
 edition = "2021"
 
-default-run = "ec-precompile"
+default-run = "host"
 
 [dependencies]
 ecadd = { path = "methods" }

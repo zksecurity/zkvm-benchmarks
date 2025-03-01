@@ -16,11 +16,11 @@ build-utils:
 
 # Bench all
 bench-all: build-utils
-    just bench-jolt
-    just bench-risczero
+    # just bench-jolt
+    # just bench-risczero
     just bench-stone
-    just bench-sp1
-    just bench-stwo
+    # just bench-sp1
+    # just bench-stwo
 
 
 #####
@@ -31,17 +31,16 @@ bench-jolt:
     cd jolt && cargo build --release
     just bench-jolt-fib
     just bench-jolt-sha2
-    # just bench-jolt-sha2-chain
+    just bench-jolt-sha2-chain
     just bench-jolt-sha3
-    # just bench-jolt-sha3-chain
-    # just bench-jolt-mat-mul
+    just bench-jolt-sha3-chain
+    just bench-jolt-mat-mul
+    just bench-jolt-ec
     # just bench-jolt-binary-search
-    # just bench-jolt-ec
-
 
 bench-jolt-fib:
 	just bench-jolt-fib-time
-	just bench-jolt-fib-mem
+	# just bench-jolt-fib-mem
 
 bench-jolt-fib-time:
     -for arg in {{FIB_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program fib && cd ..; done
@@ -52,7 +51,7 @@ bench-jolt-fib-mem:
 
 bench-jolt-ec:
 	just bench-jolt-ec-time
-	just bench-jolt-ec-mem
+	# just bench-jolt-ec-mem
 
 bench-jolt-ec-time:
     -for arg in {{EC_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-ec --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program ec && cd ..; done
@@ -63,7 +62,7 @@ bench-jolt-ec-mem:
 
 bench-jolt-sha2:
 	just bench-jolt-sha2-time
-	just bench-jolt-sha2-mem
+	# just bench-jolt-sha2-mem
 
 bench-jolt-sha2-time:
     -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2 && cd ..; done
@@ -74,7 +73,7 @@ bench-jolt-sha2-mem:
 
 bench-jolt-sha2-chain:
 	just bench-jolt-sha2-chain-time
-	just bench-jolt-sha2-chain-mem
+	# just bench-jolt-sha2-chain-mem
 
 bench-jolt-sha2-chain-time:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2-chain && cd ..; done
@@ -85,7 +84,7 @@ bench-jolt-sha2-chain-mem:
 
 bench-jolt-sha3:
 	just bench-jolt-sha3-time
-	just bench-jolt-sha3-mem
+	# just bench-jolt-sha3-mem
 
 bench-jolt-sha3-time:
     -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3 && cd ..; done
@@ -96,7 +95,7 @@ bench-jolt-sha3-mem:
 
 bench-jolt-sha3-chain:
 	just bench-jolt-sha3-chain-time
-	just bench-jolt-sha3-chain-mem
+	# just bench-jolt-sha3-chain-mem
 
 bench-jolt-sha3-chain-time:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3-chain && cd ..; done
@@ -107,24 +106,24 @@ bench-jolt-sha3-chain-mem:
 
 bench-jolt-mat-mul:
 	just bench-jolt-mat-mul-time
-	just bench-jolt-mat-mul-mem
+	# just bench-jolt-mat-mul-mem
 
 bench-jolt-mat-mul-time:
-	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$$arg" -- --program mat-mul && cd ..; done
+	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program mat-mul && cd ..; done
 
 bench-jolt-mat-mul-mem:
-	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$$arg" --bench-mem -- --program mat-mul && cd ..; done
+	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$arg" --bench-mem -- --program mat-mul && cd ..; done
 
 
-bench-jolt-binary-search:
-	just bench-jolt-binary-search-time
-	just bench-jolt-binary-search-mem
+# bench-jolt-binary-search:
+# 	just bench-jolt-binary-search-time
+# 	just bench-jolt-binary-search-mem
 
-bench-jolt-binary-search-time:
-	-for arg in {{BINARY_SEARCH_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg "$$arg" -- --program binary-search && cd ..; done
+# bench-jolt-binary-search-time:
+# 	-for arg in {{BINARY_SEARCH_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program binary-search && cd ..; done
 
-bench-jolt-binary-search-mem:
-	-for arg in {{BINARY_SEARCH_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg "$$arg" --bench-mem -- --program binary-search && cd ..; done
+# bench-jolt-binary-search-mem:
+# 	-for arg in {{BINARY_SEARCH_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-binary-search --bin target/release/jolt-benchmarks --bench-arg "$arg" --bench-mem -- --program binary-search && cd ..; done
 
 
 
@@ -150,39 +149,38 @@ build-sp1:
 	cd sp1 && cargo build --release
 
 bench-sp1: build-sp1
-    # just bench-sp1-fib-script
     just bench-sp1-time
     # just bench-sp1-mem
 
 bench-sp1-time:
 	just bench-sp1-fib-time
 	just bench-sp1-sha2-time
-	# just bench-sp1-sha2-chain-time
+	just bench-sp1-sha2-chain-time
 	just bench-sp1-sha3-time
-	# just bench-sp1-sha3-chain-time
-	# just bench-sp1-mat-mul-time
+	just bench-sp1-sha3-chain-time
+	just bench-sp1-mat-mul-time
 	# just bench-sp1-binary-search-time
 	just bench-sp1-sha2-precompile-time
 	just bench-sp1-sha3-precompile-time
-	# just bench-sp1-sha2-chain-precompile-time
-	# just bench-sp1-sha3-chain-precompile-time
-	# just bench-sp1-ec-time
-	# just bench-sp1-ec-precompile-time
+	just bench-sp1-sha2-chain-precompile-time
+	just bench-sp1-sha3-chain-precompile-time
+	just bench-sp1-ec-time
+	just bench-sp1-ec-precompile-time
 
 bench-sp1-mem:
     just bench-sp1-fib-mem
-    # just bench-sp1-sha2-mem
-    # just bench-sp1-sha2-chain-mem
-    # just bench-sp1-sha3-mem
-    # just bench-sp1-sha3-chain-mem
-    # just bench-sp1-mat-mul-mem
-    # just bench-sp1-binary-search-mem
-    # just bench-sp1-sha2-precompile-mem
-    # just bench-sp1-sha3-precompile-mem
-    # just bench-sp1-sha2-chain-precompile-mem
-    # just bench-sp1-sha3-chain-precompile-mem
-    # just bench-sp1-ec-mem
-    # just bench-sp1-ec-precompile-mem
+    just bench-sp1-sha2-mem
+    just bench-sp1-sha2-chain-mem
+    just bench-sp1-sha3-mem
+    just bench-sp1-sha3-chain-mem
+    just bench-sp1-mat-mul-mem
+    just bench-sp1-binary-search-mem
+    just bench-sp1-sha2-precompile-mem
+    just bench-sp1-sha3-precompile-mem
+    just bench-sp1-sha2-chain-precompile-mem
+    just bench-sp1-sha3-chain-precompile-mem
+    just bench-sp1-ec-mem
+    just bench-sp1-ec-precompile-mem
 
 bench-sp1-fib-time:
     -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" -- --program fib && cd ..; done
@@ -190,8 +188,8 @@ bench-sp1-fib-time:
 bench-sp1-fib-mem:
     -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program fib && cd ..; done
 
-bench-sp1-fib-script:
-    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "sp1" "fib" "$arg"; done
+# bench-sp1-fib-script:
+#     -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "sp1" "fib" "$arg"; done
 
 bench-sp1-ec-time:
     -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" -- --program ec && cd ..; done
@@ -259,11 +257,11 @@ bench-sp1-mat-mul-time:
 bench-sp1-mat-mul-mem:
     -for arg in {{MATMUL_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program mat-mul && cd ..; done
 
-bench-sp1-binary-search-time:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg "$arg" -- --program binary-search && cd ..; done
+# bench-sp1-binary-search-time:
+#     -for arg in {{BINARY_SEARCH_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg "$arg" -- --program binary-search && cd ..; done
 
-bench-sp1-binary-search-mem:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program binary-search && cd ..; done
+# bench-sp1-binary-search-mem:
+#     -for arg in {{BINARY_SEARCH_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program binary-search && cd ..; done
 
 
 #####
@@ -276,14 +274,14 @@ build-risczero:
     cd risczero/sha2-precompile && cargo build --release
     cd risczero/sha3 && cargo build --release
     cd risczero/sha3-precompile && cargo build --release
-    # cd risczero/sha2-chain && cargo build --release
-    # cd risczero/sha2-chain-precompile && cargo build --release
-    # cd risczero/sha3-chain && cargo build --release
-    # cd risczero/sha3-chain-precompile && cargo build --release
-    # cd risczero/ec && cargo build --release
-    # cd risczero/ec-precompile && cargo build --release    
+    cd risczero/sha2-chain && cargo build --release
+    cd risczero/sha2-chain-precompile && cargo build --release
+    cd risczero/sha3-chain && cargo build --release
+    cd risczero/sha3-chain-precompile && cargo build --release
+    cd risczero/ec && cargo build --release
+    cd risczero/ec-precompile && cargo build --release    
+    cd risczero/mat-mul && cargo build --release
     # cd risczero/binary-search && cargo build --release
-    # cd risczero/mat-mul && cargo build --release
 
 bench-risczero: build-risczero
     just bench-risczero-fib
@@ -291,14 +289,14 @@ bench-risczero: build-risczero
     just bench-risczero-sha2-precompile
     just bench-risczero-sha3
     just bench-risczero-sha3-precompile
-    # just bench-risczero-sha2-chain
-    # just bench-risczero-sha2-chain-precompile
-    # just bench-risczero-sha3-chain
-    # just bench-risczero-sha3-chain-precompile
-    # just bench-risczero-ec  
-    # just bench-risczero-ec-precompile  
+    just bench-risczero-sha2-chain
+    just bench-risczero-sha2-chain-precompile
+    just bench-risczero-sha3-chain
+    just bench-risczero-sha3-chain-precompile
+    just bench-risczero-ec  
+    just bench-risczero-ec-precompile  
+    just bench-risczero-mat-mul
     # just bench-risczero-binary-search
-    # just bench-risczero-mat-mul
 
 bench-risczero-fib:
     -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "fib" "$arg"; done
@@ -309,8 +307,8 @@ bench-risczero-ec:
 bench-risczero-ec-precompile:
     -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "ec-precompile" "$arg"; done
 
-bench-risczero-binary-search:
-    -for arg in {{BINARY_SEARCH_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "binary-search" "$arg"; done
+# bench-risczero-binary-search:
+#     -for arg in {{BINARY_SEARCH_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "binary-search" "$arg"; done
 
 bench-risczero-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "risczero" "mat-mul" "$arg"; done
@@ -345,27 +343,27 @@ bench-risczero-sha3-chain-precompile:
 
 bench-stone: build-stone
     just bench-stone-time
-    just bench-stone-mem
+    # just bench-stone-mem
 
 bench-stone-time:
     just bench-stone-fib-time
     just bench-stone-keccak-time
     just bench-stone-keccak-builtin-time
-    # just bench-stone-keccak-builtin-chain-time
-    # just bench-stone-mat-time
+    just bench-stone-keccak-builtin-chain-time
+    just bench-stone-mat-time
     # just bench-stone-binary-search-time
     just bench-stone-sha256-time
-    # just bench-stone-sha256-chain-time
+    just bench-stone-sha256-chain-time
 
 bench-stone-mem:
     just bench-stone-fib-mem
     just bench-stone-keccak-mem
     just bench-stone-keccak-builtin-mem
-    # just bench-stone-keccak-builtin-chain-mem
-    # just bench-stone-mat-mem
-    # just bench-stone-binary-search-mem
+    just bench-stone-keccak-builtin-chain-mem
+    just bench-stone-mat-mem
+    just bench-stone-binary-search-mem
     just bench-stone-sha256-mem
-    # just bench-stone-sha256-chain-mem
+    just bench-stone-sha256-chain-mem
 
 build-stone:
     cd stone/common && cargo build --release
@@ -373,10 +371,10 @@ build-stone:
     cd stone/fibonacci && cargo build --release
     cd stone/keccak && cargo build --release
     cd stone/keccak-builtin && cargo build --release
-    # cd stone/keccak-builtin-chain && cargo build --release
+    cd stone/keccak-builtin-chain && cargo build --release
     cd stone/sha256 && cargo build --release
-    # cd stone/sha256-chain && cargo build --release
-    # cd stone/mat-mul && cargo build --release
+    cd stone/sha256-chain && cargo build --release
+    cd stone/mat-mul && cargo build --release
     -just build-stone-steps
 
 build-stone-steps:

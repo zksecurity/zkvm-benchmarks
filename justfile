@@ -428,10 +428,10 @@ bench-stone-keccak-builtin-mem:
 # 58880 / 200 = 294.4
 # 117760 / 200 = 588.8
 bench-stone-keccak-builtin-chain-time:
-    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
+    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin-chain && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-keccak-builtin-chain-mem:
-    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
+    -for arg in 37 74 148 295 589; do cd stone/keccak-builtin-chain && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-sha256-time:
     -for arg in {{SHA_ARGS}}; do cd stone/sha256 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/sha256 --bench-arg "$arg" && cd ../..; done

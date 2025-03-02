@@ -16,10 +16,10 @@ build-utils:
 
 # Bench all
 bench-all: build-utils
-    # just bench-jolt
-    # just bench-risczero
+    just bench-jolt
+    just bench-risczero
     just bench-stone
-    # just bench-sp1
+    just bench-sp1
     just bench-stwo
 
 
@@ -35,7 +35,7 @@ bench-jolt:
     just bench-jolt-sha3
     just bench-jolt-sha3-chain
     just bench-jolt-mat-mul
-    just bench-jolt-ec
+    # just bench-jolt-ec
     # just bench-jolt-binary-search
 
 bench-jolt-fib:
@@ -164,8 +164,8 @@ bench-sp1-time:
 	just bench-sp1-sha3-precompile-time
 	just bench-sp1-sha2-chain-precompile-time
 	just bench-sp1-sha3-chain-precompile-time
-	just bench-sp1-ec-time
-	just bench-sp1-ec-precompile-time
+	# just bench-sp1-ec-time
+	# just bench-sp1-ec-precompile-time
 
 bench-sp1-mem:
     just bench-sp1-fib-mem
@@ -278,8 +278,8 @@ build-risczero:
     cd risczero/sha2-chain-precompile && cargo build --release
     cd risczero/sha3-chain && cargo build --release
     cd risczero/sha3-chain-precompile && cargo build --release
-    cd risczero/ec && cargo build --release
-    cd risczero/ec-precompile && cargo build --release    
+    # cd risczero/ec && cargo build --release
+    # cd risczero/ec-precompile && cargo build --release    
     cd risczero/mat-mul && cargo build --release
     # cd risczero/binary-search && cargo build --release
 
@@ -293,8 +293,8 @@ bench-risczero: build-risczero
     just bench-risczero-sha2-chain-precompile
     just bench-risczero-sha3-chain
     just bench-risczero-sha3-chain-precompile
-    just bench-risczero-ec  
-    just bench-risczero-ec-precompile  
+    # just bench-risczero-ec  
+    # just bench-risczero-ec-precompile  
     just bench-risczero-mat-mul
     # just bench-risczero-binary-search
 

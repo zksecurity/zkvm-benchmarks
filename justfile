@@ -456,14 +456,17 @@ bench-stwo: build-stwo
 build-stwo:
     cd stwo && cargo build --release
     cd stwo/fibonacci && scarb build
+    cd stwo/mat_mul && scarb build
     -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
     cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
-    cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
+    # cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
 
 bench-stwo-time:
-	just bench-stwo-fibonacci-time
-	just bench-stwo-sha2-time
-	just bench-stwo-sha3-time
+    just bench-stwo-fibonacci-time
+    just bench-stwo-sha2-time
+    just bench-stwo-sha3-time
+    just bench-stwo-sha2-chain-time
+    just bench-stwo-mat-mul-time
 
 bench-stwo-fibonacci-time:
     -for arg in {{FIB_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg "$arg" -- --program fib && cd ..; done
@@ -473,3 +476,9 @@ bench-stwo-sha2-time:
 
 bench-stwo-sha3-time:
     -for arg in {{SHA_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha3 --bin target/release/stwo-script --bench-arg "$arg" -- --program sha3 && cd ..; done
+
+bench-stwo-sha2-chain-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha2-chain --bin target/release/stwo-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
+
+bench-stwo-mat-mul-time:
+    -for arg in {{MATMUL_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-mat-mul --bin target/release/stwo-script --bench-arg "$arg" -- --program mat-mul && cd ..; done

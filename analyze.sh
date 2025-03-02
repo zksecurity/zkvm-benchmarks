@@ -14,6 +14,7 @@ pip install marimo
 pip install pandas
 pip install matplotlib
 pip install ipython
+pip install numpy
 marimo --version
 
 # run marimo notebook

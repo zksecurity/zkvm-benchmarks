@@ -10,7 +10,6 @@ def _(mo):
         r"""
         # zkvm benchmarks
 
-        - The peak heap memory was captured using `heaptrack`. Note that, RiscZero seems spawning the guest vm, so heaptrack can't collect the metrics in the same way. We used Linux cgroups (Control Groups) to compute the maximum memory usage for RiscZero.
         - Stone benchmarks were generated using the `dynamic` layout with the following configurations:
             - Parameters - `fri_step_list` and `last_layer_degree_bound` change dependeing on the size of the computation but other parameters remain same
                 ```
@@ -108,6 +107,7 @@ def _(mo):
     import pandas as pd
     import matplotlib.pyplot as plt
     import itertools
+    import numpy as np
 
     # Function to preprocess the dataframes
     def preprocess_data(df, column_name):
@@ -143,7 +143,8 @@ def _(mo):
             file_paths["r0-precompile"] = f'./benchmark_outputs/risczero-{bench_name}-precompile.csv'
 
         if bench_name == 'sha3-chain' and is_builtin:
-            file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-precompile.csv'
+            file_paths.pop("stone", None)
+            file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
         combined_df = None  # Start with an empty DataFrame
 
@@ -183,6 +184,13 @@ def _(mo):
             path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
             stone_df = preprocess_data(pd.read_csv(path), column_name)
             stone_df["n"] *= 200  # Multiply n column by 200
+            plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
+
+        if bench_name == 'sha3-chain' and is_builtin:
+            path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
+            stone_df = preprocess_data(pd.read_csv(path), column_name)
+            stone_df["n"] *= 200/230  # Multiply n column by 200
+            stone_df["n"] = np.ceil(stone_df["n"] * (200 / 230))
             plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
 
         plt.xlabel("n")
@@ -265,6 +273,7 @@ def _(mo):
         get_plots,
         get_tables,
         itertools,
+        np,
         os,
         pd,
         plot_benchmark,
@@ -566,6 +575,7 @@ def _(mo, pd):
     path = f'./benchmark_outputs/stone-sha3-builtin.csv'
     stone_sha3_builtin_df = pd.read_csv(path)
     stone_sha3_builtin_df["n"] *= 200  # Multiply n column by 200
+    stone_sha3_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
     stone_sha3_builtin_table = mo.ui.table(
             data=stone_sha3_builtin_df,
             label="Stone benchmark with Keccak Builtin",
@@ -574,6 +584,194 @@ def _(mo, pd):
     )
     mo.vstack([stone_sha3_builtin_table])
     return path, stone_sha3_builtin_df, stone_sha3_builtin_table
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Sha3-Chain
+
+        Benchmark Keccak256 hash of 32 bytes for `n` iteration.
+        """
+    )
+    return
+
+
+@app.cell
+def _(get_plots, get_tables):
+    sha3_chain_tuple = ("sha3-chain", True, True)
+
+    sha3_chain_prover_table, sha3_chain_verifier_table, sha3_chain_proof_size_table, sha3_chain_cycle_count_table, sha3_chain_peak_memory_table = get_tables(sha3_chain_tuple)
+
+    sha3_chain_prover_time_plot, sha3_chain_verifier_time_plot, sha3_chain_proof_size_plot, sha3_chain_cycle_count_plot, sha3_chain_peak_memory_plot = get_plots(sha3_chain_tuple)
+    return (
+        sha3_chain_cycle_count_plot,
+        sha3_chain_cycle_count_table,
+        sha3_chain_peak_memory_plot,
+        sha3_chain_peak_memory_table,
+        sha3_chain_proof_size_plot,
+        sha3_chain_proof_size_table,
+        sha3_chain_prover_table,
+        sha3_chain_prover_time_plot,
+        sha3_chain_tuple,
+        sha3_chain_verifier_table,
+        sha3_chain_verifier_time_plot,
+    )
+
+
+@app.cell
+def _(mo, sha3_chain_prover_table):
+    mo.vstack([sha3_chain_prover_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_prover_time_plot):
+    mo.image(sha3_chain_prover_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_verifier_table):
+    mo.vstack([sha3_chain_verifier_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_verifier_time_plot):
+    mo.image(sha3_chain_verifier_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_proof_size_table):
+    mo.vstack([sha3_chain_proof_size_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_proof_size_plot):
+    mo.image(sha3_chain_proof_size_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_cycle_count_table):
+    mo.vstack([sha3_chain_cycle_count_table])
+    return
+
+
+@app.cell
+def _(mo, sha3_chain_cycle_count_plot):
+    mo.image(sha3_chain_cycle_count_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _():
+    # mo.vstack([sha3_chain_peak_memory_table])
+    return
+
+
+@app.cell
+def _():
+    # mo.image(sha3_chain_peak_memory_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## Matrix Multiplication
+
+        Benchmark multplication of two matrices of size n x n.
+        """
+    )
+    return
+
+
+@app.cell
+def _(get_plots, get_tables):
+    mat_mul_tuple = ("mat-mul", False, False)
+
+    mat_mul_prover_table, mat_mul_verifier_table, mat_mul_proof_size_table, mat_mul_cycle_count_table, mat_mul_peak_memory_table = get_tables(mat_mul_tuple)
+
+    mat_mul_prover_time_plot, mat_mul_verifier_time_plot, mat_mul_proof_size_plot, mat_mul_cycle_count_plot, mat_mul_peak_memory_plot = get_plots(mat_mul_tuple)
+    return (
+        mat_mul_cycle_count_plot,
+        mat_mul_cycle_count_table,
+        mat_mul_peak_memory_plot,
+        mat_mul_peak_memory_table,
+        mat_mul_proof_size_plot,
+        mat_mul_proof_size_table,
+        mat_mul_prover_table,
+        mat_mul_prover_time_plot,
+        mat_mul_tuple,
+        mat_mul_verifier_table,
+        mat_mul_verifier_time_plot,
+    )
+
+
+@app.cell
+def _(mat_mul_prover_table, mo):
+    mo.vstack([mat_mul_prover_table])
+    return
+
+
+@app.cell
+def _(mat_mul_prover_time_plot, mo):
+    mo.image(mat_mul_prover_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mat_mul_verifier_table, mo):
+    mo.vstack([mat_mul_verifier_table])
+    return
+
+
+@app.cell
+def _(mat_mul_verifier_time_plot, mo):
+    mo.image(mat_mul_verifier_time_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mat_mul_proof_size_table, mo):
+    mo.vstack([mat_mul_proof_size_table])
+    return
+
+
+@app.cell
+def _(mat_mul_proof_size_plot, mo):
+    mo.image(mat_mul_proof_size_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _(mat_mul_cycle_count_table, mo):
+    mo.vstack([mat_mul_cycle_count_table])
+    return
+
+
+@app.cell
+def _(mat_mul_cycle_count_plot, mo):
+    mo.image(mat_mul_cycle_count_plot, height=500, width=700, rounded=True)
+    return
+
+
+@app.cell
+def _():
+    # mo.vstack([mat_mul_peak_memory_table])
+    return
+
+
+@app.cell
+def _():
+    # mo.image(mat_mul_peak_memory_plot, height=500, width=700, rounded=True)
+    return
 
 
 if __name__ == "__main__":

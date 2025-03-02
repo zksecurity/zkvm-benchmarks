@@ -44,6 +44,9 @@ fn main() {
         "sha3" => {
             bench_keccak(cli.n)
         },
+        "sha3-chain" => {
+            bench_keccak_chain(cli.n)
+        },
         "sha2-chain" => {
             bench_sha256_chain(cli.n)
         },
@@ -430,6 +433,88 @@ fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
 
     println!("Running Stwo Prover...");
     let proof_path = format!("./keccak/proof_{}.json", n);
+    let adapted_command = format!(
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        public_input, private_input, proof_path
+    );
+
+    let prover_start = Instant::now();
+    let _ = Command::new("sh")
+        .arg("-c")
+        .arg(adapted_command)
+        .output()
+        .expect("Failed to execute adapted_stwo command");
+    let prover_end = Instant::now();
+
+    let proof = load_proof(&proof_path);
+    let proof_size = size(&proof);
+    
+    println!("Running Stwo Verifier...");
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+    let verifier_start = Instant::now();
+    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config).unwrap();
+    let verifier_end = Instant::now();
+
+    let vm_output: ProverInput =
+        adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
+    let casm_states_by_opcode = vm_output.state_transitions.casm_states_by_opcode;
+    let counts = casm_states_by_opcode.counts();
+    let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
+
+    (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
+}
+
+fn bench_keccak_chain(n: u32) -> (Duration, usize, Duration, usize) {
+
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "./keccak-chain/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
+
+    let program_path = "../stone/keccak-builtin-chain/programs/keccak.cairo".to_string();
+    let output_path = "./keccak-chain/keccak_chain.json".to_string();
+
+    let public_input = "./keccak-chain/public_input.json".to_string();
+    let private_input = "./keccak-chain/private_input.json".to_string();
+    let trace = "./keccak-chain/trace.bin".to_string();
+    let memory = "./keccak-chain/memory.bin".to_string();
+
+    println!("Generating Prover Input Files...");
+    let status = Command::new("cairo-compile")
+        .arg(&program_path) // Path to the Cairo program
+        .arg("--output")
+        .arg(&output_path) // Output file path
+        .arg("--proof_mode")
+        .status();
+
+    match status {
+        Ok(status) if status.success() => {
+            println!("Compilation successful! Compiled file saved to: {}", output_path);
+        }
+        Ok(status) => {
+            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-compile: {}", err);
+        }
+    }
+
+    let run_command = format!(
+        "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
+        output_path, program_input, public_input, private_input, trace, memory,
+    );
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(run_command)
+        .output().unwrap();
+    if !output.status.success() {
+        eprintln!(
+            "Error running cairo-run: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    println!("Running Stwo Prover...");
+    let proof_path = format!("./keccak-chain/proof_{}.json", n);
     let adapted_command = format!(
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path

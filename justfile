@@ -20,7 +20,7 @@ bench-all: build-utils
     # just bench-risczero
     just bench-stone
     # just bench-sp1
-    # just bench-stwo
+    just bench-stwo
 
 
 #####
@@ -465,6 +465,7 @@ bench-stwo-time:
     just bench-stwo-fibonacci-time
     just bench-stwo-sha2-time
     just bench-stwo-sha3-time
+    just bench-stwo-sha3-chain-time
     just bench-stwo-sha2-chain-time
     just bench-stwo-mat-mul-time
 
@@ -479,6 +480,9 @@ bench-stwo-sha3-time:
 
 bench-stwo-sha2-chain-time:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha2-chain --bin target/release/stwo-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
+
+bench-stwo-sha3-chain-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha3-chain --bin target/release/stwo-script --bench-arg "$arg" -- --program sha3-chain && cd ..; done
 
 bench-stwo-mat-mul-time:
     -for arg in {{MATMUL_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-mat-mul --bin target/release/stwo-script --bench-arg "$arg" -- --program mat-mul && cd ..; done

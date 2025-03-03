@@ -31,7 +31,7 @@ bench-jolt:
     cd jolt && cargo build --release
     just bench-jolt-fib
     just bench-jolt-sha2
-    just bench-jolt-sha2-chain
+    # just bench-jolt-sha2-chain
     just bench-jolt-sha3
     just bench-jolt-sha3-chain
     just bench-jolt-mat-mul
@@ -155,14 +155,14 @@ bench-sp1: build-sp1
 bench-sp1-time:
 	just bench-sp1-fib-time
 	just bench-sp1-sha2-time
-	just bench-sp1-sha2-chain-time
+	# just bench-sp1-sha2-chain-time
 	just bench-sp1-sha3-time
 	just bench-sp1-sha3-chain-time
 	just bench-sp1-mat-mul-time
 	# just bench-sp1-binary-search-time
 	just bench-sp1-sha2-precompile-time
 	just bench-sp1-sha3-precompile-time
-	just bench-sp1-sha2-chain-precompile-time
+	# just bench-sp1-sha2-chain-precompile-time
 	just bench-sp1-sha3-chain-precompile-time
 	# just bench-sp1-ec-time
 	# just bench-sp1-ec-precompile-time
@@ -289,8 +289,8 @@ bench-risczero: build-risczero
     just bench-risczero-sha2-precompile
     just bench-risczero-sha3
     just bench-risczero-sha3-precompile
-    just bench-risczero-sha2-chain
-    just bench-risczero-sha2-chain-precompile
+    # just bench-risczero-sha2-chain
+    # just bench-risczero-sha2-chain-precompile
     just bench-risczero-sha3-chain
     just bench-risczero-sha3-chain-precompile
     # just bench-risczero-ec  
@@ -353,7 +353,7 @@ bench-stone-time:
     just bench-stone-mat-time
     # just bench-stone-binary-search-time
     just bench-stone-sha256-time
-    just bench-stone-sha256-chain-time
+    # just bench-stone-sha256-chain-time
 
 bench-stone-mem:
     just bench-stone-fib-mem

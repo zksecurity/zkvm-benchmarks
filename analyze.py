@@ -144,7 +144,7 @@ def _(mo):
 
         if bench_name == 'sha3-chain' and is_builtin:
             file_paths.pop("stone", None)
-            file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
+            # file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
         combined_df = None  # Start with an empty DataFrame
 
@@ -189,8 +189,7 @@ def _(mo):
         if bench_name == 'sha3-chain' and is_builtin:
             path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
             stone_df = preprocess_data(pd.read_csv(path), column_name)
-            stone_df["n"] *= 200/230  # Multiply n column by 200
-            stone_df["n"] = np.ceil(stone_df["n"] * (200 / 230))
+            stone_df["n"] = np.ceil(stone_df["n"] * (200 / 32))
             plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
 
         plt.xlabel("n")
@@ -678,6 +677,31 @@ def _():
 def _():
     # mo.image(sha3_chain_peak_memory_plot, height=500, width=700, rounded=True)
     return
+
+
+@app.cell
+def _(mo):
+    mo.md("""**Stone benchmark with Keccak Builtin**: The function call to the keccak builtin allows max 200 bytes per iteration. So the following benchmarks can be interpreted as hashing `200 * n` bytes data, such as `200 * 37 = 7400` and so on.""")
+    return
+
+
+@app.cell
+def _(mo, pd):
+    path_chain = f'./benchmark_outputs/stone-sha3-chain-builtin.csv'
+    stone_sha3_chain_builtin_df = pd.read_csv(path_chain)
+    stone_sha3_chain_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
+    stone_sha3_chain_builtin_table = mo.ui.table(
+            data=stone_sha3_chain_builtin_df,
+            label="Stone benchmark with Keccak-Chain Builtin",
+            show_column_summaries = False,
+            selection = None,
+    )
+    mo.vstack([stone_sha3_chain_builtin_table])
+    return (
+        path_chain,
+        stone_sha3_chain_builtin_df,
+        stone_sha3_chain_builtin_table,
+    )
 
 
 @app.cell

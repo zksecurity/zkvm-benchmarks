@@ -29,6 +29,8 @@ bench-all: build-utils
 
 bench-jolt:
     cd jolt && rustup show
+    cd jolt && rustup install
+    cd jolt && rustup show
     cd jolt && cargo build --release
     just bench-jolt-fib
     just bench-jolt-sha2

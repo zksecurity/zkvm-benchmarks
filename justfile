@@ -457,7 +457,7 @@ build-stwo:
     cd stwo && cargo build --release
     cd stwo/fibonacci && scarb build
     cd stwo/mat_mul && scarb build
-    -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git
+    -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git && cd stwo-cairo && git checkout 36092a6f4c145b71fc275e3712e8df4df50b5dc6
     cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
     # cd stwo/stwo-cairo/stwo_cairo_verifier && cargo build --release
 

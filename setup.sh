@@ -8,9 +8,7 @@ whoami
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/bin
 export PATH="$HOME/.cargo/bin:$PATH"
-rustup set auto-self-update enable
-rustup set profile default
-rustup update
+rustup install 1.81.0
 
 # Install Python3.10
 sudo apt install -y software-properties-common

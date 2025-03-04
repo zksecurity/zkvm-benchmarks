@@ -14,6 +14,7 @@ export PATH="/usr/local/bin:$HOME/.asdf/shims:$PATH"
 VENV_PATH="$HOME/python-venv"
 echo "Activating virtual environment..."
 source "$VENV_PATH/bin/activate"
+rustup show
 
 # Check Setup
 rustc --version

@@ -184,79 +184,79 @@ bench-sp1-mem:
     just bench-sp1-ec-precompile-mem
 
 bench-sp1-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" -- --program fib && cd ..; done
+    -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" -- --program fib && cd ..; done
 
 bench-sp1-fib-mem:
-    -for arg in {{FIB_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program fib && cd ..; done
+    -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program fib && cd ..; done
 
 # bench-sp1-fib-script:
 #     -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "sp1" "fib" "$arg"; done
 
 bench-sp1-ec-time:
-    -for arg in {{EC_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" -- --program ec && cd ..; done
+    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" -- --program ec && cd ..; done
 
 bench-sp1-ec-mem:
-    -for arg in {{EC_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program ec && cd ..; done
+    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program ec && cd ..; done
 
 bench-sp1-ec-precompile-time:
-    -for arg in {{EC_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-ec-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program ec-precompile && cd ..; done
+    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program ec-precompile && cd ..; done
 
 bench-sp1-ec-precompile-mem:
-    -for arg in {{EC_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-ec-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program ec-precompile && cd ..; done
+    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program ec-precompile && cd ..; done
 
 bench-sp1-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2 && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2 && cd ..; done
 
 bench-sp1-sha2-mem:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2 && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2 && cd ..; done
 
 bench-sp1-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
 
 bench-sp1-sha2-chain-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-chain && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-chain && cd ..; done
 
 bench-sp1-sha2-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-precompile && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-precompile && cd ..; done
 
 bench-sp1-sha2-precompile-mem:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-precompile && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-precompile && cd ..; done
 
 bench-sp1-sha2-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain-precompile && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain-precompile && cd ..; done
 
 bench-sp1-sha2-chain-precompile-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-chain-precompile && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha2-chain-precompile && cd ..; done
 
 bench-sp1-sha3-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-precompile && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-precompile && cd ..; done
 
 bench-sp1-sha3-precompile-mem:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-precompile && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-precompile && cd ..; done
 
 bench-sp1-sha3-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain-precompile && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain-precompile && cd ..; done
 
 bench-sp1-sha3-chain-precompile-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-chain-precompile && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-chain-precompile && cd ..; done
 
 bench-sp1-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3 && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3 && cd ..; done
 
 bench-sp1-sha3-mem:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3 && cd ..; done
+    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3 && cd ..; done
 
 bench-sp1-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain && cd ..; done
 
 bench-sp1-sha3-chain-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-chain && cd ..; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program sha3-chain && cd ..; done
 
 bench-sp1-mat-mul-time:
-    -for arg in {{MATMUL_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" -- --program mat-mul && cd ..; done
+    -for arg in {{MATMUL_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" -- --program mat-mul && cd ..; done
 
 bench-sp1-mat-mul-mem:
-    -for arg in {{MATMUL_ARGS}}; do cd sp1 && rustup install && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program mat-mul && cd ..; done
+    -for arg in {{MATMUL_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" --bench-mem -- --program mat-mul && cd ..; done
 
 # bench-sp1-binary-search-time:
 #     -for arg in {{BINARY_SEARCH_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-binary-search --bin target/release/sp1-script --bench-arg "$arg" -- --program binary-search && cd ..; done
@@ -383,13 +383,13 @@ build-stone-steps:
 	-cd stone/cairo-vm/cairo1-run && make deps
 
 bench-stone-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd stone/fibonacci && rustup install && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" && cd ../..; done
+    -for arg in {{FIB_ARGS}}; do cd stone/fibonacci && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-fib-mem:
     -for arg in {{FIB_ARGS}}; do cd stone/fibonacci && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
 
 bench-stone-mat-time:
-    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && rustup install && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" && cd ../..; done
+    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
 bench-stone-mat-mem:
     -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" --bench-mem && cd ../..; done
@@ -456,7 +456,6 @@ bench-stwo: build-stwo
 
 build-stwo:
     cd stwo && cargo build --release
-    cd stwo && rustup install
     cd stwo/fibonacci && scarb build
     cd stwo/mat_mul && scarb build
     -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git && cd stwo-cairo && git checkout 36092a6f4c145b71fc275e3712e8df4df50b5dc6

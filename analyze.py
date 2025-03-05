@@ -146,6 +146,10 @@ def _(mo):
             file_paths.pop("stone", None)
             # file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
+        if bench_name == 'mat-mul':
+            file_paths.pop("jolt", None)
+            # file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
+
         combined_df = None  # Start with an empty DataFrame
 
         for name, path in file_paths.items():

@@ -35,7 +35,7 @@ bench-jolt:
     # just bench-jolt-sha2-chain
     just bench-jolt-sha3
     just bench-jolt-sha3-chain
-    just bench-jolt-mat-mul
+    # just bench-jolt-mat-mul
     # just bench-jolt-ec
     # just bench-jolt-binary-search
 

@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.11.8"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", app_title="ZKVM Benchmarks Report")
 
 
 @app.cell
@@ -55,6 +55,7 @@ def _(mo):
                     "table_prover_n_tasks_per_segment": 32
                 }
                 ```
+            - Benchmarks which run out of memory have been indicate by `*` in the tables.
         """
     )
     return
@@ -204,6 +205,8 @@ def _(mo):
         plt.legend()
         plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
+        plt.xticks(df["n"], df["n"], rotation=45)
+
         # Save the plot as a PNG file
         filename = f"./plots/{bench_name}_{title.replace(' ', '_').lower()}.png"
         plt.savefig(filename, dpi=300)
@@ -221,6 +224,16 @@ def _(mo):
 
     def get_tables(bench_tuple):
         prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = get_data(bench_tuple)
+
+        # Assuming your DataFrames may have NaN or empty strings
+        dataframes = [prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df]
+    
+        # Replace NaN or empty strings with "*"
+        dataframes = [df.replace({None: "*", "": "*"}).fillna("*") for df in dataframes]
+    
+        # Unpack back to original variables if needed
+        prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = dataframes
+
         prover_table = mo.ui.table(
             data=prover_time_df,
             label="Prover Time (s)",

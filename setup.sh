@@ -13,7 +13,7 @@ rustup install nightly-2025-01-02
 
 # Install Python3.10
 sudo apt install -y software-properties-common
-sudo add-apt-repository ppa:deadsnakes/ppa
+sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt update -y
 sudo apt install -y python3.10 python3.10-venv python3.10-distutils
 

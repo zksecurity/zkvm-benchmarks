@@ -5,11 +5,17 @@ app = marimo.App(width="medium", app_title="ZKVM Benchmarks Report")
 
 
 @app.cell
+def _():
+    import marimo as mo
+    from IPython.display import display, HTML
+    return HTML, display, mo
+
+
+@app.cell
 def _(mo):
     mo.md(
         r"""
         # zkvm benchmarks
-
         - Stone benchmarks were generated using the `dynamic` layout with the following configurations:
             - Parameters - `fri_step_list` and `last_layer_degree_bound` change dependeing on the size of the computation but other parameters remain same
                 ```
@@ -55,10 +61,30 @@ def _(mo):
                     "table_prover_n_tasks_per_segment": 32
                 }
                 ```
-            - Benchmarks which run out of memory have been indicate by `*` in the tables.
+        - Benchmarks which run out of memory have been indicate by `*` in the tables.
         """
     )
     return
+
+
+@app.cell
+def _(mo):
+    mo.md("""## Commit Hash""")
+    return
+
+
+@app.cell
+def _(HTML, display, mo):
+    commit_file = "./report_info/latest_commit.txt"
+
+    with open(commit_file, "r") as file1:
+        commit_hash = file1.readline().strip()  # Read first line and remove any trailing spaces/newlines
+
+    # print(commit_hash)
+
+    with mo.redirect_stdout():
+        display(HTML(f"<pre style='font-size:14px; color:black;'>{commit_hash}</pre>"))
+    return commit_file, commit_hash, file1
 
 
 @app.cell
@@ -68,37 +94,86 @@ def _(mo):
 
 
 @app.cell
-def _():
-    import marimo as mo
-    from pathlib import Path
-    from IPython.display import display, HTML
+def _(HTML, display, mo):
+    os_version_file = "./report_info/os_version.txt"
+    cpuinfo_file = "./report_info/cpuinfo.txt"
+    meminfo_file = "./report_info/meminfo.txt"
 
+    # OS Version
+    os_version = "Unknown"
+    with open(os_version_file, "r") as file:
+        for line in file:
+            if line.startswith("PRETTY_NAME="):
+                os_version = line.split("=", 1)[1].strip().strip('"')
+                break
+
+    # CPU Info
+    cpu_keys = [
+        "Architecture",
+        "CPU(s)",
+        "Model name",
+        "Thread(s) per core",
+        "Core(s) per socket",
+        "Socket(s)",
+        "L3 cache"
+    ]
+
+    cpu_info = {}
+
+    with open(cpuinfo_file, "r") as file:
+        for line in file:
+            for key in cpu_keys:
+                if line.startswith(key):
+                    value = line.split(":", 1)[1].strip()
+                    cpu_info[key] = value
+
+    # Memory Info
+    mem_keys = [
+        "MemTotal",
+        "MemFree",
+        "MemAvailable",
+        "Buffers",
+        "Cached",
+        "SwapTotal",
+        "SwapFree"
+    ]
+
+    mem_info = {}
+
+    with open(meminfo_file, "r") as file:
+        for line in file:
+            key_value = line.split(":", 1)
+            if len(key_value) == 2:
+                key, value = key_value[0].strip(), key_value[1].strip()
+                if key in mem_keys:
+                    mem_info[key] = value
+
+    # Display
     with mo.redirect_stdout():
-        txt_folder = Path("./machine_info/")
+        display(HTML(f"<pre style='font-size:16px; color:black;'>{os_version}</pre>"))
 
-        if not txt_folder.exists():
-            display(HTML("<p style='font-size:20px; color:red;'>The folder containing .txt files does not exist. Please ensure the path is correct.</p>"))
-        else:
-            txt_files = list(txt_folder.glob("*.txt"))
+        display(HTML("<pre style='font-size:16px; color:black;'>===== CPU Information =====</pre>"))
+        for key in cpu_keys:
+            display(HTML(f"<pre style='font-size:14px; color:black;'>{key}: {cpu_info.get(key, 'N/A')}</pre>"))
 
-            if not txt_files:
-                display(HTML("<p style='font-size:20px; color:blue;'>No .txt files found in the specified folder.</p>"))
-            else:
-                for txt_file in txt_files:
-                    with txt_file.open("r") as file:
-                        content = file.read()
-
-                    display(HTML(f"<pre style='font-size:14px; color:black;'>{content}</pre>"))
+        display(HTML("<pre style='font-size:16px; color:black;'>===== Memory Information =====</pre>"))
+        for key in mem_keys:
+            display(HTML(f"<pre style='font-size:14px; color:black;'>{key}: {mem_info.get(key, 'N/A')}</pre>"))
+        
     return (
-        HTML,
-        Path,
-        content,
-        display,
+        cpu_info,
+        cpu_keys,
+        cpuinfo_file,
         file,
-        mo,
-        txt_file,
-        txt_files,
-        txt_folder,
+        key,
+        key_value,
+        line,
+        mem_info,
+        mem_keys,
+        meminfo_file,
+        os_version,
+        os_version_file,
+        value,
     )
 
 
@@ -227,10 +302,11 @@ def _(mo):
 
         # Assuming your DataFrames may have NaN or empty strings
         dataframes = [prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df]
-    
+
         # Replace NaN or empty strings with "*"
-        dataframes = [df.replace({None: "*", "": "*"}).fillna("*") for df in dataframes]
-    
+        dataframes = [df.astype(str).replace({"nan": "*", "NaN": "*", "": "*"}) for df in dataframes]
+
+
         # Unpack back to original variables if needed
         prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = dataframes
 

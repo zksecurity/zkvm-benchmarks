@@ -16,8 +16,8 @@ build-utils:
 
 # Bench all
 bench-all: build-utils
-    just bench-jolt
-    just bench-risczero
+    # just bench-jolt
+    # just bench-risczero
     just bench-stone
     just bench-sp1
     just bench-stwo

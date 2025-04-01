@@ -25,27 +25,35 @@ cairo-run --version
 scarb --version
 
 # Capture Machine Info
-MACHINE_INFO_DIR="./machine_info"
-mkdir -p $MACHINE_INFO_DIR
+REPORT_INFO_DIR="./report_info"
+mkdir -p $REPORT_INFO_DIR
 
 echo "Capturing CPU information..."
-echo "=== CPU Information ===" > $MACHINE_INFO_DIR/cpuinfo.txt
-lscpu | grep -E "^(Model name|Architecture|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket|Socket\(s\)|CPU MHz|L3 cache)" >> $MACHINE_INFO_DIR/cpuinfo.txt
+echo "=== CPU Information ===" > $REPORT_INFO_DIR/cpuinfo.txt
+lscpu >> $REPORT_INFO_DIR/cpuinfo.txt
 
 echo "Capturing OS version information..."
 if [ -f /etc/os-release ]; then
-    PRETTY_NAME=$(grep "^PRETTY_NAME=" /etc/os-release | cut -d= -f2 | tr -d '"')
-    echo "OS Version Information: $PRETTY_NAME" > $MACHINE_INFO_DIR/os_version.txt
+    echo "=== OS Information ===" > $REPORT_INFO_DIR/os_version.txt
+    cat /etc/os-release >> $REPORT_INFO_DIR/os_version.txt
 else
-    OS_INFO=$(uname -a)
-    echo "OS Version Information: $OS_INFO" > $MACHINE_INFO_DIR/os_version.txt
+    echo "OS information file not found." > $REPORT_INFO_DIR/os_version.txt
 fi
 
 echo "Capturing memory information..."
-echo "=== Memory Information ===" > $MACHINE_INFO_DIR/meminfo.txt
-grep -E "^(MemTotal|MemFree|MemAvailable|Buffers|Cached|SwapTotal|SwapFree)" /proc/meminfo >> $MACHINE_INFO_DIR/meminfo.txt
+if [ -f /proc/meminfo ]; then
+    echo "=== Memory Information ===" > $REPORT_INFO_DIR/meminfo.txt
+    cat /proc/meminfo >> $REPORT_INFO_DIR/meminfo.txt
+else
+    echo "Memory information file not found." >> $REPORT_INFO_DIR/meminfo.txt
+fi
 
-echo "System information captured in $MACHINE_INFO_DIR:"
+# Capture Latest Commit
+REPO_PATH=${1:-"."}
+cd "$REPO_PATH" || { echo "Invalid repository path"; exit 1; }
+LATEST_COMMIT=$(git rev-parse HEAD)
+echo "$LATEST_COMMIT" > $REPORT_INFO_DIR/latest_commit.txt
+echo "Latest commit hash saved to $REPORT_INFO_DIR/latest_commit.txt: $LATEST_COMMIT"
 
 # Benchmark
 echo "Start benchmarking"

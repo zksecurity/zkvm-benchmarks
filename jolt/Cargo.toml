@@ -5,15 +5,15 @@ edition = "2021"
 
 [workspace]
 members = [
-    "sha2-chain-guest",
-    "sha3-chain-guest",
-    "sha2-guest",
-    "sha3-guest",
-    "fibonacci-guest",
-    # "bigmem-guest",
-    "mat-mul-guest",
-    "binary-search-guest",
-    "ec-guest"
+    "sha2-chain",
+    "sha3-chain",
+    "sha2",
+    "sha3",
+    "fib",
+    # "bigmem",
+    "mat-mul",
+    "binary-search",
+    "ec"
 ]
 
 [profile.release]
@@ -25,15 +25,15 @@ lto = "fat"
 jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["host"] }
 utils = { path = "../utils" }
 
-sha2-chain-guest = { path = "./sha2-chain-guest" }
-sha3-chain-guest = { path = "./sha3-chain-guest" }
-sha2-guest = { path = "./sha2-guest" }
-sha3-guest = { path = "./sha3-guest" }
-fibonacci-guest = { path = "./fibonacci-guest" }
-bigmem-guest = { path = "./bigmem-guest" }
-mat-mul-guest = { path = "./mat-mul-guest" }
-binary-search-guest = { path = "./binary-search-guest" }
-ec-guest = { path = "./ec-guest" }
+sha2-chain-guest = { path = "./sha2-chain" }
+sha3-chain-guest = { path = "./sha3-chain" }
+sha2-guest = { path = "./sha2" }
+sha3-guest = { path = "./sha3" }
+fibonacci-guest = { path = "./fib" }
+bigmem-guest = { path = "./bigmem" }
+mat-mul-guest = { path = "./mat-mul" }
+binary-search-guest = { path = "./binary-search" }
+ec-guest = { path = "./ec" }
 
 clap = { version = "4.5.26", features = ["derive"] } 
 

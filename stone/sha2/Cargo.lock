@@ -217,7 +217,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sha256"
+name = "stone"
 version = "0.1.0"
 dependencies = [
  "clap",

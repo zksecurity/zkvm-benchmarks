@@ -43,7 +43,7 @@ export PATH="$HOME/.sp1/bin:$PATH"
 sp1up
 
 # Install cairo
-VENV_PATH="$HOME/python-venv"
+VENV_PATH="$HOME/bench-venv"
 echo "Creating virtual environment in $VENV_PATH..."
 python3.10 -m venv "$VENV_PATH"
 echo "Activating virtual environment..."

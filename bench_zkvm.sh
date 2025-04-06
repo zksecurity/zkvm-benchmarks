@@ -15,17 +15,32 @@ CSV_FILE="benchmark_outputs/${BENCH_ZKVM}-${BENCH_NAME}.csv"
 BENCH_DIR="${BENCH_ZKVM}/${BENCH_NAME}"
 TMP_FILE="tmp_output.txt"
 BENCH_ZKVM_NAME="${BENCH_ZKVM}-${BENCH_NAME}"
+MEM_DIR="./memory_outputs"
+mkdir -p $MEM_DIR
+BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
 
 # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
 if [ "$BENCH_ZKVM" == "risczero" ]; then
     BENCH_BIN="target/release/host"
-    COMMAND="./mem.sh bash -c 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
-else
+    COMMAND="./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
+elif [ "$BENCH_ZKVM" == "sp1" ]; then
     BENCH_BIN="../target/release/sp1-script"
-    COMMAND="./mem.sh bash -c 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+elif [ "$BENCH_ZKVM" == "jolt" ]; then
+    BENCH_BIN="target/release/jolt-benchmarks"
+    COMMAND="./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+elif [ "$BENCH_ZKVM" == "stwo" ]; then
+    BENCH_BIN="target/release/stwo-script"
+    COMMAND="./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+elif [ "$BENCH_ZKVM" == "stone" ]; then
+    BENCH_BIN="target/release/stone"
+    COMMAND="./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
+else
+    echo "Error: Unknown zkVM '$BENCH_ZKVM'"
+    exit 1
 fi
 
-# Print results (optional, for debugging)
+# Print info
 echo "BENCH_ZKVM: $BENCH_ZKVM"
 echo "BENCH_NAME: $BENCH_NAME"
 echo "BENCH_ARG: $BENCH_ARG"
@@ -34,41 +49,37 @@ echo "BENCH_DIR: $BENCH_DIR"
 echo "BENCH_BIN: $BENCH_BIN"
 echo "COMMAND: $COMMAND"
 
-# Run the command and capture output
-echo "Running command..."
-eval $COMMAND > "$TMP_FILE" 2>&1
+# Run the benchmark
+echo "Running benchmark..."
+eval "$COMMAND"
 
-# Extract the peak memory value
-PEAK_MEMORY_MB=$(grep -oP 'Maximum memory usage: \K[0-9.]+' "$TMP_FILE")
-
-# Check if peak memory was found
-if [ -z "$PEAK_MEMORY_MB" ]; then
-    echo "Error: Could not extract peak memory value from command output."
+# Extract peak memory
+if [ -f "$BENCH_OUT" ]; then
+    PEAK_MEMORY_BYTES=$(awk 'BEGIN { max = 0 } { if ($2 > max) max = $2 } END { print max }' "$BENCH_OUT")
+    echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
+else
+    echo "Error: Benchmark output file not found at $BENCH_OUT"
     exit 1
 fi
 
-# Convert peak memory from MB to GB (1 GB = 1024 MB)
-PEAK_MEMORY_GB=$(echo "scale=2; $PEAK_MEMORY_MB / 1024" | bc)
+# Convert bytes to GB (1 GB = 1024 * 1024 * 1024 bytes)
+PEAK_MEMORY_GB=$(echo "scale=2; $PEAK_MEMORY_BYTES / (1024 * 1024 * 1024)" | bc)
 
 echo "Extracted peak memory: $PEAK_MEMORY_GB GB"
 
 # Update the CSV file
 if [ ! -f "$CSV_FILE" ]; then
-    echo "Error: File $CSV_FILE not found."
+    echo "Error: CSV file $CSV_FILE not found."
     exit 1
 fi
 
 awk -v peak_memory="$PEAK_MEMORY_GB" -v row_id="$ROW_IDENTIFIER" -F, '
 BEGIN { OFS = FS } 
 {
-    # If the first column matches the row identifier, update the last column
     if ($1 == row_id) {
         $6 = peak_memory;
     }
-    print $0;
-}' "$CSV_FILE" > temp.csv && mv temp.csv "$CSV_FILE"
+    print
+}' "$CSV_FILE" > tmp_csv_update.csv && mv tmp_csv_update.csv "$CSV_FILE"
 
 echo "Updated $CSV_FILE with peak memory $PEAK_MEMORY_GB GB for row $ROW_IDENTIFIER."
-
-# Clean up temporary file
-rm -f "$TMP_FILE"

@@ -57,49 +57,49 @@ bench-jolt-fib-time:
     -for arg in {{FIB_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program fib && cd ..; done
 
 bench-jolt-fib-mem:
-    -for arg in {{FIB_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "fib" "$arg"; done
+    -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
 
 
 bench-jolt-ec-time:
     -for arg in {{EC_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-ec --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program ec && cd ..; done
 
 bench-jolt-ec-mem:
-    -for arg in {{EC_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "ec" "$arg"; done
+    -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "jolt" "ec" "$arg"; done
 
 
 bench-jolt-sha2-time:
     -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2 && cd ..; done
 
 bench-jolt-sha2-mem:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
 
 
 bench-jolt-sha2-chain-time:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2-chain && cd ..; done
 
 bench-jolt-sha2-chain-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "sha2-chain" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "jolt" "sha2-chain" "$arg"; done
 
 
 bench-jolt-sha3-time:
     -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3 && cd ..; done
 
 bench-jolt-sha3-mem:
-    -for arg in {{SHA_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
 
 
 bench-jolt-sha3-chain-time:
     -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3-chain && cd ..; done
 
 bench-jolt-sha3-chain-mem:
-    -for arg in {{SHA_CHAIN_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
 
 
 bench-jolt-mat-mul-time:
 	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program mat-mul && cd ..; done
 
 bench-jolt-mat-mul-mem:
-    -for arg in {{MATMUL_ARGS}}; do sudo PATH="$PATH" ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
+    -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
 
 
 #####

@@ -28,7 +28,7 @@ elif [ "$BENCH_ZKVM" == "sp1" ]; then
     COMMAND="sudo ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
 elif [ "$BENCH_ZKVM" == "jolt" ]; then
     BENCH_BIN="target/release/jolt-benchmarks"
-    COMMAND="sudo ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="sudo PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
 elif [ "$BENCH_ZKVM" == "stwo" ]; then
     BENCH_BIN="target/release/stwo-script"
     COMMAND="sudo ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"

@@ -39,16 +39,16 @@ fn main() {
             bench_fibonacci(cli.n)
         },
         "sha2" => {
-            bench_sha256(cli.n)
+            bench_sha2(cli.n)
         },
         "sha3" => {
-            bench_keccak(cli.n)
+            bench_sha3(cli.n)
         },
         "sha3-chain" => {
-            bench_keccak_chain(cli.n)
+            bench_sha3_chain(cli.n)
         },
         "sha2-chain" => {
-            bench_sha256_chain(cli.n)
+            bench_sha2_chain(cli.n)
         },
         "mat-mul" => {
             bench_mat_mul(cli.n)
@@ -64,7 +64,7 @@ fn main() {
 
 fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
 
-    let bench_dir = "fibonacci".to_string();
+    let bench_dir = "fib".to_string();
     
     if let Err(e) = env::set_current_dir(Path::new(&bench_dir)) {
         eprintln!("Failed to change directory: {}", e);
@@ -216,19 +216,19 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }
 
-fn bench_sha256(n: u32) -> (Duration, usize, Duration, usize) {
+fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
 
     let input = format!("{{\"iterations\": {}}}", n);
-    let program_input = "./sha256/input.json";
+    let program_input = "./sha2/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
-    let program_path = "../stone/sha256/programs/sha256.cairo".to_string();
-    let output_path = "./sha256/sha256.json".to_string();
+    let program_path = "../stone/sha2/programs/sha256.cairo".to_string();
+    let output_path = "./sha2/sha2.json".to_string();
 
-    let public_input = "./sha256/public_input.json".to_string();
-    let private_input = "./sha256/private_input.json".to_string();
-    let trace = "./sha256/trace.bin".to_string();
-    let memory = "./sha256/memory.bin".to_string();
+    let public_input = "./sha2/public_input.json".to_string();
+    let private_input = "./sha2/private_input.json".to_string();
+    let trace = "./sha2/trace.bin".to_string();
+    let memory = "./sha2/memory.bin".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
@@ -267,7 +267,7 @@ fn bench_sha256(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
-    let proof_path = format!("./sha256/proof_{}.json", n);
+    let proof_path = format!("./sha2/proof_{}.json", n);
     let adapted_command = format!(
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path
@@ -299,19 +299,19 @@ fn bench_sha256(n: u32) -> (Duration, usize, Duration, usize) {
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }
 
-fn bench_sha256_chain(n: u32) -> (Duration, usize, Duration, usize) {
+fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
 
     let input = format!("{{\"iterations\": {}}}", n);
-    let program_input = "./sha256-chain/input.json";
+    let program_input = "./sha2-chain/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
-    let program_path = "../stone/sha256-chain/programs/sha256_chain.cairo".to_string();
-    let output_path = "./sha256-chain/sha256_chain.json".to_string();
+    let program_path = "../stone/sha2-chain/programs/sha256_chain.cairo".to_string();
+    let output_path = "./sha2-chain/sha2_chain.json".to_string();
 
-    let public_input = "./sha256-chain/public_input.json".to_string();
-    let private_input = "./sha256-chain/private_input.json".to_string();
-    let trace = "./sha256-chain/trace.bin".to_string();
-    let memory = "./sha256-chain/memory.bin".to_string();
+    let public_input = "./sha2-chain/public_input.json".to_string();
+    let private_input = "./sha2-chain/private_input.json".to_string();
+    let trace = "./sha2-chain/trace.bin".to_string();
+    let memory = "./sha2-chain/memory.bin".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
@@ -349,7 +349,7 @@ fn bench_sha256_chain(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
-    let proof_path = format!("./sha256-chain/proof_{}.json", n);
+    let proof_path = format!("./sha2-chain/proof_{}.json", n);
     let adapted_command = format!(
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path
@@ -382,19 +382,19 @@ fn bench_sha256_chain(n: u32) -> (Duration, usize, Duration, usize) {
 }
 
 
-fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
+fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
 
     let input = format!("{{\"iterations\": {}}}", n);
-    let program_input = "./keccak/input.json";
+    let program_input = "./sha3/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
-    let program_path = "../stone/keccak/programs/cairo_keccak.cairo".to_string();
-    let output_path = "./keccak/keccak.json".to_string();
+    let program_path = "../stone/sha3/programs/cairo_keccak.cairo".to_string();
+    let output_path = "./sha3/sha3.json".to_string();
 
-    let public_input = "./keccak/public_input.json".to_string();
-    let private_input = "./keccak/private_input.json".to_string();
-    let trace = "./keccak/trace.bin".to_string();
-    let memory = "./keccak/memory.bin".to_string();
+    let public_input = "./sha3/public_input.json".to_string();
+    let private_input = "./sha3/private_input.json".to_string();
+    let trace = "./sha3/trace.bin".to_string();
+    let memory = "./sha3/memory.bin".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
@@ -432,7 +432,7 @@ fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
-    let proof_path = format!("./keccak/proof_{}.json", n);
+    let proof_path = format!("./sha3/proof_{}.json", n);
     let adapted_command = format!(
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path
@@ -464,19 +464,19 @@ fn bench_keccak(n: u32) -> (Duration, usize, Duration, usize) {
     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
 }
 
-fn bench_keccak_chain(n: u32) -> (Duration, usize, Duration, usize) {
+fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
 
     let input = format!("{{\"iterations\": {}}}", n);
-    let program_input = "./keccak-chain/input.json";
+    let program_input = "./sha3-chain/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
-    let program_path = "../stone/keccak-builtin-chain/programs/keccak.cairo".to_string();
-    let output_path = "./keccak-chain/keccak_chain.json".to_string();
+    let program_path = "../stone/sha3-builtin-chain/programs/keccak.cairo".to_string();
+    let output_path = "./sha3-chain/sha3_chain.json".to_string();
 
-    let public_input = "./keccak-chain/public_input.json".to_string();
-    let private_input = "./keccak-chain/private_input.json".to_string();
-    let trace = "./keccak-chain/trace.bin".to_string();
-    let memory = "./keccak-chain/memory.bin".to_string();
+    let public_input = "./sha3-chain/public_input.json".to_string();
+    let private_input = "./sha3-chain/private_input.json".to_string();
+    let trace = "./sha3-chain/trace.bin".to_string();
+    let memory = "./sha3-chain/memory.bin".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
@@ -514,7 +514,7 @@ fn bench_keccak_chain(n: u32) -> (Duration, usize, Duration, usize) {
     }
 
     println!("Running Stwo Prover...");
-    let proof_path = format!("./keccak-chain/proof_{}.json", n);
+    let proof_path = format!("./sha3-chain/proof_{}.json", n);
     let adapted_command = format!(
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path

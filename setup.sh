@@ -92,6 +92,7 @@ cargo install --git https://github.com/zksecurity/stone-cli.git
 # # asdf global scarb latest:nightly
 # echo "scarb nightly-2025-02-26" >> $HOME/.tool-versions
 curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v nightly-2025-02-26
+export PATH="$HOME/.local/bin:$PATH"
 
 # Check Setup
 rustc --version

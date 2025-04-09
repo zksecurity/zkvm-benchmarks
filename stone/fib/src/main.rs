@@ -11,7 +11,7 @@ fn main() {
 
 fn run(n: u32, bench_mem: bool) {
     // get cycle count command
-    let program_file = "../../fibonacci/programs/fibonacci.cairo".to_string();
+    let program_file = "../../fib/programs/fibonacci.cairo".to_string();
     let program_input = format!("[{}]", n).to_string();
     let steps_command = format!("cargo run {} --layout dynamic --cairo_layout_params_file ../../configs/cairo_layout_params_file.json --cairo_pie_output get_steps.zip --args '{}'", program_file, program_input).to_string();
 
@@ -78,7 +78,7 @@ fn run(n: u32, bench_mem: bool) {
     };
     
     // prove and verify
-    let prove_dir = "../../fibonacci".to_string();
+    let prove_dir = "../../fib".to_string();
     std::env::set_current_dir(&prove_dir).unwrap();
     let (proof_bytes, duration, verifier_duration) = prove_and_verify(command, args.to_vec(), output_file.clone());
 

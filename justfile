@@ -19,7 +19,7 @@ bench-all: build-utils
     # just bench-sp1
     # just bench-risczero
     just bench-stone
-    just bench-stwo
+    # just bench-stwo
 
 
 #####
@@ -375,21 +375,21 @@ bench-stone: build-stone
 
 bench-stone-mem:
     just bench-stone-fib-mem
-    just bench-stone-sha3-mem
-    just bench-stone-sha3-builtin-mem
-    just bench-stone-sha3-builtin-chain-mem
-    just bench-stone-mat-mem
-    just bench-stone-sha2-mem
-    # just bench-stone-sha2-chain-mem
+    # just bench-stone-sha3-mem
+    # just bench-stone-sha3-builtin-mem
+    # just bench-stone-sha3-builtin-chain-mem
+    # just bench-stone-mat-mem
+    # just bench-stone-sha2-mem
+    # # just bench-stone-sha2-chain-mem
 
 bench-stone-time:
     just bench-stone-fib-time
-    just bench-stone-sha3-time
-    just bench-stone-sha3-builtin-time
-    just bench-stone-sha3-builtin-chain-time
-    just bench-stone-mat-time
-    just bench-stone-sha2-time
-    # just bench-stone-sha2-chain-time
+    # just bench-stone-sha3-time
+    # just bench-stone-sha3-builtin-time
+    # just bench-stone-sha3-builtin-chain-time
+    # just bench-stone-mat-time
+    # just bench-stone-sha2-time
+    # # just bench-stone-sha2-chain-time
 
 
 bench-stone-fib-time:

@@ -9,7 +9,7 @@ source $HOME/.bashrc
 export PATH="$HOME/.cargo/env:$PATH"
 export PATH="$HOME/.risc0/bin:$PATH"
 export PATH="$HOME/.sp1/bin:$PATH"
-export PATH="/usr/local/bin:$HOME/.asdf/shims:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 VENV_PATH="$HOME/bench-venv"
 echo "Activating virtual environment..."

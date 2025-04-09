@@ -19,13 +19,13 @@ sudo apt install -y python3.10 python3.10-venv python3.10-distutils
 
 # Install other dependencies
 sudo apt update -y
-sudo apt install -y heaptrack
+# sudo apt install -y heaptrack
 sudo apt install -y build-essential
 sudo apt install -y pkg-config
 sudo apt install -y libssl-dev
 sudo apt install -y libgmp-dev
 sudo apt install -y clang
-sudo apt install -y age
+# sudo apt install -y age
 sudo apt install -y just
 sudo apt install -y unzip
 

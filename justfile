@@ -19,7 +19,7 @@ bench-all: build-utils
     # just bench-sp1
     # just bench-risczero
     just bench-stone
-    # just bench-stwo
+    just bench-stwo
 
 
 #####
@@ -468,19 +468,19 @@ build-stwo:
 
 bench-stwo-mem:
     just bench-stwo-fib-mem
-    just bench-stwo-sha2-mem
-    just bench-stwo-sha3-mem
-    just bench-stwo-sha3-chain-mem
-    just bench-stwo-sha2-chain-mem
-    just bench-stwo-mat-mul-mem
+    # just bench-stwo-sha2-mem
+    # just bench-stwo-sha3-mem
+    # just bench-stwo-sha3-chain-mem
+    # just bench-stwo-sha2-chain-mem
+    # just bench-stwo-mat-mul-mem
 
 bench-stwo-time:
     just bench-stwo-fib-time
-    just bench-stwo-sha2-time
-    just bench-stwo-sha3-time
-    just bench-stwo-sha3-chain-time
-    just bench-stwo-sha2-chain-time
-    just bench-stwo-mat-mul-time
+    # just bench-stwo-sha2-time
+    # just bench-stwo-sha3-time
+    # just bench-stwo-sha3-chain-time
+    # just bench-stwo-sha2-chain-time
+    # just bench-stwo-mat-mul-time
 
 bench-stwo-fib-mem:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done

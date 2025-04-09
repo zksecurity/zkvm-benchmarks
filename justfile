@@ -375,21 +375,21 @@ bench-stone: build-stone
 
 bench-stone-mem:
     just bench-stone-fib-mem
-    # just bench-stone-sha3-mem
-    # just bench-stone-sha3-builtin-mem
-    # just bench-stone-sha3-builtin-chain-mem
-    # just bench-stone-mat-mem
-    # just bench-stone-sha2-mem
-    # # just bench-stone-sha2-chain-mem
+    just bench-stone-sha3-mem
+    just bench-stone-sha3-builtin-mem
+    just bench-stone-sha3-builtin-chain-mem
+    just bench-stone-mat-mem
+    just bench-stone-sha2-mem
+    # just bench-stone-sha2-chain-mem
 
 bench-stone-time:
     just bench-stone-fib-time
-    # just bench-stone-sha3-time
-    # just bench-stone-sha3-builtin-time
-    # just bench-stone-sha3-builtin-chain-time
-    # just bench-stone-mat-time
-    # just bench-stone-sha2-time
-    # # just bench-stone-sha2-chain-time
+    just bench-stone-sha3-time
+    just bench-stone-sha3-builtin-time
+    just bench-stone-sha3-builtin-chain-time
+    just bench-stone-mat-time
+    just bench-stone-sha2-time
+    # just bench-stone-sha2-chain-time
 
 
 bench-stone-fib-time:
@@ -468,19 +468,19 @@ build-stwo:
 
 bench-stwo-mem:
     just bench-stwo-fib-mem
-    # just bench-stwo-sha2-mem
-    # just bench-stwo-sha3-mem
-    # just bench-stwo-sha3-chain-mem
-    # just bench-stwo-sha2-chain-mem
-    # just bench-stwo-mat-mul-mem
+    just bench-stwo-sha2-mem
+    just bench-stwo-sha3-mem
+    just bench-stwo-sha3-chain-mem
+    just bench-stwo-sha2-chain-mem
+    just bench-stwo-mat-mul-mem
 
 bench-stwo-time:
     just bench-stwo-fib-time
-    # just bench-stwo-sha2-time
-    # just bench-stwo-sha3-time
-    # just bench-stwo-sha3-chain-time
-    # just bench-stwo-sha2-chain-time
-    # just bench-stwo-mat-mul-time
+    just bench-stwo-sha2-time
+    just bench-stwo-sha3-time
+    just bench-stwo-sha3-chain-time
+    just bench-stwo-sha2-chain-time
+    just bench-stwo-mat-mul-time
 
 bench-stwo-fib-mem:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done

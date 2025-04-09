@@ -159,7 +159,6 @@ def _(HTML, display, mo):
         display(HTML("<pre style='font-size:16px; color:black;'>===== Memory Information =====</pre>"))
         for key in mem_keys:
             display(HTML(f"<pre style='font-size:14px; color:black;'>{key}: {mem_info.get(key, 'N/A')}</pre>"))
-        
     return (
         cpu_info,
         cpu_keys,
@@ -457,14 +456,14 @@ def _(fib_cycle_count_plot, mo):
 
 
 @app.cell
-def _():
-    # mo.vstack([fib_peak_memory_table])
+def _(fib_peak_memory_table, mo):
+    mo.vstack([fib_peak_memory_table])
     return
 
 
 @app.cell
-def _():
-    # mo.image(fib_peak_memory_plot, height=500, width=700, rounded=True)
+def _(fib_peak_memory_plot, mo):
+    mo.image(fib_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
@@ -551,14 +550,14 @@ def _(mo, sha2_cycle_count_plot):
 
 
 @app.cell
-def _():
-    # mo.vstack([sha2_peak_memory_table])
+def _(mo, sha2_peak_memory_table):
+    mo.vstack([sha2_peak_memory_table])
     return
 
 
 @app.cell
-def _():
-    # mo.image(sha2_peak_memory_plot, height=500, width=700, rounded=True)
+def _(mo, sha2_peak_memory_plot):
+    mo.image(sha2_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
@@ -645,14 +644,14 @@ def _(mo, sha3_cycle_count_plot):
 
 
 @app.cell
-def _():
-    # mo.vstack([sha3_peak_memory_table])
+def _(mo, sha3_peak_memory_table):
+    mo.vstack([sha3_peak_memory_table])
     return
 
 
 @app.cell
-def _():
-    # mo.image(sha3_peak_memory_plot, height=500, width=700, rounded=True)
+def _(mo, sha3_peak_memory_plot):
+    mo.image(sha3_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
@@ -667,7 +666,7 @@ def _(mo, pd):
     path = f'./benchmark_outputs/stone-sha3-builtin.csv'
     stone_sha3_builtin_df = pd.read_csv(path)
     stone_sha3_builtin_df["n"] *= 200  # Multiply n column by 200
-    stone_sha3_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
+    # stone_sha3_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
     stone_sha3_builtin_table = mo.ui.table(
             data=stone_sha3_builtin_df,
             label="Stone benchmark with Keccak Builtin",
@@ -761,14 +760,14 @@ def _(mo, sha3_chain_cycle_count_plot):
 
 
 @app.cell
-def _():
-    # mo.vstack([sha3_chain_peak_memory_table])
+def _(mo, sha3_chain_peak_memory_table):
+    mo.vstack([sha3_chain_peak_memory_table])
     return
 
 
 @app.cell
-def _():
-    # mo.image(sha3_chain_peak_memory_plot, height=500, width=700, rounded=True)
+def _(mo, sha3_chain_peak_memory_plot):
+    mo.image(sha3_chain_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 
@@ -782,7 +781,7 @@ def _(mo):
 def _(mo, pd):
     path_chain = f'./benchmark_outputs/stone-sha3-chain-builtin.csv'
     stone_sha3_chain_builtin_df = pd.read_csv(path_chain)
-    stone_sha3_chain_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
+    # stone_sha3_chain_builtin_df.drop(columns=["peak memory"], inplace=True, errors='ignore')
     stone_sha3_chain_builtin_table = mo.ui.table(
             data=stone_sha3_chain_builtin_df,
             label="Stone benchmark with Keccak-Chain Builtin",
@@ -880,14 +879,14 @@ def _(mat_mul_cycle_count_plot, mo):
 
 
 @app.cell
-def _():
-    # mo.vstack([mat_mul_peak_memory_table])
+def _(mat_mul_peak_memory_table, mo):
+    mo.vstack([mat_mul_peak_memory_table])
     return
 
 
 @app.cell
-def _():
-    # mo.image(mat_mul_peak_memory_plot, height=500, width=700, rounded=True)
+def _(mat_mul_peak_memory_plot, mo):
+    mo.image(mat_mul_peak_memory_plot, height=500, width=700, rounded=True)
     return
 
 

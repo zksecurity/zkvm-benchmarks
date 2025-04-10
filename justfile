@@ -15,11 +15,11 @@ build-utils:
 
 # Bench all
 bench-all: build-utils
+    just bench-stone
+    just bench-stwo
     just bench-jolt
     just bench-sp1
     just bench-risczero
-    just bench-stone
-    just bench-stwo
 
 
 #####
@@ -359,7 +359,7 @@ build-stone:
     cd stone/fib && cargo build --release
     cd stone/sha3 && cargo build --release
     cd stone/sha3-builtin && cargo build --release
-    cd stone/sha3-builtin-chain && cargo build --release
+    cd stone/sha3-chain-builtin && cargo build --release
     cd stone/sha2 && cargo build --release
     cd stone/sha2-chain && cargo build --release
     cd stone/mat-mul && cargo build --release
@@ -377,7 +377,7 @@ bench-stone-mem:
     just bench-stone-fib-mem
     just bench-stone-sha3-mem
     just bench-stone-sha3-builtin-mem
-    just bench-stone-sha3-builtin-chain-mem
+    just bench-stone-sha3-chain-builtin-mem
     just bench-stone-mat-mem
     just bench-stone-sha2-mem
     # just bench-stone-sha2-chain-mem
@@ -386,7 +386,7 @@ bench-stone-time:
     just bench-stone-fib-time
     just bench-stone-sha3-time
     just bench-stone-sha3-builtin-time
-    just bench-stone-sha3-builtin-chain-time
+    just bench-stone-sha3-chain-builtin-time
     just bench-stone-mat-time
     just bench-stone-sha2-time
     # just bench-stone-sha2-chain-time
@@ -432,10 +432,10 @@ bench-stone-sha3-builtin-mem:
 # 29440 / 200 = 147.2
 # 58880 / 200 = 294.4
 # 117760 / 200 = 588.8
-bench-stone-sha3-builtin-chain-time:
-    -for arg in 37 74 148 295 589; do cd stone/sha3-builtin-chain && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
+bench-stone-sha3-chain-builtin-time:
+    -for arg in 37 74 148 295 589; do cd stone/sha3-chain-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
 
-bench-stone-sha3-builtin-chain-mem:
+bench-stone-sha3-chain-builtin-mem:
     -for arg in 37 74 148 295 589; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
 bench-stone-sha2-time:

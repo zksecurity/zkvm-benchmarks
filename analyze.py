@@ -16,6 +16,19 @@ def _(mo):
     mo.md(
         r"""
         # zkvm benchmarks
+
+
+
+        - Overview of zkVM and Proof Systems
+
+            | zkVM / Proof System   | Architecture   | Frontend   | Backend       |
+            |:----------------------|:---------------|:-----------|:--------------|
+            | [RISC Zero](https://github.com/risc0/risc0)             | RISC-V         | Rust       | STARK-based   |
+            | [SP1](https://github.com/succinctlabs/sp1)       | RISC-V         | Rust       | STARK-based   |
+            | [Jolt](https://github.com/a16z/jolt)                  | RISC-V         | Rust       | Lookup-based  |
+            | [Stone](https://github.com/starkware-libs/stone-prover)                 | Cairo VM       | Cairo      | STARK-based   |
+            | [Stwo](https://github.com/starkware-libs/stwo)                  | Cairo VM       | Cairo      | STARK-based   |
+
         - Stone benchmarks were generated using the `dynamic` layout with the following configurations:
             - Parameters - `fri_step_list` and `last_layer_degree_bound` change dependeing on the size of the computation but other parameters remain same
                 ```
@@ -69,22 +82,27 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md("""## Commit Hash""")
+    mo.md("""## Time and Commit Hash""")
     return
 
 
 @app.cell
 def _(HTML, display, mo):
     commit_file = "./report_info/latest_commit.txt"
-
     with open(commit_file, "r") as file1:
         commit_hash = file1.readline().strip()  # Read first line and remove any trailing spaces/newlines
 
-    # print(commit_hash)
+    time_file = "./report_info/time_stamp.txt"
+    with open(time_file, "r") as file1:
+        time = file1.readline().strip()  # Read first line and remove any trailing spaces/newlines
 
     with mo.redirect_stdout():
-        display(HTML(f"<pre style='font-size:14px; color:black;'>{commit_hash}</pre>"))
-    return commit_file, commit_hash, file1
+        display(HTML(f"<pre style='font-size:12px; color:black;'>Time Stamp: {time}</pre>"))
+        display(HTML(f"<pre style='font-size:12px; color:black;'>Commit Hash: {commit_hash}</pre>"))
+        display(HTML("<br>"))
+    
+
+    return commit_file, commit_hash, file1, time, time_file
 
 
 @app.cell
@@ -150,15 +168,19 @@ def _(HTML, display, mo):
 
     # Display
     with mo.redirect_stdout():
-        display(HTML(f"<pre style='font-size:16px; color:black;'>{os_version}</pre>"))
+        display(HTML("<pre style='font-size:14px; color:black;'>===== OS Information =====</pre>"))
+        display(HTML(f"<pre style='font-size:12px; color:black;'>{os_version}</pre>"))
 
-        display(HTML("<pre style='font-size:16px; color:black;'>===== CPU Information =====</pre>"))
+        display(HTML("<br>"))
+        display(HTML("<pre style='font-size:14px; color:black;'>===== CPU Information =====</pre>"))
         for key in cpu_keys:
-            display(HTML(f"<pre style='font-size:14px; color:black;'>{key}: {cpu_info.get(key, 'N/A')}</pre>"))
+            display(HTML(f"<pre style='font-size:12px; color:black;'>{key}: {cpu_info.get(key, 'N/A')}</pre>"))
 
-        display(HTML("<pre style='font-size:16px; color:black;'>===== Memory Information =====</pre>"))
+        display(HTML("<br>"))
+        display(HTML("<pre style='font-size:14px; color:black;'>===== Memory Information =====</pre>"))
         for key in mem_keys:
-            display(HTML(f"<pre style='font-size:14px; color:black;'>{key}: {mem_info.get(key, 'N/A')}</pre>"))
+            display(HTML(f"<pre style='font-size:12px; color:black;'>{key}: {mem_info.get(key, 'N/A')}</pre>"))
+        display(HTML("<br>"))
     return (
         cpu_info,
         cpu_keys,
@@ -241,35 +263,51 @@ def _(mo):
 
         return combined_df
 
+
     def plot_benchmark(df, title, y_label, bench_tuple, column_name):
-        """Plot the benchmark data with dynamically chosen colors and markers, then save it as a PNG."""
+        """Plot the benchmark data with fixed color and marker mapping per column."""
         bench_name, _, is_builtin = bench_tuple
 
-        # Define a set of markers and colors, then cycle through them if needed
-        marker_list = ['o', 's', 'D', '^', 'v', '*', 'P', 'X']
-        color_list = ['b', 'r', 'g', 'm', 'c', 'y', 'k', '#ff7f0e']
-
-        markers = itertools.cycle(marker_list)  # Cycle through markers if needed
-        colors = itertools.cycle(color_list)  # Cycle through colors if needed
+        # Define fixed markers and colors for each column
+        style_map = {
+            'jolt': ('o', 'b'),
+            'r0': ('s', 'r'),
+            'sp1': ('D', 'g'),
+            'stone': ('^', 'm'),
+            'stwo': ('v', 'c'),
+            'r0-precompile': ('*', 'y'),
+            'sp1-precompile': ('P', 'k'),
+            'stone-builtin': ('h', '#8B0000'),
+        }
 
         plt.figure(figsize=(8, 6))
 
         for col in df.columns[1:]:  # Skip "n" column
+            if col in style_map:
+                marker, color = style_map[col]
+            else:
+                marker, color = ('x', 'gray')  # fallback for unknown columns
+
             non_zero = df[col] != 0
             plt.plot(df["n"][non_zero], df[col][non_zero], 
-                     marker=next(markers), color=next(colors), label=col, linestyle='-')
+                     marker=marker, color=color, label=col, linestyle='-')
 
+        # Special handling for stone-builtin
         if bench_name == 'sha3' and is_builtin:
             path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
             stone_df = preprocess_data(pd.read_csv(path), column_name)
-            stone_df["n"] *= 200  # Multiply n column by 200
-            plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
+            stone_df["n"] *= 200
+            marker, color = style_map["stone-builtin"]
+            plt.plot(stone_df["n"], stone_df[column_name], marker=marker, color=color,
+                     label="stone-builtin", linestyle='-')
 
         if bench_name == 'sha3-chain' and is_builtin:
             path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
             stone_df = preprocess_data(pd.read_csv(path), column_name)
             stone_df["n"] = np.ceil(stone_df["n"] * (200 / 32))
-            plt.plot(stone_df["n"], stone_df[column_name], marker='h', color='#8B0000', label="stone-builtin", linestyle='-')
+            marker, color = style_map["stone-builtin"]
+            plt.plot(stone_df["n"], stone_df[column_name], marker=marker, color=color,
+                     label="stone-builtin", linestyle='-')
 
         plt.xlabel("n")
         plt.ylabel(y_label)
@@ -281,12 +319,13 @@ def _(mo):
 
         plt.xticks(df["n"], df["n"], rotation=45)
 
-        # Save the plot as a PNG file
+        # Save the plot
         filename = f"./plots/{bench_name}_{title.replace(' ', '_').lower()}.png"
         plt.savefig(filename, dpi=300)
-        plt.close()  # Close the figure to avoid displaying it
+        plt.close()
 
-        return filename  # Return the filename of the saved plot
+        return filename
+
 
     def get_data(bench_tuple):
         prover_time_df = combine_benchmark(bench_tuple, "prover time(ms)")

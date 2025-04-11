@@ -470,7 +470,7 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let program_input = "./sha3-chain/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
-    let program_path = "../stone/sha3-builtin-chain/programs/keccak.cairo".to_string();
+    let program_path = "../stone/sha3-chain-builtin/programs/keccak.cairo".to_string();
     let output_path = "./sha3-chain/sha3_chain.json".to_string();
 
     let public_input = "./sha3-chain/public_input.json".to_string();

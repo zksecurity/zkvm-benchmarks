@@ -1,0 +1,12 @@
+[package]
+name = "sha2-chain"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
+sha2 = { version = "0.10.8", default-features = false }
+
+[features]
+default = []
+std = ["openvm/std"]

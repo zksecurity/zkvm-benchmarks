@@ -1,0 +1,12 @@
+[package]
+name = "sha3-precompile"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-keccak256-guest = { git = "https://github.com/openvm-org/openvm.git" }
+
+[features]
+default = []
+std = ["openvm/std"]

@@ -35,6 +35,9 @@ elif [ "$BENCH_ZKVM" == "stwo" ]; then
 elif [ "$BENCH_ZKVM" == "stone" ]; then
     BENCH_BIN="target/release/stone"
     COMMAND="sudo SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT SHARP_KEY_PATH=$SHARP_KEY_PATH SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
+elif [ "$BENCH_ZKVM" == "openvm" ]; then
+    BENCH_BIN="target/release/openvm-benchmarks"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
 else
     echo "Error: Unknown zkVM '$BENCH_ZKVM'"
     exit 1

@@ -15,11 +15,12 @@ build-utils:
 
 # Bench all
 bench-all: build-utils
-    just bench-stone
-    just bench-stwo
-    just bench-jolt
-    just bench-sp1
-    just bench-risczero
+    just bench-openvm
+    # just bench-stone
+    # just bench-stwo
+    # just bench-jolt
+    # just bench-sp1
+    # just bench-risczero
 
 
 #####
@@ -517,3 +518,100 @@ bench-stwo-sha3-chain-time:
 
 bench-stwo-mat-mul-time:
     -for arg in {{MATMUL_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-mat-mul --bin target/release/stwo-script --bench-arg "$arg" -- --program mat-mul && cd ..; done
+
+
+#####
+# openvm
+#####
+
+build-openvm:
+    cd openvm && rustup install
+    cd openvm && cargo build --release
+
+bench-openvm: build-openvm
+    just bench-openvm-mem
+    just bench-openvm-time
+
+bench-openvm-mem:
+    just bench-openvm-fib-mem
+    just bench-openvm-sha2-mem
+    # just bench-openvm-sha2-chain-mem
+    just bench-openvm-sha3-mem
+    just bench-openvm-sha3-chain-mem
+    just bench-openvm-sha2-precompile-mem
+    # just bench-openvm-sha2-chain-precompile-mem
+    just bench-openvm-sha3-precompile-mem
+    just bench-openvm-sha3-chain-precompile-mem
+    just bench-openvm-mat-mul-mem
+
+bench-openvm-time:
+    just bench-openvm-fib-time
+    just bench-openvm-sha2-time
+    # just bench-openvm-sha2-chain-time
+    just bench-openvm-sha3-time
+    just bench-openvm-sha3-chain-time
+    just bench-openvm-sha2-precompile-time
+    # just bench-openvm-sha2-chain-precompile-time
+    just bench-openvm-sha3-precompile-time
+    just bench-openvm-sha3-chain-precompile-time
+    just bench-openvm-mat-mul-time
+
+bench-openvm-fib-time:
+    -for arg in {{FIB_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-fib --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program fib && cd ..; done
+
+bench-openvm-fib-mem:
+    -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "openvm" "fib" "$arg"; done
+
+bench-openvm-sha2-time:
+    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2 --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2 && cd ..; done
+
+bench-openvm-sha2-mem:
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2" "$arg"; done
+
+bench-openvm-sha2-chain-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-chain --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-chain && cd ..; done
+
+bench-openvm-sha2-chain-mem:
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-chain" "$arg"; done
+
+bench-openvm-sha3-time:
+    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3 --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3 && cd ..; done
+
+bench-openvm-sha3-mem:
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3" "$arg"; done
+
+bench-openvm-sha3-chain-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-chain --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-chain && cd ..; done
+
+bench-openvm-sha3-chain-mem:
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-chain" "$arg"; done
+
+bench-openvm-mat-mul-time:
+	-for arg in {{MATMUL_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-mat-mul --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program mat-mul && cd ..; done
+
+bench-openvm-mat-mul-mem:
+    -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "openvm" "mat-mul" "$arg"; done
+
+bench-openvm-sha2-precompile-time:
+    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-precompile && cd ..; done
+
+bench-openvm-sha2-precompile-mem:
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-precompile" "$arg"; done
+
+bench-openvm-sha2-chain-precompile-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-chain-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-chain-precompile && cd ..; done
+
+bench-openvm-sha2-chain-precompile-mem:
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-chain-precompile" "$arg"; done
+
+bench-openvm-sha3-precompile-time:
+    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-precompile && cd ..; done
+
+bench-openvm-sha3-precompile-mem:
+    -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-precompile" "$arg"; done
+
+bench-openvm-sha3-chain-precompile-time:
+    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-chain-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-chain-precompile && cd ..; done
+
+bench-openvm-sha3-chain-precompile-mem:
+    -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-chain-precompile" "$arg"; done

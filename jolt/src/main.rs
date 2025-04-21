@@ -4,20 +4,17 @@ use jolt::Serializable;
 
 use clap::Parser;
 
-/// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
 #[clap()]
 pub struct Cli {
     #[arg(long)]
     pub n: u32,
     
-    /// Run the benchmark under heaptrack for memory profiling
     #[arg(long)]
     pub program: String,
 }
 
 fn main() {
-    // read args from cli
     let cli = Cli::parse();
 
     let (duration, proof_size, verifier_duration, cycle_count) = match cli.program.as_str() {
@@ -38,9 +35,6 @@ fn main() {
         },
         "mat-mul" => {
             benchmark_mat_mul(cli.n)
-        },
-        "binary-search" => {
-            benchmark_binary_search(cli.n as u8)
         },
         "ec" => {
             benchmark_ecadd(cli.n)
@@ -168,27 +162,9 @@ fn benchmark_ecadd(n: u32) -> (Duration, usize, Duration, usize) {
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
 
-fn benchmark_binary_search(n: u8) -> (Duration, usize, Duration, usize) {
-    let (prove_bs, verify_bs) = binary_search_guest::build_find();
-
-    let input: Vec<u8> = (1..=n).collect();
-
-    let start = Instant::now();
-    let (_output, proof) = prove_bs(&input);
-    let end = Instant::now();
-
-    let proof_size = proof.size().unwrap();
-    let trace_len = proof.proof.trace_length;
-
-    let verify_start = Instant::now();
-    let is_valid = verify_bs(proof);
-    let verify_end = Instant::now();
-    assert!(is_valid);
-
-    (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
-}
-
 fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
+    
+    // THIS GIVES PROOF INVALID ERROR
     // let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul();
     
     // let start = Instant::now();

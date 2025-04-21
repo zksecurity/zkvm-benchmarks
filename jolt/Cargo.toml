@@ -10,9 +10,7 @@ members = [
     "sha2",
     "sha3",
     "fib",
-    # "bigmem",
     "mat-mul",
-    "binary-search",
     "ec"
 ]
 
@@ -30,9 +28,7 @@ sha3-chain-guest = { path = "./sha3-chain" }
 sha2-guest = { path = "./sha2" }
 sha3-guest = { path = "./sha3" }
 fibonacci-guest = { path = "./fib" }
-bigmem-guest = { path = "./bigmem" }
 mat-mul-guest = { path = "./mat-mul" }
-binary-search-guest = { path = "./binary-search" }
 ec-guest = { path = "./ec" }
 
 clap = { version = "4.5.26", features = ["derive"] } 

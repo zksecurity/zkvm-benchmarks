@@ -246,88 +246,111 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    // open memory file for monitoring
-    int mem_fd = open(mem_current, O_RDONLY);
-    if (mem_fd < 0) {
-        fprintf(stderr, "cannot open memory file for monitoring\n");
-        exit(1);
-    }
-
-    // start by taking the max
-    struct timespec time_start;
-    clock_gettime(CLOCK_REALTIME, &time_start);
-
-    // write to output file
-    char output_line[0x100];
-    int len = snprintf(
-        output_line,
-        sizeof(output_line),
-        "%llu %llu\n",
-        0ull,
-        get_memory_usage(mem_peak)
-    );
-    fwrite(output_line, len, 1, output_fd);
-
-    // sample number (we just collected one)
-    unsigned long long sample = 1;
-    while (1) {
-        // check if command is still running
-        int status;
-        pid_t result = waitpid(cmd_pid, &status, WNOHANG);
-        if (result != 0) break;
-
-        // probe aggressively
-        struct timespec time_now;
-        unsigned long long max_mem = 0;
-        unsigned long long next_sample_time = sample * SAMPLE_FREQ;
-        while (1) {
-            // check if it's been long enough since last sample
-            clock_gettime(CLOCK_REALTIME, &time_now);
-            if (time_diff(time_start, time_now) > next_sample_time) {
-                break;
-            }
-
-            // get memory value
-            char mem_val_str[32] = {0};
-            ssize_t bytes_read = read(mem_fd, mem_val_str, sizeof(mem_val_str) - 1);
-
-            if (bytes_read == 0) {
-                fprintf(stderr, "Error reading from memory file\n");
-                exit(1);
-            }
-
-            // zero-terminate string
-            mem_val_str[bytes_read] = '\0';
-            char *nl = strchr(mem_val_str, '\n');
-            if (nl) *nl = '\0';
-
-            // parse and take max
-            unsigned long mem_val = strtoul(mem_val_str, NULL, 10);
-            if (mem_val > max_mem) {
-                max_mem = mem_val;
-            }
-
-            // seek to the start
-            lseek(mem_fd, 0, SEEK_SET);
-
-            // wait for next probe?
-            if (SLEEP > 0) {
-                usleep(SLEEP);
-            }
+    // check if TRACE is set in the environment
+    const char *trace_env = getenv("MEM_TRACE");
+    if (trace_env != NULL) {
+        // open memory file for monitoring
+        int mem_fd = open(mem_current, O_RDONLY);
+        if (mem_fd < 0) {
+            fprintf(stderr, "cannot open memory file for monitoring\n");
+            exit(1);
         }
 
-        // write to output file
-        char output_line[0x100];
-        unsigned long long elapsed = time_diff(time_start, time_now);
-        int len = snprintf(output_line, sizeof(output_line), "%llu %llu\n", elapsed / MICRO_S, max_mem);
-        fwrite(output_line, len, 1, output_fd);
-        sample++;
+        // write the initial measurement at time 0
+        struct timespec time_start;
+        clock_gettime(CLOCK_REALTIME, &time_start);
+        {
+            char output_line[0x100];
+            int len = snprintf(
+                output_line,
+                sizeof(output_line),
+                "%llu %llu\n",
+                0ull,
+                get_memory_usage(mem_peak)
+            );
+            fwrite(output_line, len, 1, output_fd);
+        }
+
+        // sample number (we just collected one)
+        unsigned long long sample = 1;
+        while (1) {
+            // check if command is still running
+            int status;
+            pid_t result = waitpid(cmd_pid, &status, WNOHANG);
+            if (result != 0) break;
+
+            // probe aggressively
+            struct timespec time_now;
+            unsigned long long max_mem = 0;
+            unsigned long long next_sample_time = sample * SAMPLE_FREQ;
+            while (1) {
+                // check if it's been long enough since last sample
+                clock_gettime(CLOCK_REALTIME, &time_now);
+                if (time_diff(time_start, time_now) > next_sample_time) {
+                    break;
+                }
+
+                // get memory value
+                char mem_val_str[32] = {0};
+                ssize_t bytes_read = read(mem_fd, mem_val_str, sizeof(mem_val_str) - 1);
+
+                if (bytes_read == 0) {
+                    fprintf(stderr, "Error reading from memory file\n");
+                    exit(1);
+                }
+
+                // zero-terminate string
+                mem_val_str[bytes_read] = '\0';
+                char *nl = strchr(mem_val_str, '\n');
+                if (nl) *nl = '\0';
+
+                // parse and take max
+                unsigned long mem_val = strtoul(mem_val_str, NULL, 10);
+                if (mem_val > max_mem) {
+                    max_mem = mem_val;
+                }
+
+                // seek to the start
+                lseek(mem_fd, 0, SEEK_SET);
+
+                // wait for next probe?
+                if (SLEEP > 0) {
+                    usleep(SLEEP);
+                }
+            }
+
+            // write to output file
+            char output_line[0x100];
+            unsigned long long elapsed = time_diff(time_start, time_now);
+            int len = snprintf(output_line, sizeof(output_line), "%llu %llu\n", elapsed / MICRO_S, max_mem);
+            fwrite(output_line, len, 1, output_fd);
+            sample++;
+        }
+
+        close(mem_fd);
+    }
+
+
+    // Wait for the command to finish
+    int status;
+    waitpid(cmd_pid, &status, 0);
+
+    // final "PEAK" usage measurement
+    // write to output file
+    {
+       char output_line[0x100];
+       int len = snprintf(
+           output_line,
+           sizeof(output_line),
+           "PEAK %llu\n",
+           get_memory_usage(mem_peak)
+       );
+       fwrite(output_line, len, 1, output_fd);
     }
 
     // flush measurements to output file
     fflush(output_fd);
     fclose(output_fd);
-    close(mem_fd);
     free(cmd);
     cleanup(0);
 }

@@ -10,10 +10,10 @@ pub fn main() {
     let one = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
     let secp = Secp256k1::new();
     let secret_key = SecretKey::from_slice(&one).unwrap();
-    let g = PublicKey::from_secret_key(&secp, &secret_key);
+    let mut g = PublicKey::from_secret_key(&secp, &secret_key);
 
     while n != 0 {
-        let _ = PublicKey::combine(&g, &g);
+        g = PublicKey::combine(&g, &g).unwrap();
         n -= 1;
     }
 

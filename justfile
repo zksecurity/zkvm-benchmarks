@@ -113,7 +113,6 @@ build-sp1:
 	cd sp1/sha3-chain && cargo prove build
 	cd sp1/sha2 && cargo prove build
 	cd sp1/sha3 && cargo prove build
-	cd sp1/bigmem && cargo prove build
 	cd sp1/mat-mul && cargo prove build
 	cd sp1/sha2-precompile && cargo prove build
 	cd sp1/sha2-chain-precompile && cargo prove build

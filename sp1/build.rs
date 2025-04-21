@@ -11,7 +11,6 @@ fn main() {
     build_program_with_args("sha3", Default::default());
     build_program_with_args("sha3-precompile", Default::default());
     build_program_with_args("mat-mul", Default::default());
-    build_program_with_args("binary-search", Default::default());
     build_program_with_args("ec", Default::default());
     build_program_with_args("ec-precompile", Default::default());
 }

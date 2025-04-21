@@ -1,8 +1,0 @@
-[workspace]
-[package]
-version = "0.1.0"
-name = "binary-search"
-edition = "2021"
-
-[dependencies]
-sp1-zkvm = "4.0.1"

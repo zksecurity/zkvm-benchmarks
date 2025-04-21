@@ -16,20 +16,17 @@ const SHA3_CHAIN_PRECOMPILE_ELF: &[u8] = include_elf!("sha3-chain-precompile");
 const SHA3_ELF: &[u8] = include_elf!("sha3");
 const SHA3_PRECOMPILE_ELF: &[u8] = include_elf!("sha3-precompile");
 const MATMUL_ELF: &[u8] = include_elf!("mat-mul");
-const BINARY_SEARCH_ELF: &[u8] = include_elf!("binary-search");
 const ECADD_ELF: &[u8] = include_elf!("ec");
 const ECADD_PRECOMPILE_ELF: &[u8] = include_elf!("ec-precompile");
 
 use clap::Parser;
 
-/// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
 #[clap()]
 pub struct Cli {
     #[arg(long)]
     pub n: u32,
 
-    /// Run the benchmark under heaptrack for memory profiling
     #[arg(long)]
     pub program: String,
 }
@@ -50,30 +47,12 @@ fn main() {
         "sha3-chain" => benchmark_sha3_chain(cli.n),
         "sha3-chain-precompile" => benchmark_sha3_chain_precompile(cli.n),
         "mat-mul" => bench_mat_mul(cli.n),
-        "binary-search" => benchmark_binary_search(cli.n as usize),
         "ec" => bench_ecadd(cli.n),
         "ec-precompile" => bench_ecadd_precompile(cli.n),
         _ => unreachable!(),
     };
     let mut file = std::fs::File::create("results.json").unwrap();
     file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_size, duration.as_millis(), verifier_duration.as_millis(), cycle_count).as_bytes()).unwrap();
-}
-
-fn _benchmark_with_shard_size(
-    func: fn(u32) -> (Duration, usize),
-    iters: &[u32],
-    shard_sizes: &[usize],
-    file_name: &str,
-    input_name: &str,
-) {
-    assert_eq!(iters.len(), shard_sizes.len());
-    let mut info = Vec::new();
-    for bench_i in 0..iters.len() {
-        std::env::set_var("SHARD_SIZE", format!("{}", shard_sizes[bench_i]));
-        let duration_and_size = func(iters[bench_i]);
-        info.push(duration_and_size);
-    }
-    utils::write_csv(file_name, input_name, iters, &info);
 }
 
 fn benchmark_sha2_chain(iters: u32) -> (Duration, usize, Duration, usize) {
@@ -322,30 +301,6 @@ fn bench_ecadd_precompile(n: u32) -> (Duration, usize, Duration, usize) {
     let (_, report) = client.execute(ECADD_PRECOMPILE_ELF, &stdin).run().unwrap();
     let cycle_count = report.total_instruction_count() as usize;
     let (pk, vk) = client.setup(ECADD_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_binary_search(n: usize) -> (Duration, usize, Duration, usize) {
-    let input: Vec<usize> = (1..=n).collect();
-
-    let mut stdin = SP1Stdin::new();
-    stdin.write(&input);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(BINARY_SEARCH_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(BINARY_SEARCH_ELF);
 
     let start = Instant::now();
     let proof = client.prove(&pk, &stdin).run().unwrap();

@@ -12,7 +12,7 @@ fn main() {
     let mut hash = input;
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
-        hasher.update(input);
+        hasher.update(hash);
         let res = &hasher.finalize();
         hash = Into::<[u8; 32]>::into (*res);
     }

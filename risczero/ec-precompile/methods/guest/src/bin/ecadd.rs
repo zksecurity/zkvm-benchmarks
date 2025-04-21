@@ -6,10 +6,10 @@ use std::ops::Add;
 
 fn main() {
     let mut n = env::read::<u32>();
-    let g = ProjectivePoint::GENERATOR;
+    let mut g = ProjectivePoint::GENERATOR;
 
     while n != 0 {
-        let _ = ProjectivePoint::add(g, &g);
+        g = ProjectivePoint::add(g, &g);
         n -= 1;
     }
 

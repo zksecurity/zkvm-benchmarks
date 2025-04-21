@@ -243,8 +243,8 @@ build-risczero:
     cd risczero/sha2-chain-precompile && cargo build --release
     cd risczero/sha3-chain && cargo build --release
     cd risczero/sha3-chain-precompile && cargo build --release
-    # cd risczero/ec && cargo build --release
-    # cd risczero/ec-precompile && cargo build --release    
+    cd risczero/ec && cargo build --release
+    cd risczero/ec-precompile && cargo build --release    
     cd risczero/mat-mul && cargo build --release
 
 bench-risczero: build-risczero

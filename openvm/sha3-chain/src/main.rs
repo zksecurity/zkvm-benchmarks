@@ -9,11 +9,12 @@ openvm::entry!(main);
 
 pub fn main() {
     let num_iters: u32 = read();
-    let input = [5u8; 32];
+    let mut input: Vec<u8> = read();
 
     for _ in 0..num_iters {
         let mut hasher = Keccak256::new();
         hasher.update(input);
         let _res = &hasher.finalize();
+        input = Into::<[u8; 32]>::into(*res);
     }
 }

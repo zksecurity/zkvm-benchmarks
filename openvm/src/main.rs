@@ -254,8 +254,10 @@ fn benchmark_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
     
     // 4. Format your input into StdIn
+    let input = vec![5u8; 32];
     let mut stdin = StdIn::default();
     stdin.write(&n);
+    stdin.write(&input);
 
     // 5. Run the program
     let _output = sdk.execute(exe.clone(), vm_config.clone(), stdin.clone()).unwrap();
@@ -310,8 +312,10 @@ fn benchmark_sha2_chain_precompile(n: u32) -> (Duration, usize, Duration, usize)
     let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
     
     // 4. Format your input into StdIn
+    let input = vec![5u8; 32];
     let mut stdin = StdIn::default();
     stdin.write(&n);
+    stdin.write(&input);
 
     // 5. Run the program
     let _output = sdk.execute(exe.clone(), vm_config.clone(), stdin.clone()).unwrap();
@@ -478,8 +482,10 @@ fn benchmark_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
     
     // 4. Format your input into StdIn
+    let input = vec![5u8; 32];
     let mut stdin = StdIn::default();
     stdin.write(&n);
+    stdin.write(&input);
 
     // 5. Run the program
     let _output = sdk.execute(exe.clone(), vm_config.clone(), stdin.clone()).unwrap();
@@ -534,8 +540,10 @@ fn benchmark_sha3_chain_precompile(n: u32) -> (Duration, usize, Duration, usize)
     let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
     
     // 4. Format your input into StdIn
+    let input = vec![5u8; 32];
     let mut stdin = StdIn::default();
     stdin.write(&n);
+    stdin.write(&input);
 
     // 5. Run the program
     let _output = sdk.execute(exe.clone(), vm_config.clone(), stdin.clone()).unwrap();

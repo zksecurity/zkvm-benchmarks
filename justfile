@@ -16,11 +16,11 @@ build-utils:
 # Bench all
 bench-all: build-utils
     just bench-openvm
-    # just bench-stone
-    # just bench-stwo
-    # just bench-jolt
-    # just bench-sp1
-    # just bench-risczero
+    just bench-stone
+    just bench-stwo
+    just bench-jolt
+    just bench-sp1
+    just bench-risczero
 
 
 #####

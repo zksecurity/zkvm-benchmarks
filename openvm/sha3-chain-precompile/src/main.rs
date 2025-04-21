@@ -10,9 +10,10 @@ openvm::entry!(main);
 
 pub fn main() {
     let num_iters: u32 = read();
-    let input = [5u8; 32];
+    let mut input: Vec<u8> = read();
 
     for _ in 0..num_iters {
-        let _output = keccak256(&black_box(input));
+        let output = sha256(&black_box(input));
+        input = Into::<[u8; 32]>::into(*output);
     }
 }

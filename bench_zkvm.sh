@@ -19,8 +19,6 @@ MEM_DIR="./memory_outputs"
 mkdir -p $MEM_DIR
 BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
 
-# compile the memuse program
-gcc memuse.c -o memuse
 
 # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
 if [ "$BENCH_ZKVM" == "risczero" ]; then

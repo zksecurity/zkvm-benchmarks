@@ -59,6 +59,9 @@ echo "Latest commit hash saved to $REPORT_INFO_DIR/latest_commit.txt: $LATEST_CO
 date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/time_stamp.txt"
 echo "Timestamp saved to $REPORT_INFO_DIR/time_stamp.txt"
 
+# compile the memuse program
+gcc memuse.c -o memuse
+
 # Benchmark
 echo "Start benchmarking"
 just

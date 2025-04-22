@@ -7,6 +7,10 @@ use openvm_sha256_guest::sha256;
 
 use openvm::io::read;
 
+extern crate alloc;
+
+use alloc::vec::Vec;
+
 openvm::entry!(main);
 
 pub fn main() {

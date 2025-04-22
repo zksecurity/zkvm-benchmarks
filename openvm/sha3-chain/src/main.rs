@@ -5,6 +5,10 @@ use sha3::{Keccak256, Digest};
 
 use openvm::io::read;
 
+extern crate alloc;
+
+use alloc::vec::Vec;
+
 openvm::entry!(main);
 
 pub fn main() {
@@ -14,7 +18,7 @@ pub fn main() {
     for _ in 0..num_iters {
         let mut hasher = Keccak256::new();
         hasher.update(input);
-        let _res = &hasher.finalize();
+        let res = &hasher.finalize();
         input = Into::<[u8; 32]>::into(*res);
     }
 }

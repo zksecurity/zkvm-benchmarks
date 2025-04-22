@@ -6,6 +6,10 @@ use core::hint::black_box;
 
 use openvm::io::read;
 
+extern crate alloc;
+
+use alloc::vec::Vec;
+
 openvm::entry!(main);
 
 pub fn main() {

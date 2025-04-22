@@ -8,3 +8,4 @@ benchmark_outputs/*
 *.ipynb
 __pycache__/
 *.png
+memuse

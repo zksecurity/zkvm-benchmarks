@@ -1,9 +1,16 @@
-# Define variables
-FIB_ARGS := "5000 10000 50000 100000 500000 1000000"
-EC_ARGS := "8 16 32 64 128"
-SHA_ARGS := "256 512 1024 2048 4096"
-SHA_CHAIN_ARGS := "230 460 920 1840 3680"
-MATMUL_ARGS := "10 20 40 60"
+# # Define variables
+# FIB_ARGS := "5000 10000 50000 100000 500000 1000000"
+# EC_ARGS := "8 16 32 64 128"
+# SHA_ARGS := "256 512 1024 2048 4096"
+# SHA_CHAIN_ARGS := "230 460 920 1840 3680"
+# MATMUL_ARGS := "10 20 40 60"
+
+FIB_ARGS := "5 10"
+EC_ARGS := "4 8"
+SHA_ARGS := "32 64"
+BINARY_SEARCH_ARGS := "8 16"
+SHA_CHAIN_ARGS := "8 16"
+MATMUL_ARGS := "10 20"
 
 # Default recipe
 default:
@@ -32,74 +39,34 @@ build-jolt:
     cd jolt && cargo build --release
 
 bench-jolt: build-jolt
-    just bench-jolt-mem
-    just bench-jolt-time
-
-bench-jolt-mem:
-    just bench-jolt-fib-mem
-    just bench-jolt-sha2-mem
-    # just bench-jolt-sha2-chain-mem
-    just bench-jolt-sha3-mem
-    just bench-jolt-sha3-chain-mem
-    # just bench-jolt-mat-mul-mem
-    # just bench-jolt-ec-mem
-
-bench-jolt-time:
-    just bench-jolt-fib-time
-    just bench-jolt-sha2-time
-    # just bench-jolt-sha2-chain-time
-    just bench-jolt-sha3-time
-    just bench-jolt-sha3-chain-time
-    # just bench-jolt-mat-mul-time
-    # just bench-jolt-ec-time
+    just bench-jolt-fib
+    just bench-jolt-sha2
+    # just bench-jolt-sha2-chain
+    just bench-jolt-sha3
+    just bench-jolt-sha3-chain
+    # just bench-jolt-mat-mul
+    # just bench-jolt-ec
 
 
-bench-jolt-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-fib --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program fib && cd ..; done
-
-bench-jolt-fib-mem:
+bench-jolt-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
 
-
-bench-jolt-ec-time:
-    -for arg in {{EC_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-ec --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program ec && cd ..; done
-
-bench-jolt-ec-mem:
+bench-jolt-ec:
     -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "jolt" "ec" "$arg"; done
 
-
-bench-jolt-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2 && cd ..; done
-
-bench-jolt-sha2-mem:
+bench-jolt-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
 
-
-bench-jolt-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha2-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha2-chain && cd ..; done
-
-bench-jolt-sha2-chain-mem:
+bench-jolt-sha2-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "jolt" "sha2-chain" "$arg"; done
 
-
-bench-jolt-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3 --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3 && cd ..; done
-
-bench-jolt-sha3-mem:
+bench-jolt-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
 
-
-bench-jolt-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-sha3-chain --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program sha3-chain && cd ..; done
-
-bench-jolt-sha3-chain-mem:
+bench-jolt-sha3-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
 
-
-bench-jolt-mat-mul-time:
-	-for arg in {{MATMUL_ARGS}}; do cd jolt && ../utils/target/release/utils --bench-name jolt-mat-mul --bin target/release/jolt-benchmarks --bench-arg "$arg" -- --program mat-mul && cd ..; done
-
-bench-jolt-mat-mul-mem:
+bench-jolt-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
 
 
@@ -123,108 +90,53 @@ build-sp1:
 	cd sp1 && cargo build --release
 
 bench-sp1: build-sp1
-    just bench-sp1-mem
-    just bench-sp1-time
+    just bench-sp1-fib
+    just bench-sp1-sha2
+    # just bench-sp1-sha2-chain
+    just bench-sp1-sha3
+    just bench-sp1-sha3-chain
+    just bench-sp1-mat-mul
+    just bench-sp1-sha2-precompile
+    just bench-sp1-sha3-precompile
+    # just bench-sp1-sha2-chain-precompile
+    just bench-sp1-sha3-chain-precompile
+    # just bench-sp1-ec
+    # just bench-sp1-ec-precompile
 
-bench-sp1-mem:
-    just bench-sp1-fib-mem
-    just bench-sp1-sha2-mem
-    # just bench-sp1-sha2-chain-mem
-    just bench-sp1-sha3-mem
-    just bench-sp1-sha3-chain-mem
-    just bench-sp1-mat-mul-mem
-    just bench-sp1-sha2-precompile-mem
-    just bench-sp1-sha3-precompile-mem
-    # just bench-sp1-sha2-chain-precompile-mem
-    just bench-sp1-sha3-chain-precompile-mem
-    # just bench-sp1-ec-mem
-    # just bench-sp1-ec-precompile-mem
-
-bench-sp1-time:
-	just bench-sp1-fib-time
-	just bench-sp1-sha2-time
-	# just bench-sp1-sha2-chain-time
-	just bench-sp1-sha3-time
-	just bench-sp1-sha3-chain-time
-	just bench-sp1-mat-mul-time
-	just bench-sp1-sha2-precompile-time
-	just bench-sp1-sha3-precompile-time
-	# just bench-sp1-sha2-chain-precompile-time
-	just bench-sp1-sha3-chain-precompile-time
-	# just bench-sp1-ec-time
-	# just bench-sp1-ec-precompile-time
-
-
-bench-sp1-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-fib --bin target/release/sp1-script --bench-arg "$arg" -- --program fib && cd ..; done
-
-bench-sp1-fib-mem:
+bench-sp1-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "sp1" "fib" "$arg"; done
 
-bench-sp1-ec-time:
-    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec --bin target/release/sp1-script --bench-arg "$arg" -- --program ec && cd ..; done
-
-bench-sp1-ec-mem:
+bench-sp1-ec:
     -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "sp1" "ec" "$arg"; done
 
-bench-sp1-ec-precompile-time:
-    -for arg in {{EC_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-ec-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program ec-precompile && cd ..; done
-
-bench-sp1-ec-precompile-mem:
+bench-sp1-ec-precompile:
     -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "sp1" "ec-precompile" "$arg"; done
 
-bench-sp1-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2 && cd ..; done
-
-bench-sp1-sha2-mem:
+bench-sp1-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "sp1" "sha2" "$arg"; done
 
-bench-sp1-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
-
-bench-sp1-sha2-chain-mem:
+bench-sp1-sha2-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "sp1" "sha2-chain" "$arg"; done
 
-bench-sp1-sha2-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-precompile && cd ..; done
-
-bench-sp1-sha2-precompile-mem:
+bench-sp1-sha2-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "sp1" "sha2-precompile" "$arg"; done
 
-bench-sp1-sha2-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha2-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha2-chain-precompile && cd ..; done
-
-bench-sp1-sha2-chain-precompile-mem:
+bench-sp1-sha2-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "sp1" "sha2-chain-precompile" "$arg"; done
 
-bench-sp1-sha3-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-precompile && cd ..; done
-
-bench-sp1-sha3-precompile-mem:
+bench-sp1-sha3-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "sp1" "sha3-precompile" "$arg"; done
 
-bench-sp1-sha3-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain-precompile --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain-precompile && cd ..; done
-
-bench-sp1-sha3-chain-precompile-mem:
+bench-sp1-sha3-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "sp1" "sha3-chain-precompile" "$arg"; done
 
-bench-sp1-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3 --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3 && cd ..; done
-
-bench-sp1-sha3-mem:
+bench-sp1-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "sp1" "sha3" "$arg"; done
 
-bench-sp1-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-sha3-chain --bin target/release/sp1-script --bench-arg "$arg" -- --program sha3-chain && cd ..; done
-
-bench-sp1-sha3-chain-mem:
+bench-sp1-sha3-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "sp1" "sha3-chain" "$arg"; done
 
-bench-sp1-mat-mul-time:
-    -for arg in {{MATMUL_ARGS}}; do cd sp1 && ../utils/target/release/utils --bench-name sp1-mat-mul --bin target/release/sp1-script --bench-arg "$arg" -- --program mat-mul && cd ..; done
-
-bench-sp1-mat-mul-mem:
+bench-sp1-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "sp1" "mat-mul" "$arg"; done
 
 
@@ -247,108 +159,55 @@ build-risczero:
     cd risczero/mat-mul && cargo build --release
 
 bench-risczero: build-risczero
-    just bench-risczero-mem
-    just bench-risczero-time
+    just bench-risczero-fib
+    just bench-risczero-sha2
+    just bench-risczero-sha2-precompile
+    just bench-risczero-sha3
+    just bench-risczero-sha3-precompile
+    # just bench-risczero-sha2-chain
+    # just bench-risczero-sha2-chain-precompile
+    just bench-risczero-sha3-chain
+    just bench-risczero-sha3-chain-precompile
+    # just bench-risczero-ec
+    # just bench-risczero-ec-precompile
+    just bench-risczero-mat-mul
 
-bench-risczero-time:
-    just bench-risczero-fib-time
-    just bench-risczero-sha2-time
-    just bench-risczero-sha2-precompile-time
-    just bench-risczero-sha3-time
-    just bench-risczero-sha3-precompile-time
-    # just bench-risczero-sha2-chain-time
-    # just bench-risczero-sha2-chain-precompile-time
-    just bench-risczero-sha3-chain-time
-    just bench-risczero-sha3-chain-precompile-time
-    # just bench-risczero-ec-time
-    # just bench-risczero-ec-precompile-time
-    just bench-risczero-mat-mul-time
-
-bench-risczero-mem:
-    just bench-risczero-fib-mem
-    just bench-risczero-sha2-mem
-    just bench-risczero-sha2-precompile-mem
-    just bench-risczero-sha3-mem
-    just bench-risczero-sha3-precompile-mem
-    # just bench-risczero-sha2-chain-mem
-    # just bench-risczero-sha2-chain-precompile-mem
-    just bench-risczero-sha3-chain-mem
-    just bench-risczero-sha3-chain-precompile-mem
-    # just bench-risczero-ec-mem
-    # just bench-risczero-ec-precompile-mem
-    just bench-risczero-mat-mul-mem
-
-bench-risczero-fib-mem:
+bench-risczero-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "risczero" "fib" "$arg"; done
 
-bench-risczero-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd risczero/fib && ../../utils/target/release/utils --bench-name risczero-fib --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-ec-mem:
+bench-risczero-ec:
     -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "risczero" "ec" "$arg"; done
 
-bench-risczero-ec-time:
-    -for arg in {{EC_ARGS}}; do cd risczero/ec && ../../utils/target/release/utils --bench-name risczero-ec --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-ec-precompile-mem:
+bench-risczero-ec-precompile:
     -for arg in {{EC_ARGS}}; do ./bench_zkvm.sh "risczero" "ec-precompile" "$arg"; done
 
-bench-risczero-ec-precompile-time:
-    -for arg in {{EC_ARGS}}; do cd risczero/ec-precompile && ../../utils/target/release/utils --bench-name risczero-ec-precompile --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-mat-mul-mem:
+bench-risczero-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "risczero" "mat-mul" "$arg"; done
 
-bench-risczero-mat-mul-time:
-    -for arg in {{MATMUL_ARGS}}; do cd risczero/mat-mul && ../../utils/target/release/utils --bench-name risczero-mat-mul --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha2-mem:
+bench-risczero-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "risczero" "sha2" "$arg"; done
 
-bench-risczero-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd risczero/sha2 && ../../utils/target/release/utils --bench-name risczero-sha2 --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha2-precompile-mem:
+bench-risczero-sha2-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "risczero" "sha2-precompile" "$arg"; done
 
-bench-risczero-sha2-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd risczero/sha2-precompile && ../../utils/target/release/utils --bench-name risczero-sha2-precompile --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha2-chain-mem:
+bench-risczero-sha2-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "risczero" "sha2-chain" "$arg"; done
 
-bench-risczero-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd risczero/sha2-chain && ../../utils/target/release/utils --bench-name risczero-sha2-chain --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha2-chain-precompile-mem:
+bench-risczero-sha2-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "risczero" "sha2-chain-precompile" "$arg"; done
 
-bench-risczero-sha2-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd risczero/sha2-chain-precompile && ../../utils/target/release/utils --bench-name risczero-sha2-chain-precompile --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha3-mem:
+bench-risczero-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "risczero" "sha3" "$arg"; done
 
-bench-risczero-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd risczero/sha3 && ../../utils/target/release/utils --bench-name risczero-sha3 --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha3-precompile-mem:
+bench-risczero-sha3-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "risczero" "sha3-precompile" "$arg"; done
 
-bench-risczero-sha3-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd risczero/sha3-precompile && ../../utils/target/release/utils --bench-name risczero-sha3-precompile --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha3-chain-mem:
+bench-risczero-sha3-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "risczero" "sha3-chain" "$arg"; done
 
-bench-risczero-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd risczero/sha3-chain && ../../utils/target/release/utils --bench-name risczero-sha3-chain --bin target/release/host --bench-arg "$arg" && cd ../..; done
-
-bench-risczero-sha3-chain-precompile-mem:
+bench-risczero-sha3-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "risczero" "sha3-chain-precompile" "$arg"; done
 
-bench-risczero-sha3-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd risczero/sha3-chain-precompile && ../../utils/target/release/utils --bench-name risczero-sha3-chain-precompile --bin target/release/host --bench-arg "$arg" && cd ../..; done
 
 #####
 # Stone
@@ -370,53 +229,27 @@ build-stone-steps:
 	-cd stone/cairo-vm/cairo1-run && make deps
 
 bench-stone: build-stone
-    just bench-stone-mem
-    just bench-stone-time
+    just bench-stone-fib
+    just bench-stone-sha3
+    just bench-stone-sha3-builtin
+    just bench-stone-sha3-chain-builtin
+    just bench-stone-mat
+    just bench-stone-sha2
+    # just bench-stone-sha2-chain
 
-bench-stone-mem:
-    just bench-stone-fib-mem
-    just bench-stone-sha3-mem
-    just bench-stone-sha3-builtin-mem
-    just bench-stone-sha3-chain-builtin-mem
-    just bench-stone-mat-mem
-    just bench-stone-sha2-mem
-    # just bench-stone-sha2-chain-mem
-
-bench-stone-time:
-    just bench-stone-fib-time
-    just bench-stone-sha3-time
-    just bench-stone-sha3-builtin-time
-    just bench-stone-sha3-chain-builtin-time
-    just bench-stone-mat-time
-    just bench-stone-sha2-time
-    # just bench-stone-sha2-chain-time
-
-
-bench-stone-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd stone/fib && ../../utils/target/release/utils --bench-name stone-fib --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-fib-mem:
+bench-stone-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
 
-bench-stone-mat-time:
-    -for arg in {{MATMUL_ARGS}}; do cd stone/mat-mul && ../../utils/target/release/utils --bench-name stone-mat-mul --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-mat-mem:
+bench-stone-mat:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "stone" "mat-mul" "$arg"; done
 
-bench-stone-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd stone/sha3 && ../../utils/target/release/utils --bench-name stone-sha3 --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-sha3-mem:
+bench-stone-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "stone" "sha3" "$arg"; done
 
 # representing bytes 200, 400, 1000, 2000
 # as each iteration of the sha3 builtin processes 200 bytes
 # let inputs = [1, 2, 5, 10];
-bench-stone-sha3-builtin-time:
-    -for arg in 1 2 5 10; do cd stone/sha3-builtin && ../../utils/target/release/utils --bench-name stone-sha3-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-sha3-builtin-mem:
+bench-stone-sha3-builtin:
     -for arg in 1 2 5 10; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
 
 # other programs use:
@@ -432,32 +265,19 @@ bench-stone-sha3-builtin-mem:
 # 29440 / 200 = 147.2
 # 58880 / 200 = 294.4
 # 117760 / 200 = 588.8
-bench-stone-sha3-chain-builtin-time:
-    -for arg in 37 74 148 295 589; do cd stone/sha3-chain-builtin && ../../utils/target/release/utils --bench-name stone-sha3-chain-builtin --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-sha3-chain-builtin-mem:
+bench-stone-sha3-chain-builtin:
     -for arg in 37 74 148 295 589; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
-bench-stone-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd stone/sha2 && ../../utils/target/release/utils --bench-name stone-sha2 --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-sha2-mem:
+bench-stone-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done
 
-bench-stone-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd stone/sha2-chain && ../../utils/target/release/utils --bench-name stone-sha2-chain --bin target/release/stone --bench-arg "$arg" && cd ../..; done
-
-bench-stone-sha2-chain-mem:
+bench-stone-sha2-chain:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "stone" "sha2-chain" "$arg"; done
 
 
 #####
 # Stwo
 #####
-
-bench-stwo: build-stwo
-    just bench-stwo-mem
-    just bench-stwo-time
 
 build-stwo:
     cd stwo && cargo build --release
@@ -466,57 +286,31 @@ build-stwo:
     -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git && cd stwo-cairo && git checkout 36092a6f4c145b71fc275e3712e8df4df50b5dc6
     cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
 
-bench-stwo-mem:
-    just bench-stwo-fib-mem
-    just bench-stwo-sha2-mem
-    just bench-stwo-sha3-mem
-    just bench-stwo-sha3-chain-mem
-    # just bench-stwo-sha2-chain-mem
-    just bench-stwo-mat-mul-mem
+bench-stwo:
+    just bench-stwo-fib
+    just bench-stwo-sha2
+    just bench-stwo-sha3
+    just bench-stwo-sha3-chain
+    # just bench-stwo-sha2-chain
+    just bench-stwo-mat-mul
 
-bench-stwo-time:
-    just bench-stwo-fib-time
-    just bench-stwo-sha2-time
-    just bench-stwo-sha3-time
-    just bench-stwo-sha3-chain-time
-    # just bench-stwo-sha2-chain-time
-    just bench-stwo-mat-mul-time
-
-bench-stwo-fib-mem:
+bench-stwo-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done
 
-bench-stwo-sha2-mem:
+bench-stwo-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "stwo" "sha2" "$arg"; done
 
-bench-stwo-sha3-mem:
+bench-stwo-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "stwo" "sha3" "$arg"; done
 
-bench-stwo-sha2-chain-mem:
+bench-stwo-sha2-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "stwo" "sha2-chain" "$arg"; done
 
-bench-stwo-sha3-chain-mem:
+bench-stwo-sha3-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "stwo" "sha3-chain" "$arg"; done
 
-bench-stwo-mat-mul-mem:
+bench-stwo-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "stwo" "mat-mul" "$arg"; done
-
-bench-stwo-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-fib --bin target/release/stwo-script --bench-arg "$arg" -- --program fib && cd ..; done
-
-bench-stwo-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha2 --bin target/release/stwo-script --bench-arg "$arg" -- --program sha2 && cd ..; done
-
-bench-stwo-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha3 --bin target/release/stwo-script --bench-arg "$arg" -- --program sha3 && cd ..; done
-
-bench-stwo-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha2-chain --bin target/release/stwo-script --bench-arg "$arg" -- --program sha2-chain && cd ..; done
-
-bench-stwo-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-sha3-chain --bin target/release/stwo-script --bench-arg "$arg" -- --program sha3-chain && cd ..; done
-
-bench-stwo-mat-mul-time:
-    -for arg in {{MATMUL_ARGS}}; do cd stwo && ../utils/target/release/utils --bench-name stwo-mat-mul --bin target/release/stwo-script --bench-arg "$arg" -- --program mat-mul && cd ..; done
 
 
 #####
@@ -527,90 +321,44 @@ build-openvm:
     cd openvm && rustup install
     cd openvm && cargo build --release
 
-bench-openvm: build-openvm
-    just bench-openvm-mem
-    just bench-openvm-time
+bench-openvm:
+    just bench-openvm-fib
+    just bench-openvm-sha2
+    # just bench-openvm-sha2-chain
+    just bench-openvm-sha3
+    just bench-openvm-sha3-chain
+    just bench-openvm-sha2-precompile
+    # just bench-openvm-sha2-chain-precompile
+    just bench-openvm-sha3-precompile
+    just bench-openvm-sha3-chain-precompile
+    just bench-openvm-mat-mul
 
-bench-openvm-mem:
-    just bench-openvm-fib-mem
-    just bench-openvm-sha2-mem
-    # just bench-openvm-sha2-chain-mem
-    just bench-openvm-sha3-mem
-    just bench-openvm-sha3-chain-mem
-    just bench-openvm-sha2-precompile-mem
-    # just bench-openvm-sha2-chain-precompile-mem
-    just bench-openvm-sha3-precompile-mem
-    just bench-openvm-sha3-chain-precompile-mem
-    just bench-openvm-mat-mul-mem
-
-bench-openvm-time:
-    just bench-openvm-fib-time
-    just bench-openvm-sha2-time
-    # just bench-openvm-sha2-chain-time
-    just bench-openvm-sha3-time
-    just bench-openvm-sha3-chain-time
-    just bench-openvm-sha2-precompile-time
-    # just bench-openvm-sha2-chain-precompile-time
-    just bench-openvm-sha3-precompile-time
-    just bench-openvm-sha3-chain-precompile-time
-    just bench-openvm-mat-mul-time
-
-bench-openvm-fib-time:
-    -for arg in {{FIB_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-fib --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program fib && cd ..; done
-
-bench-openvm-fib-mem:
+bench-openvm-fib:
     -for arg in {{FIB_ARGS}}; do ./bench_zkvm.sh "openvm" "fib" "$arg"; done
 
-bench-openvm-sha2-time:
-    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2 --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2 && cd ..; done
-
-bench-openvm-sha2-mem:
+bench-openvm-sha2:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2" "$arg"; done
 
-bench-openvm-sha2-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-chain --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-chain && cd ..; done
-
-bench-openvm-sha2-chain-mem:
+bench-openvm-sha2-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-chain" "$arg"; done
 
-bench-openvm-sha3-time:
-    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3 --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3 && cd ..; done
-
-bench-openvm-sha3-mem:
+bench-openvm-sha3:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3" "$arg"; done
 
-bench-openvm-sha3-chain-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-chain --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-chain && cd ..; done
-
-bench-openvm-sha3-chain-mem:
+bench-openvm-sha3-chain:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-chain" "$arg"; done
 
-bench-openvm-mat-mul-time:
-	-for arg in {{MATMUL_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-mat-mul --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program mat-mul && cd ..; done
-
-bench-openvm-mat-mul-mem:
+bench-openvm-mat-mul:
     -for arg in {{MATMUL_ARGS}}; do ./bench_zkvm.sh "openvm" "mat-mul" "$arg"; done
 
-bench-openvm-sha2-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-precompile && cd ..; done
-
-bench-openvm-sha2-precompile-mem:
+bench-openvm-sha2-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-precompile" "$arg"; done
 
-bench-openvm-sha2-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha2-chain-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha2-chain-precompile && cd ..; done
-
-bench-openvm-sha2-chain-precompile-mem:
+bench-openvm-sha2-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha2-chain-precompile" "$arg"; done
 
-bench-openvm-sha3-precompile-time:
-    -for arg in {{SHA_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-precompile && cd ..; done
-
-bench-openvm-sha3-precompile-mem:
+bench-openvm-sha3-precompile:
     -for arg in {{SHA_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-precompile" "$arg"; done
 
-bench-openvm-sha3-chain-precompile-time:
-    -for arg in {{SHA_CHAIN_ARGS}}; do cd openvm && ../utils/target/release/utils --bench-name openvm-sha3-chain-precompile --bin target/release/openvm-benchmarks --bench-arg "$arg" -- --program sha3-chain-precompile && cd ..; done
-
-bench-openvm-sha3-chain-precompile-mem:
+bench-openvm-sha3-chain-precompile:
     -for arg in {{SHA_CHAIN_ARGS}}; do ./bench_zkvm.sh "openvm" "sha3-chain-precompile" "$arg"; done

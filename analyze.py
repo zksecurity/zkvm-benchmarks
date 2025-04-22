@@ -25,6 +25,7 @@ def _(mo):
             |:----------------------|:---------------|:-----------|:--------------|
             | [RISC Zero](https://github.com/risc0/risc0)             | RISC-V         | Rust       | STARK-based   |
             | [SP1](https://github.com/succinctlabs/sp1)       | RISC-V         | Rust       | STARK-based   |
+            | [OpenVM](https://github.com/openvm-org/openvm)       | RISC-V         | Rust       | STARK-based   |
             | [Jolt](https://github.com/a16z/jolt)                  | RISC-V         | Rust       | Lookup-based  |
             | [Stone](https://github.com/starkware-libs/stone-prover)                 | Cairo VM       | Cairo      | STARK-based   |
             | [Stwo](https://github.com/starkware-libs/stwo)                  | Cairo VM       | Cairo      | STARK-based   |
@@ -100,8 +101,6 @@ def _(HTML, display, mo):
         display(HTML(f"<pre style='font-size:12px; color:black;'>Time Stamp: {time}</pre>"))
         display(HTML(f"<pre style='font-size:12px; color:black;'>Commit Hash: {commit_hash}</pre>"))
         display(HTML("<br>"))
-    
-
     return commit_file, commit_hash, file1, time, time_file
 
 
@@ -227,6 +226,7 @@ def _(mo):
         file_paths = {
             "jolt": f'./benchmark_outputs/jolt-{bench_name}.csv',
             "sp1": f'./benchmark_outputs/sp1-{bench_name}.csv',
+            "openvm": f'./benchmark_outputs/openvm-{bench_name}.csv',
             "r0": f'./benchmark_outputs/risczero-{bench_name}.csv',
             "stone": f'./benchmark_outputs/stone-{bench_name}.csv',
             "stwo": f'./benchmark_outputs/stwo-{bench_name}.csv',
@@ -238,14 +238,13 @@ def _(mo):
         if is_precompile:
             file_paths["sp1-precompile"] = f'./benchmark_outputs/sp1-{bench_name}-precompile.csv'
             file_paths["r0-precompile"] = f'./benchmark_outputs/risczero-{bench_name}-precompile.csv'
+            file_paths["openvm-precompile"] = f'./benchmark_outputs/openvm-{bench_name}-precompile.csv'
 
         if bench_name == 'sha3-chain' and is_builtin:
             file_paths.pop("stone", None)
-            # file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
         if bench_name == 'mat-mul':
             file_paths.pop("jolt", None)
-            # file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
         combined_df = None  # Start with an empty DataFrame
 
@@ -278,6 +277,8 @@ def _(mo):
             'r0-precompile': ('*', 'y'),
             'sp1-precompile': ('P', 'k'),
             'stone-builtin': ('h', '#8B0000'),
+            'openvm': ('X', '#FF7F0E'),
+            'openvm-precompile': ('d', '#2CA02C'),
         }
 
         plt.figure(figsize=(8, 6))
@@ -332,6 +333,7 @@ def _(mo):
         verifier_time_df = combine_benchmark(bench_tuple, "verifier time(ms)")
         proof_size_df = combine_benchmark(bench_tuple, "proof size(bytes)")
         cycle_count_df = combine_benchmark(bench_tuple, "cycle count")
+        cycle_count_df = cycle_count_df.drop(columns=['openvm', 'openvm-precompile'], errors='ignore')
         peak_memory_df = combine_benchmark(bench_tuple, "peak memory")
         return prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df
 

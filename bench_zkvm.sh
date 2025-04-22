@@ -19,6 +19,9 @@ MEM_DIR="./memory_outputs"
 mkdir -p $MEM_DIR
 BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
 
+# compile the memuse program
+gcc memuse.c -o memuse
+
 # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
 if [ "$BENCH_ZKVM" == "risczero" ]; then
     BENCH_BIN="target/release/host"
@@ -58,7 +61,7 @@ eval "$COMMAND"
 
 # Extract peak memory
 if [ -f "$BENCH_OUT" ]; then
-    PEAK_MEMORY_BYTES=$(awk 'BEGIN { max = 0 } { if ($2 > max) max = $2 } END { print max }' "$BENCH_OUT")
+    PEAK_MEMORY_BYTES=$(grep "PEAK" "$BENCH_OUT" | awk '{print $2}')
     echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
 else
     echo "Error: Benchmark output file not found at $BENCH_OUT"

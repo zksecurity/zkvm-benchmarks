@@ -1,16 +1,9 @@
-# # Define variables
-# FIB_ARGS := "5000 10000 50000 100000 500000 1000000"
-# EC_ARGS := "8 16 32 64 128"
-# SHA_ARGS := "256 512 1024 2048 4096"
-# SHA_CHAIN_ARGS := "230 460 920 1840 3680"
-# MATMUL_ARGS := "10 20 40 60"
-
-FIB_ARGS := "5 10"
-EC_ARGS := "4 8"
-SHA_ARGS := "32 64"
-BINARY_SEARCH_ARGS := "8 16"
-SHA_CHAIN_ARGS := "8 16"
-MATMUL_ARGS := "10 20"
+# Define variables
+FIB_ARGS := "5000 10000 50000 100000 500000 1000000"
+EC_ARGS := "8 16 32 64 128"
+SHA_ARGS := "256 512 1024 2048 4096"
+SHA_CHAIN_ARGS := "230 460 920 1840 3680"
+MATMUL_ARGS := "10 20 40 60"
 
 # Default recipe
 default:
@@ -286,7 +279,7 @@ build-stwo:
     -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git && cd stwo-cairo && git checkout 36092a6f4c145b71fc275e3712e8df4df50b5dc6
     cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
 
-bench-stwo:
+bench-stwo: build-stwo
     just bench-stwo-fib
     just bench-stwo-sha2
     just bench-stwo-sha3
@@ -321,7 +314,7 @@ build-openvm:
     cd openvm && rustup install
     cd openvm && cargo build --release
 
-bench-openvm:
+bench-openvm: build-openvm
     just bench-openvm-fib
     just bench-openvm-sha2
     # just bench-openvm-sha2-chain

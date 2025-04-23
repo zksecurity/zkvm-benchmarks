@@ -15,6 +15,7 @@ pip install pandas
 pip install matplotlib
 pip install ipython
 pip install numpy
+pip install jinja2 tabulate
 marimo --version
 
 # run marimo notebook

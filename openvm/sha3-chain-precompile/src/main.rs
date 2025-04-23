@@ -17,7 +17,7 @@ pub fn main() {
     let mut input: Vec<u8> = read();
 
     for _ in 0..num_iters {
-        let output = sha256(&black_box(input));
-        input = Into::<[u8; 32]>::into(*output);
+        let output = keccak256(&black_box(input));
+        input = output.to_vec();
     }
 }

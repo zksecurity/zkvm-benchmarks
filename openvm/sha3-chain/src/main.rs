@@ -19,6 +19,6 @@ pub fn main() {
         let mut hasher = Keccak256::new();
         hasher.update(input);
         let res = &hasher.finalize();
-        input = Into::<[u8; 32]>::into(*res);
+        input = res.to_vec();
     }
 }

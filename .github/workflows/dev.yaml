@@ -1,10 +1,9 @@
-name: "Benchmark Run"
+name: "Benchmark Test Dev"
 
 on:
   push:
     branches:
-      - main
-      - master
+      - dev
     paths-ignore:
       - "**.md"
   workflow_dispatch:
@@ -69,7 +68,7 @@ jobs:
             SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
             SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
             SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
-            bash -c "cd $WORK_DIR && ./bench.sh . \"5000 10000 50000 100000 500000 1000000\" \"256 512 1024 2048 4096\" \"230 460 920 1840 3680\" \"10 20 40 60\""
+            bash -c "cd $WORK_DIR && ./bench.sh . \"5000\" \"256\" \"230\" \"10\""
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v4
@@ -103,40 +102,3 @@ jobs:
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           name: ${{ needs.create-runner.outputs.label }}
           server_id: ${{ needs.create-runner.outputs.server_id }}
-
-  analyze:
-    name: Analyze Benchmark Results
-    needs:
-      - benchmark
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Download Benchmark Results
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-results
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y python3-pip
-
-      - name: Run Analysis
-        run: |
-          ./analyze.sh
-
-      - name: Upload report
-        uses: actions/upload-artifact@v4
-        with:
-          name: report
-          path: ./report/
-
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./report --project-name=zcjjnygdkpjup --commit-dirty=true

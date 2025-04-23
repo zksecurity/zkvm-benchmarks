@@ -48,8 +48,11 @@ else
     echo "Memory information file not found." >> $REPORT_INFO_DIR/meminfo.txt
 fi
 
+# Repo path comes first, default to current dir
+REPO_PATH="${1:-.}"
+shift # Drop the first argument, so $1 $2 $3 $4 are now the benchmarks
+
 # Capture Latest Commit
-REPO_PATH=${1:-"."}
 cd "$REPO_PATH" || { echo "Invalid repository path"; exit 1; }
 LATEST_COMMIT=$(git rev-parse HEAD)
 echo "$LATEST_COMMIT" > $REPORT_INFO_DIR/latest_commit.txt
@@ -59,10 +62,10 @@ echo "Latest commit hash saved to $REPORT_INFO_DIR/latest_commit.txt: $LATEST_CO
 date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/time_stamp.txt"
 echo "Timestamp saved to $REPORT_INFO_DIR/time_stamp.txt"
 
-# compile the memuse program
+# Compile the memuse program
 gcc memuse.c -o memuse
 
 # Benchmark
 echo "Start benchmarking"
-just
+just bench-all "$1" "$2" "$3" "$4"
 echo "Finished benchmarking"

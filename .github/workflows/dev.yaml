@@ -24,7 +24,7 @@ jobs:
         id: create-hcloud-runner
         uses: Cyclenerd/hcloud-github-runner@v1
         with:
-          name: gh-benchmark-runner # also ensures that we can have at most one runner
+          name: gh-benchmark-runner
           mode: create
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
@@ -39,8 +39,8 @@ jobs:
   benchmark:
     name: Execute on the Benchmarking Machine
     timeout-minutes: 1440 # 24 hrs
-    needs: create-runner # required to start the main job when the runner is ready
-    runs-on: ${{ needs.create-runner.outputs.label }} # run the job on the newly created runner
+    needs: create-runner
+    runs-on: ${{ needs.create-runner.outputs.label }}
     env:
       BENCH_USER: shodan
     steps:
@@ -89,10 +89,10 @@ jobs:
   delete-runner:
     name: Delete Hetzner Cloud Runner
     needs:
-      - create-runner # required to get output from the create-runner job
-      - benchmark # required to wait when the main job is done
+      - create-runner
+      - benchmark
     runs-on: ubuntu-24.04
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs, or the main job was canceled
+    if: ${{ always() }}
     steps:
       - name: Delete runner
         uses: Cyclenerd/hcloud-github-runner@v1

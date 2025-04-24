@@ -32,19 +32,19 @@ bench-jolt fib_args sha_args sha_chain_args matmul_args: build-jolt
     just bench-jolt-sha3-chain "{{sha_chain_args}}"
 
 bench-jolt-fib fib_args:
-    -for arg in "{{fib_args}}"; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
+    -for arg in {{fib_args}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
 
 bench-jolt-sha2 sha_args:
-    -for arg in "{{sha_args}}"; do ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
 
 bench-jolt-sha3 sha_args:
-    -for arg in "{{sha_args}}"; do ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
 
 bench-jolt-sha3-chain sha_chain_args:
-    -for arg in "{{sha_chain_args}}"; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
 
 bench-jolt-mat-mul matmul_args:
-    -for arg in "{{matmul_args}}"; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
+    -for arg in {{matmul_args}}; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
 
 
 #####
@@ -183,13 +183,13 @@ bench-stone fib_args sha_args sha_chain_args matmul_args: build-stone
     just bench-stone-sha2 "{{sha_args}}"
 
 bench-stone-fib fib_args:
-    -for arg in "{{fib_args}}"; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
+    -for arg in {{fib_args}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
 
 bench-stone-mat matmul_args:
-    -for arg in "{{matmul_args}}"; do ./bench_zkvm.sh "stone" "mat-mul" "$arg"; done
+    -for arg in {{matmul_args}}; do ./bench_zkvm.sh "stone" "mat-mul" "$arg"; done
 
 bench-stone-sha3 sha_args:
-    -for arg in "{{sha_args}}"; do ./bench_zkvm.sh "stone" "sha3" "$arg"; done
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha3" "$arg"; done
 
 # representing bytes 200, 400, 1000, 2000
 # as each iteration of the sha3 builtin processes 200 bytes
@@ -214,7 +214,7 @@ bench-stone-sha3-chain-builtin:
     -for arg in 37 74 148 295 589; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
 bench-stone-sha2 sha_args:
-    -for arg in "{{sha_args}}"; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done
 
 
 #####

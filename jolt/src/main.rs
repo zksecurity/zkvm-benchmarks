@@ -59,8 +59,9 @@ fn benchmark_sha2_chain(iters: u32) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_sha2_chain(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
@@ -78,8 +79,9 @@ fn benchmark_sha3_chain(iters: u32) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_sha3_chain(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
@@ -99,8 +101,9 @@ fn benchmark_sha2(num_bytes: usize) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_sha2(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
@@ -120,8 +123,9 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_sha3(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
@@ -138,8 +142,9 @@ fn benchmark_fib(n: u32) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_fib(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
@@ -156,30 +161,14 @@ fn benchmark_ecadd(n: u32) -> (Duration, usize, Duration, usize) {
 
     let verify_start = Instant::now();
     let is_valid = verify_ecadd(proof);
-    let verify_end = Instant::now();
     assert!(is_valid);
+    let verify_end = Instant::now();
+
 
     (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 }
 
 fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
-    
-    // THIS GIVES PROOF INVALID ERROR
-    // let (prove_mat_mul, verify_mat_mul) = mat_mul_guest::build_matrix_mul();
-    
-    // let start = Instant::now();
-    // let (_output, proof) = prove_mat_mul(size as usize);
-    // let end = Instant::now();
-
-    // let proof_size = proof.size().unwrap();
-    // let trace_len = proof.proof.trace_length;
-
-    // let verify_start = Instant::now();
-    // let is_valid = verify_mat_mul(proof);
-    // let verify_end = Instant::now();
-    // assert!(is_valid);
-        
-    // (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
 
     let (duration, proof_size, verifier_duration, cycle_count) = match size {
         10 => {
@@ -193,8 +182,9 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             let verify_start = Instant::now();
             let is_valid = verify_mat_mul(proof);
-            let verify_end = Instant::now();
             assert!(is_valid);
+            let verify_end = Instant::now();
+        
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
@@ -209,8 +199,9 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             let verify_start = Instant::now();
             let is_valid = verify_mat_mul(proof);
-            let verify_end = Instant::now();
             assert!(is_valid);
+            let verify_end = Instant::now();
+        
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
@@ -225,8 +216,9 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             let verify_start = Instant::now();
             let is_valid = verify_mat_mul(proof);
-            let verify_end = Instant::now();
             assert!(is_valid);
+            let verify_end = Instant::now();
+        
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },
@@ -241,8 +233,9 @@ fn benchmark_mat_mul(size: u32) -> (Duration, usize, Duration, usize) {
         
             let verify_start = Instant::now();
             let is_valid = verify_mat_mul(proof);
-            let verify_end = Instant::now();
             assert!(is_valid);
+            let verify_end = Instant::now();
+        
         
             (end.duration_since(start), proof_size, verify_end.duration_since(verify_start), trace_len)
         },

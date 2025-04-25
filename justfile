@@ -8,12 +8,12 @@ build-utils:
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args: build-utils
-    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
     just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
 
 
 #####
@@ -178,10 +178,12 @@ build-stone-steps:
 bench-stone fib_args sha_args sha_chain_args matmul_args: build-stone
     just bench-stone-fib "{{fib_args}}"
     just bench-stone-sha3 "{{sha_args}}"
+    just bench-stone-sha3-chain "{{sha_chain_args}}"
     just bench-stone-sha3-builtin
     just bench-stone-sha3-chain-builtin
     just bench-stone-mat "{{matmul_args}}"
     just bench-stone-sha2 "{{sha_args}}"
+    just bench-stone-sha2-chain "{{sha_chain_args}}"
 
 bench-stone-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
@@ -192,6 +194,9 @@ bench-stone-mat matmul_args:
 bench-stone-sha3 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha3" "$arg"; done
 
+bench-stone-sha3-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha3-chain" "$arg"; done
+
 # representing bytes 200, 400, 1000, 2000
 # as each iteration of the sha3 builtin processes 200 bytes
 # let inputs = [1, 2, 5, 10];
@@ -199,23 +204,28 @@ bench-stone-sha3-builtin:
     -for arg in 1 2 5 10; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
 
 # other programs use:
+# 32 bytes * 58 = 1856 bytes
+# 32 bytes * 115 = 3680 bytes 
 # 32 bytes * 230 = 7360 bytes
 # 32 bytes * 460 = 14720 bytes
 # 32 bytes * 920 = 29440 bytes
 # 32 bytes * 1840 = 58880 bytes
-# 32 bytes * 3680 = 117760 bytes
 # to adapt to the 200 bytes per iteration of the sha3 builtin,
 # the number of equivalent iterations is:
+# 1856 / 200 = 9.3
+# 3680 / 200 = 18.4
 # 7360 / 200 = 36.8
 # 14720 / 200 = 73.6
 # 29440 / 200 = 147.2
 # 58880 / 200 = 294.4
-# 117760 / 200 = 588.8
 bench-stone-sha3-chain-builtin:
-    -for arg in 37 74 148 295 589; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
+    -for arg in 10 19 37 74 148 295; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
 bench-stone-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done
+
+bench-stone-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha2-chain" "$arg"; done
 
 
 #####

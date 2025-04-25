@@ -383,12 +383,15 @@ func finalize_sha256{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
 
 func main{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
-    let n_bytes = 32;
 
     local iterations;
     %{ ids.iterations = program_input['iterations'] %}
 
-    repeat_hash(n_bytes, iterations);
+    let n_bytes = 32;
+    let (inputs: felt*) = alloc();
+    fill_input(input=inputs, length=iterations / 4, iterator=0); 
+
+    let final_state = repeat_hash(inputs, iterations);
 
     return ();
 }
@@ -402,20 +405,17 @@ func fill_input(input: felt*, length: felt, iterator: felt) {
 }
 
 // A helper function that hashes the given state `n` times.
-func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(n_bytes: felt, iterations: felt) {
+func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(input: felt*, iterations: felt) -> felt* {
     alloc_locals;
 
     if (iterations == 0) {
-        return ();
+        return input;
     }
-
-    let (inputs: felt*) = alloc();
-    fill_input(input=inputs, length=n_bytes / 4, iterator=0);
 
     let (local sha256_ptr: felt*) = alloc();
     let sha256_ptr_start = sha256_ptr;
-    let (hash) = sha256{sha256_ptr=sha256_ptr}(inputs, n_bytes);
+    let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 32);
     finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr);
 
-    return repeat_hash(n_bytes, iterations - 1);
+    return repeat_hash(hash, iterations - 1);
 }

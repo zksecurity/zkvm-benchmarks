@@ -232,9 +232,6 @@ def _(mo):
             "stwo": f'./benchmark_outputs/stwo-{bench_name}.csv',
         }
 
-        # if column_name == 'prover time(ms)':
-        #     file_paths["stwo"] = f'./benchmark_outputs/stwo-{bench_name}.csv'
-
         if is_precompile:
             file_paths["sp1-precompile"] = f'./benchmark_outputs/sp1-{bench_name}-precompile.csv'
             file_paths["r0-precompile"] = f'./benchmark_outputs/risczero-{bench_name}-precompile.csv'
@@ -242,9 +239,6 @@ def _(mo):
 
         if bench_name == 'sha3-chain' and is_builtin:
             file_paths.pop("stone", None)
-
-        if bench_name == 'mat-mul':
-            file_paths.pop("jolt", None)
 
         combined_df = None  # Start with an empty DataFrame
 

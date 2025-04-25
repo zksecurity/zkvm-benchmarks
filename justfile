@@ -164,6 +164,7 @@ build-stone:
     cd stone/common && cargo build --release
     cd stone/fib && cargo build --release
     cd stone/sha3 && cargo build --release
+    cd stone/sha3-chain && cargo build --release
     cd stone/sha3-builtin && cargo build --release
     cd stone/sha3-chain-builtin && cargo build --release
     cd stone/sha2 && cargo build --release

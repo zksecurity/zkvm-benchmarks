@@ -9,8 +9,8 @@ build-utils:
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args: build-utils
     # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
     # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
     # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
     # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
@@ -243,6 +243,7 @@ build-stwo:
 bench-stwo fib_args sha_args sha_chain_args matmul_args: build-stwo
     just bench-stwo-fib "{{fib_args}}"
     just bench-stwo-sha2 "{{sha_args}}"
+    just bench-stwo-sha2-chain "{{sha_chain_args}}"
     just bench-stwo-sha3 "{{sha_args}}"
     just bench-stwo-sha3-chain "{{sha_chain_args}}"
     just bench-stwo-mat-mul "{{matmul_args}}"
@@ -252,6 +253,9 @@ bench-stwo-fib fib_args:
 
 bench-stwo-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stwo" "sha2" "$arg"; done
+
+bench-stwo-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stwo" "sha2-chain" "$arg"; done
 
 bench-stwo-sha3 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stwo" "sha3" "$arg"; done

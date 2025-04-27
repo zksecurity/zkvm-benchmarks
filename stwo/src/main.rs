@@ -337,6 +337,7 @@ fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
         "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
         output_path, program_input, public_input, private_input, trace, memory,
     );
+    println!("cairo-run: {:?}", run_command);
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
@@ -470,6 +471,7 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let program_input = "./sha3-chain/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
 
+    // let program_path = "../stone/sha3-chain-builtin/programs/keccak.cairo".to_string();
     let program_path = "../stone/sha3-chain-builtin/programs/keccak.cairo".to_string();
     let output_path = "./sha3-chain/sha3_chain.json".to_string();
 

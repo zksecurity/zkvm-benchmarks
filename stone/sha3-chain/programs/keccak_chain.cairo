@@ -41,14 +41,14 @@ func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(inputs: felt*, i
     if (iterations == 0) {
         let (keccak_ptr: felt*) = alloc();
         let keccak_ptr_start = keccak_ptr;
-        let (res: Uint256) = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=iterations);
+        let (res: Uint256) = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=32);
         finalize_keccak(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=keccak_ptr);
         return res;
     }
 
     let (keccak_ptr: felt*) = alloc();
     let keccak_ptr_start = keccak_ptr;
-    let (res: Uint256) = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=iterations);
+    let (res: Uint256) = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=32);
     finalize_keccak(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=keccak_ptr);
 
     return repeat_hash(inputs, iterations - 1);

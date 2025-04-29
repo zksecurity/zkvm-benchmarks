@@ -49,6 +49,8 @@ fn run(n: u32) {
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
     let parameter_file = match n {
+        15 => "../configs/parameter_2097152.json".to_string(),
+        29 => "../configs/parameter_2097152.json".to_string(),
         58 => "../configs/parameter_2097152.json".to_string(),
         115 => "../configs/parameter_4194304.json".to_string(),
         230 => "../configs/parameter_8388608.json".to_string(),

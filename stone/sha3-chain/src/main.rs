@@ -6,11 +6,11 @@ use std::process::Command;
 fn main() {
     let cli = Cli::parse();
 
-    run(cli.n, cli.bench_mem);
+    run(cli.n);
 }
 
 
-fn run(n: u32, bench_mem: bool) {
+fn run(n: u32) {
     let program_path = "programs/keccak_chain.cairo".to_string();
     let output_path = "programs/keccak_chain.json".to_string();
     let input = format!("{{\"iterations\": {}}}", n);

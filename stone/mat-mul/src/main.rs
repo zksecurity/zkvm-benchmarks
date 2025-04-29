@@ -6,10 +6,10 @@ fn main() {
     // read args from cli
     let cli = Cli::parse();
 
-    run(cli.n, cli.bench_mem);
+    run(cli.n);
 }
 
-fn run(n: u32, bench_mem: bool) {
+fn run(n: u32) {
     // get cycle count command
     let program_file = "../../mat-mul/programs/mat.cairo".to_string();
     let program_input = format!("[{}]", n).to_string();
@@ -33,46 +33,23 @@ fn run(n: u32, bench_mem: bool) {
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();
-    let args = if bench_mem {
-        vec![
-            "prove",
-            "--cairo_program",
-            &program_path,
-            "--program_input",
-            &program_input,
-            "--parameter_file",
-            &parameter_file,
-            "--prover_config_file",
-            &prover_config_file,
-            "--layout",
-            &layout,
-            "--output",
-            &output_file,
-            "--stone_version",
-            "v6",
-            "--bench_memory",
-            "true",
-        ]
-    }
-    else {
-        vec![
-            "prove",
-            "--cairo_program",
-            &program_path,
-            "--program_input",
-            &program_input,
-            "--parameter_file",
-            &parameter_file,
-            "--prover_config_file",
-            &prover_config_file,
-            "--output",
-            &output_file,
-            "--layout",
-            &layout,
-            "--stone_version",
-            "v6",
-        ]
-    };
+    let args = vec![
+        "prove",
+        "--cairo_program",
+        &program_path,
+        "--program_input",
+        &program_input,
+        "--parameter_file",
+        &parameter_file,
+        "--prover_config_file",
+        &prover_config_file,
+        "--output",
+        &output_file,
+        "--layout",
+        &layout,
+        "--stone_version",
+        "v6",
+    ];
     
     // prove and verify
     let prove_dir = "../../mat-mul".to_string();

@@ -389,7 +389,7 @@ func main{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
 
     let n_bytes = 32;
     let (inputs: felt*) = alloc();
-    fill_input(input=inputs, length=iterations / 4, iterator=0); 
+    fill_input(input=inputs, length=n_bytes / 4, iterator=0); 
 
     let final_state = repeat_hash(inputs, iterations);
 
@@ -417,5 +417,5 @@ func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(input: felt*, it
     let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 32);
     finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr);
 
-    return repeat_hash(input, iterations - 1);
+    return repeat_hash(hash, iterations - 1);
 }

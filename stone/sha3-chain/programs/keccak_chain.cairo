@@ -8,18 +8,18 @@ from starkware.cairo.common.alloc import alloc
 func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
 
-    // because the stone-cli only expose the input keyed by 'iterations'
-    // here variable is called iterations to represent n_bytes
     local iterations;
     %{ ids.iterations = program_input['iterations'] %}
 
     let (inputs: felt*) = alloc();
 
+    let n_bytes = 32;
+
     // each felt field has 251 bits, so it can hold 31 bytes
     // less input fields take much more memory (and crash on my machine)
     // so here we assume filling the input with 8 bytes
 
-    fill_input(input=inputs, length=iterations / 8, iterator=0);
+    fill_input(input=inputs, length=n_bytes / 8, iterator=0);
 
     let final_state = repeat_hash(inputs, iterations-1);
 

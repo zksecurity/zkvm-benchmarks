@@ -6,11 +6,11 @@ use std::process::Command;
 fn main() {
     let cli = Cli::parse();
 
-    run(cli.n, cli.bench_mem);
+    run(cli.n);
 }
 
 
-fn run(n: u32, bench_mem: bool) {
+fn run(n: u32) {
     let program_path = "programs/keccak.cairo".to_string();
     let output_path = "programs/keccak.json".to_string();
     let input = format!("{{\"iterations\": {}}}", n);
@@ -46,60 +46,28 @@ fn run(n: u32, bench_mem: bool) {
 
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
-    // let parameter_file = match n {
-    //     1 => "../configs/parameter_65536_32.json".to_string(),
-    //     2 => "../configs/parameter_65536_32.json".to_string(),
-    //     5 => "../configs/parameter_65536_32.json".to_string(),
-    //     10 => "../configs/parameter_65536_32.json".to_string(),
-    //     _ => unreachable!("Unexpected value for n: {}", n),
-    // };
     let parameter_file = "../configs/parameter_65536_32.json".to_string();
     let prover_config_file = "../configs/prover_config.json".to_string();
 
-    let args = if bench_mem {
-        vec![
-            "prove",
-            "--cairo_version",
-            "cairo0",
-            "--cairo_program",
-            &output_path,
-            "--layout",
-            &layout,
-            "--program_input_file",
-            program_input,
-            "--output",
-            &output_file,
-            "--parameter_file",
-            &parameter_file,
-            "--prover_config_file",
-            &prover_config_file,
-            "--stone_version",
-            "v6",
-            "--bench_memory",
-            "true",
-        ]
-    }
-    else {
-        vec![
-            "prove",
-            "--cairo_version",
-            "cairo0",
-            "--cairo_program",
-            &output_path,
-            "--layout",
-            &layout,
-            "--program_input_file",
-            program_input,
-            "--output",
-            &output_file,
-            "--parameter_file",
-            &parameter_file,
-            "--prover_config_file",
-            &prover_config_file,
-            "--stone_version",
-            "v6",
-        ]
-    };
+    let args = vec![
+        "prove",
+        "--cairo_version",
+        "cairo0",
+        "--cairo_program",
+        &output_path,
+        "--layout",
+        &layout,
+        "--program_input_file",
+        program_input,
+        "--output",
+        &output_file,
+        "--parameter_file",
+        &parameter_file,
+        "--prover_config_file",
+        &prover_config_file,
+        "--stone_version",
+        "v6",
+    ];
 
     // prove and verify
     let (proof_bytes, duration, verifier_duration) = prove_and_verify(command, args.to_vec(), output_file.clone());

@@ -10,10 +10,10 @@ build-utils:
 bench-all fib_args sha_args sha_chain_args matmul_args: build-utils
     just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
     just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
 
 
 #####
@@ -28,6 +28,7 @@ build-jolt:
 bench-jolt fib_args sha_args sha_chain_args matmul_args: build-jolt
     just bench-jolt-fib "{{fib_args}}"
     just bench-jolt-sha2 "{{sha_args}}"
+    just bench-jolt-sha2-chain "{{sha_chain_args}}"
     just bench-jolt-sha3 "{{sha_args}}"
     just bench-jolt-sha3-chain "{{sha_chain_args}}"
     just bench-jolt-mat-mul "{{matmul_args}}"
@@ -37,6 +38,9 @@ bench-jolt-fib fib_args:
 
 bench-jolt-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "jolt" "sha2" "$arg"; done
+
+bench-jolt-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "jolt" "sha2-chain" "$arg"; done
 
 bench-jolt-sha3 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "jolt" "sha3" "$arg"; done
@@ -70,10 +74,12 @@ build-sp1:
 bench-sp1 fib_args sha_args sha_chain_args matmul_args: build-sp1
     just bench-sp1-fib "{{fib_args}}"
     just bench-sp1-sha2 "{{sha_args}}"
+    just bench-sp1-sha2-chain "{{sha_chain_args}}"
     just bench-sp1-sha3 "{{sha_args}}"
     just bench-sp1-sha3-chain "{{sha_chain_args}}"
     just bench-sp1-mat-mul "{{matmul_args}}"
     just bench-sp1-sha2-precompile "{{sha_args}}"
+    just bench-sp1-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-sp1-sha3-precompile "{{sha_args}}"
     just bench-sp1-sha3-chain-precompile "{{sha_chain_args}}"
 
@@ -83,8 +89,14 @@ bench-sp1-fib fib_args:
 bench-sp1-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "sp1" "sha2" "$arg"; done
 
+bench-sp1-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "sp1" "sha2-chain" "$arg"; done
+
 bench-sp1-sha2-precompile sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "sp1" "sha2-precompile" "$arg"; done
+
+bench-sp1-sha2-chain-precompile sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "sp1" "sha2-chain-precompile" "$arg"; done
 
 bench-sp1-sha3-precompile sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "sp1" "sha3-precompile" "$arg"; done
@@ -124,7 +136,9 @@ build-risczero:
 bench-risczero fib_args sha_args sha_chain_args matmul_args: build-risczero
     just bench-risczero-fib "{{fib_args}}"
     just bench-risczero-sha2 "{{sha_args}}"
+    just bench-risczero-sha2-chain "{{sha_chain_args}}"
     just bench-risczero-sha2-precompile "{{sha_args}}"
+    just bench-risczero-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-risczero-sha3 "{{sha_args}}"
     just bench-risczero-sha3-precompile "{{sha_args}}"
     just bench-risczero-sha3-chain "{{sha_chain_args}}"
@@ -142,6 +156,12 @@ bench-risczero-sha2 sha_args:
 
 bench-risczero-sha2-precompile sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "risczero" "sha2-precompile" "$arg"; done
+
+bench-risczero-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "risczero" "sha2-chain" "$arg"; done
+
+bench-risczero-sha2-chain-precompile sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "risczero" "sha2-chain-precompile" "$arg"; done
 
 bench-risczero-sha3 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "risczero" "sha3" "$arg"; done
@@ -279,9 +299,11 @@ build-openvm:
 bench-openvm fib_args sha_args sha_chain_args matmul_args: build-openvm
     just bench-openvm-fib "{{fib_args}}"
     just bench-openvm-sha2 "{{sha_args}}"
+    just bench-openvm-sha2-chain "{{sha_chain_args}}"
     just bench-openvm-sha3 "{{sha_args}}"
     just bench-openvm-sha3-chain "{{sha_chain_args}}"
     just bench-openvm-sha2-precompile "{{sha_args}}"
+    just bench-openvm-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-openvm-sha3-precompile "{{sha_args}}"
     just bench-openvm-sha3-chain-precompile "{{sha_chain_args}}"
     just bench-openvm-mat-mul "{{matmul_args}}"
@@ -291,6 +313,9 @@ bench-openvm-fib fib_args:
 
 bench-openvm-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "openvm" "sha2" "$arg"; done
+
+bench-openvm-sha2-chain sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "openvm" "sha2-chain" "$arg"; done
 
 bench-openvm-sha3 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "openvm" "sha3" "$arg"; done
@@ -303,6 +328,9 @@ bench-openvm-mat-mul matmul_args:
 
 bench-openvm-sha2-precompile sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "openvm" "sha2-precompile" "$arg"; done
+
+bench-openvm-sha2-chain-precompile sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "openvm" "sha2-chain-precompile" "$arg"; done
 
 bench-openvm-sha3-precompile sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "openvm" "sha3-precompile" "$arg"; done

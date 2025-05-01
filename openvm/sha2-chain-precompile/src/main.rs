@@ -19,6 +19,6 @@ pub fn main() {
 
     for _ in 0..num_iters {
         let output = sha256(&black_box(input));
-        input = Into::<[u8; 32]>::into(*output);
+        input = output.to_vec();
     }
 }

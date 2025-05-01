@@ -19,7 +19,7 @@ pub fn main() {
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
         hasher.update(input);
-        let _res = &hasher.finalize();
-        input = Into::<[u8; 32]>::into(*res);
+        let res = &hasher.finalize();
+        input = res.to_vec();
     }
 }

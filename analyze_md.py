@@ -41,9 +41,6 @@ def combine_benchmark(bench_tuple, column_name):
     if bench_name == 'sha3-chain' and is_builtin:
         file_paths.pop("stone", None)
 
-    if bench_name == 'mat-mul':
-        file_paths.pop("jolt", None)
-
     combined_df = None
 
     for name, path in file_paths.items():
@@ -145,11 +142,11 @@ def get_tables(bench_tuple):
     prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = dataframes
 
     tables = {
-        "prover_time": tabulate(prover_time_df, headers="keys", tablefmt="github"),
-        "verifier_time": tabulate(verifier_time_df, headers="keys", tablefmt="github"),
-        "proof_size": tabulate(proof_size_df, headers="keys", tablefmt="github"),
-        "cycle_count": tabulate(cycle_count_df, headers="keys", tablefmt="github"),
-        "peak_memory": tabulate(peak_memory_df, headers="keys", tablefmt="github"),
+        "prover_time": tabulate(prover_time_df.values.tolist(), headers=prover_time_df.columns, tablefmt="github"),
+        "verifier_time": tabulate(verifier_time_df.values.tolist(), headers=verifier_time_df.columns, tablefmt="github"),
+        "proof_size": tabulate(proof_size_df.values.tolist(), headers=proof_size_df.columns, tablefmt="github"),
+        "cycle_count": tabulate(cycle_count_df.values.tolist(), headers=cycle_count_df.columns, tablefmt="github"),
+        "peak_memory": tabulate(peak_memory_df.values.tolist(), headers=peak_memory_df.columns, tablefmt="github"),
     }
 
     return tables
@@ -243,10 +240,16 @@ fib_plots = get_plots(fib_tuple)
 fib_data = {"tables": fib_tables, "plots": fib_plots}
 
 # Sha2
-sha2_tuple = ("sha2", True, True)
+sha2_tuple = ("sha2", True, False)
 sha2_tables = get_tables(sha2_tuple)
 sha2_plots = get_plots(sha2_tuple)
 sha2_data = {"tables": sha2_tables, "plots": sha2_plots}
+
+# Sha2-chain
+sha2_chain_tuple = ("sha2-chain", True, False)
+sha2_chain_tables = get_tables(sha2_chain_tuple)
+sha2_chain_plots = get_plots(sha2_chain_tuple)
+sha2_chain_data = {"tables": sha2_chain_tables, "plots": sha2_chain_plots}
 
 # Sha3
 sha3_tuple = ("sha3", True, True)
@@ -257,7 +260,7 @@ sha3_data = {"tables": sha3_tables, "plots": sha3_plots}
 path = f'./benchmark_outputs/stone-sha3-builtin.csv'
 stone_sha3_builtin_df = pd.read_csv(path)
 stone_sha3_builtin_df["n"] *= 200
-stone_sha3_builtin_table = tabulate(stone_sha3_builtin_df, headers="keys", tablefmt="github")
+stone_sha3_builtin_table = tabulate(stone_sha3_builtin_df.values.tolist(), headers=stone_sha3_builtin_df.columns, tablefmt="github")
 
 # Sha3-chain
 sha3_chain_tuple = ("sha3-chain", True, True)
@@ -267,8 +270,7 @@ sha3_chain_data = {"tables": sha3_chain_tables, "plots": sha3_chain_plots}
 
 path_chain = f'./benchmark_outputs/stone-sha3-chain-builtin.csv'
 stone_sha3_chain_builtin_df = pd.read_csv(path_chain)
-stone_sha3_chain_builtin_table = tabulate(stone_sha3_chain_builtin_df, headers="keys", tablefmt="github")
-
+stone_sha3_chain_builtin_table = tabulate(stone_sha3_chain_builtin_df.values.tolist(), headers=stone_sha3_chain_builtin_df.columns, tablefmt="github")
 
 # Mat Mul
 mat_mul_tuple = ("mat-mul", False, False)
@@ -289,6 +291,7 @@ output_md = template.render(
     mem_info=mem_info,
     fib_data=fib_data,
     sha2_data=sha2_data,
+    sha2_chain_data=sha2_chain_data,
     sha3_data=sha3_data,
     stone_sha3_builtin_table=stone_sha3_builtin_table,
     sha3_chain_data=sha3_chain_data,

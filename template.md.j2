@@ -1,5 +1,3 @@
-# zkvm Benchmark Report
-
 - Overview of zkVM and Proof Systems
 
     | zkVM / Proof System   | Architecture   | Frontend   | Backend       |
@@ -12,7 +10,8 @@
     | [Stwo](https://github.com/starkware-libs/stwo)                  | Cairo VM       | Cairo      | STARK-based   |
 
 - Stone benchmarks were generated using the `dynamic` layout with the following configurations:
-    - Parameters - `fri_step_list` and `last_layer_degree_bound` change dependeing on the size of the computation but other parameters remain same
+    - Parameters - `fri_step_list` and `last_layer_degree_bound` change depending on the size of the computation but other parameters remain same
+
         ```
         {
             "field": "PrimeField0",
@@ -45,6 +44,7 @@
         }
         ```
     - Prover Config
+
         ```
         {
             "cached_lde_config": {
@@ -56,6 +56,12 @@
             "table_prover_n_tasks_per_segment": 32
         }
         ```
+- Security bits for STARK-based zkVM / Proof Systems
+    - Stone: 100 bits
+    - Stwo: 96 bits
+    - OpenVM: 100 bits
+    - RISC Zero: 96 bits
+    - SP1: 100 bits
 - Benchmarks which run out of memory have been indicate by `*` in the tables.
 
 
@@ -86,27 +92,27 @@ Benchmark `n` Fibonacci iterations.
 ### Prover Time
 {{ fib_data.tables.prover_time }}
 
-![Prover Time Plot]({{ fib_data.plots.prover_time_plot }})
+![]({{ fib_data.plots.prover_time_plot }})
 
 ### Verifier Time
 {{ fib_data.tables.verifier_time }}
 
-![Verifier Time Plot]({{ fib_data.plots.verifier_time_plot }})
+![]({{ fib_data.plots.verifier_time_plot }})
 
 ### Proof Size
 {{ fib_data.tables.proof_size }}
 
-![Proof Size Plot]({{ fib_data.plots.proof_size_plot }})
+![]({{ fib_data.plots.proof_size_plot }})
 
 ### Cycle Count
 {{ fib_data.tables.cycle_count }}
 
-![Cycle Count Plot]({{ fib_data.plots.cycle_count_plot }})
+![]({{ fib_data.plots.cycle_count_plot }})
 
 ### Peak Memory
 {{ fib_data.tables.peak_memory }}
 
-![Peak Memory Plot]({{ fib_data.plots.peak_memory_plot }})
+![]({{ fib_data.plots.peak_memory_plot }})
 
 
 ## Sha2
@@ -115,27 +121,55 @@ Benchmark Sha256 hash of `n` bytes. For Stone, the [cairo implementation of sha2
 ### Prover Time
 {{ sha2_data.tables.prover_time }}
 
-![Prover Time Plot]({{ sha2_data.plots.prover_time_plot }})
+![]({{ sha2_data.plots.prover_time_plot }})
 
 ### Verifier Time
 {{ sha2_data.tables.verifier_time }}
 
-![Verifier Time Plot]({{ sha2_data.plots.verifier_time_plot }})
+![]({{ sha2_data.plots.verifier_time_plot }})
 
 ### Proof Size
 {{ sha2_data.tables.proof_size }}
 
-![Proof Size Plot]({{ sha2_data.plots.proof_size_plot }})
+![]({{ sha2_data.plots.proof_size_plot }})
 
 ### Cycle Count
 {{ sha2_data.tables.cycle_count }}
 
-![Cycle Count Plot]({{ sha2_data.plots.cycle_count_plot }})
+![]({{ sha2_data.plots.cycle_count_plot }})
 
 ### Peak Memory
 {{ sha2_data.tables.peak_memory }}
 
-![Peak Memory Plot]({{ sha2_data.plots.peak_memory_plot }})
+![]({{ sha2_data.plots.peak_memory_plot }})
+
+## Sha2-Chain
+Benchmark Sha256 hash of 32 bytes for `n` iteration.
+
+### Prover Time
+{{ sha2_chain_data.tables.prover_time }}
+
+![]({{ sha2_chain_data.plots.prover_time_plot }})
+
+### Verifier Time
+{{ sha2_chain_data.tables.verifier_time }}
+
+![]({{ sha2_chain_data.plots.verifier_time_plot }})
+
+### Proof Size
+{{ sha2_chain_data.tables.proof_size }}
+
+![]({{ sha2_chain_data.plots.proof_size_plot }})
+
+### Cycle Count
+{{ sha2_chain_data.tables.cycle_count }}
+
+![]({{ sha2_chain_data.plots.cycle_count_plot }})
+
+### Peak Memory
+{{ sha2_chain_data.tables.peak_memory }}
+
+![]({{ sha2_chain_data.plots.peak_memory_plot }})
 
 
 ## Sha3
@@ -144,29 +178,30 @@ Benchmark Keccak256 hash of `n` bytes. For Stone, the implementation of Keccak25
 ### Prover Time
 {{ sha3_data.tables.prover_time }}
 
-![Prover Time Plot]({{ sha3_data.plots.prover_time_plot }})
+![]({{ sha3_data.plots.prover_time_plot }})
 
 ### Verifier Time
 {{ sha3_data.tables.verifier_time }}
 
-![Verifier Time Plot]({{ sha3_data.plots.verifier_time_plot }})
+![]({{ sha3_data.plots.verifier_time_plot }})
 
 ### Proof Size
 {{ sha3_data.tables.proof_size }}
 
-![Proof Size Plot]({{ sha3_data.plots.proof_size_plot }})
+![]({{ sha3_data.plots.proof_size_plot }})
 
 ### Cycle Count
 {{ sha3_data.tables.cycle_count }}
 
-![Cycle Count Plot]({{ sha3_data.plots.cycle_count_plot }})
+![]({{ sha3_data.plots.cycle_count_plot }})
 
 ### Peak Memory
 {{ sha3_data.tables.peak_memory }}
 
-![Peak Memory Plot]({{ sha3_data.plots.peak_memory_plot }})
+![]({{ sha3_data.plots.peak_memory_plot }})
 
 **Stone benchmark with Keccak Builtin**: The function call to the keccak builtin allows max 200 bytes per iteration. So the following benchmarks are hashing multiples of 200 byts.
+
 {{ stone_sha3_builtin_table }}
 
 
@@ -176,55 +211,56 @@ Benchmark Keccak256 hash of 32 bytes for `n` iteration.
 ### Prover Time
 {{ sha3_chain_data.tables.prover_time }}
 
-![Prover Time Plot]({{ sha3_chain_data.plots.prover_time_plot }})
+![]({{ sha3_chain_data.plots.prover_time_plot }})
 
 ### Verifier Time
 {{ sha3_chain_data.tables.verifier_time }}
 
-![Verifier Time Plot]({{ sha3_chain_data.plots.verifier_time_plot }})
+![]({{ sha3_chain_data.plots.verifier_time_plot }})
 
 ### Proof Size
 {{ sha3_chain_data.tables.proof_size }}
 
-![Proof Size Plot]({{ sha3_chain_data.plots.proof_size_plot }})
+![]({{ sha3_chain_data.plots.proof_size_plot }})
 
 ### Cycle Count
 {{ sha3_chain_data.tables.cycle_count }}
 
-![Cycle Count Plot]({{ sha3_chain_data.plots.cycle_count_plot }})
+![]({{ sha3_chain_data.plots.cycle_count_plot }})
 
 ### Peak Memory
 {{ sha3_chain_data.tables.peak_memory }}
 
-![Peak Memory Plot]({{ sha3_chain_data.plots.peak_memory_plot }})
+![]({{ sha3_chain_data.plots.peak_memory_plot }})
 
 **Stone benchmark with Keccak Builtin**: The function call to the keccak builtin allows max 200 bytes per iteration. So the following benchmarks can be interpreted as hashing `200 * n` bytes data, such as `200 * 37 = 7400` and so on.
+
 {{ stone_sha3_chain_builtin_table }}
 
 ## Matrix Multiplication
-Benchmark multplication of two matrices of size n x n.
+Benchmark multiplication of two matrices of size n x n.
 
 ### Prover Time
 {{ mat_mul_data.tables.prover_time }}
 
-![Prover Time Plot]({{ mat_mul_data.plots.prover_time_plot }})
+![]({{ mat_mul_data.plots.prover_time_plot }})
 
 ### Verifier Time
 {{ mat_mul_data.tables.verifier_time }}
 
-![Verifier Time Plot]({{ mat_mul_data.plots.verifier_time_plot }})
+![]({{ mat_mul_data.plots.verifier_time_plot }})
 
 ### Proof Size
 {{ mat_mul_data.tables.proof_size }}
 
-![Proof Size Plot]({{ mat_mul_data.plots.proof_size_plot }})
+![]({{ mat_mul_data.plots.proof_size_plot }})
 
 ### Cycle Count
 {{ mat_mul_data.tables.cycle_count }}
 
-![Cycle Count Plot]({{ mat_mul_data.plots.cycle_count_plot }})
+![]({{ mat_mul_data.plots.cycle_count_plot }})
 
 ### Peak Memory
 {{ mat_mul_data.tables.peak_memory }}
 
-![Peak Memory Plot]({{ mat_mul_data.plots.peak_memory_plot }})
+![]({{ mat_mul_data.plots.peak_memory_plot }})

@@ -218,29 +218,25 @@ bench-stone-sha3 sha_args:
 bench-stone-sha3-chain sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha3-chain" "$arg"; done
 
-# representing bytes 200, 400, 1000, 2000
+# representing bytes 200, 400, 800, 1600, 3200
 # as each iteration of the sha3 builtin processes 200 bytes
-# let inputs = [1, 2, 5, 10];
+# let inputs = [1, 2, 4, 8, 16];
 bench-stone-sha3-builtin:
-    -for arg in 1 2 5 10; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
+    -for arg in 1 2 4 8 16; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
 
-# other programs use:
-# 32 bytes * 58 = 1856 bytes
-# 32 bytes * 115 = 3680 bytes 
-# 32 bytes * 230 = 7360 bytes
-# 32 bytes * 460 = 14720 bytes
-# 32 bytes * 920 = 29440 bytes
-# 32 bytes * 1840 = 58880 bytes
 # to adapt to the 200 bytes per iteration of the sha3 builtin,
 # the number of equivalent iterations is:
-# 1856 / 200 = 9.3
-# 3680 / 200 = 18.4
-# 7360 / 200 = 36.8
-# 14720 / 200 = 73.6
-# 29440 / 200 = 147.2
-# 58880 / 200 = 294.4
+# 32 bytes * 4 = 128 bytes     → 128 / 200 = 0.64
+# 32 bytes * 8 = 256 bytes     → 256 / 200 = 1.28
+# 32 bytes * 16 = 512 bytes    → 512 / 200 = 2.56
+# 32 bytes * 32 = 1024 bytes   → 1024 / 200 = 5.12
+# 32 bytes * 64 = 2048 bytes   → 2048 / 200 = 10.24
+# 32 bytes * 128 = 4096 bytes  → 4096 / 200 = 20.48
+# 32 bytes * 256 = 8192 bytes  → 8192 / 200 = 40.96
+# 32 bytes * 512 = 16384 bytes → 16384 / 200 = 81.92
+# 32 bytes * 1024 = 32768 bytes → 32768 / 200 = 163.84
 bench-stone-sha3-chain-builtin:
-    -for arg in 10 19 37 74 148 295; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
+    -for arg in 1 3 5 10 20 40 80 160; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
 bench-stone-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done

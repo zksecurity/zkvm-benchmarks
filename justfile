@@ -31,7 +31,6 @@ bench-jolt fib_args sha_args sha_chain_args matmul_args: build-jolt
     just bench-jolt-sha2-chain "{{sha_chain_args}}"
     just bench-jolt-sha3 "{{sha_args}}"
     just bench-jolt-sha3-chain "{{sha_chain_args}}"
-    just bench-jolt-mat-mul "{{matmul_args}}"
 
 bench-jolt-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
@@ -47,9 +46,6 @@ bench-jolt-sha3 sha_args:
 
 bench-jolt-sha3-chain sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
-
-bench-jolt-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
 
 
 #####

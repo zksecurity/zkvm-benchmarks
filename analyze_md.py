@@ -41,6 +41,9 @@ def combine_benchmark(bench_tuple, column_name):
     if bench_name == 'sha3-chain' and is_builtin:
         file_paths.pop("stone", None)
 
+    if bench_name == 'mat-mul':
+             file_paths.pop("jolt", None)
+
     combined_df = None
 
     for name, path in file_paths.items():

@@ -239,6 +239,9 @@ def _(mo):
 
         if bench_name == 'sha3-chain' and is_builtin:
             file_paths.pop("stone", None)
+        
+        if bench_name == 'mat-mul':
+             file_paths.pop("jolt", None)
 
         combined_df = None  # Start with an empty DataFrame
 

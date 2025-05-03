@@ -61,6 +61,7 @@ def combine_benchmark(bench_tuple, column_name):
 
 def plot_benchmark(df, title, y_label, bench_tuple, column_name):
     """Plot the benchmark data with fixed color and marker mapping per column."""
+    os.makedirs("plots", exist_ok=True)
     bench_name, _, is_builtin = bench_tuple
 
     style_map = {

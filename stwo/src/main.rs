@@ -504,6 +504,7 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
         "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
         output_path, program_input, public_input, private_input, trace, memory,
     );
+    println!("cairo-run: {:?}", run_command);
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
@@ -521,6 +522,7 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
         "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
         public_input, private_input, proof_path
     );
+    println!("adapted_command: {:?}", adapted_command);
 
     let prover_start = Instant::now();
     let _ = Command::new("sh")

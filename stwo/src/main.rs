@@ -296,7 +296,6 @@ fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
     match output_adapted_stwo {
         Ok(output) if output.status.success() => {
             println!("Adapted command successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
         }
         Ok(output) => {
             eprintln!(
@@ -407,7 +406,6 @@ fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     match output_adapted_stwo {
         Ok(output) if output.status.success() => {
             println!("Adapted command successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
         }
         Ok(output) => {
             eprintln!(
@@ -519,7 +517,6 @@ fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
     match output_adapted_stwo {
         Ok(output) if output.status.success() => {
             println!("Adapted command successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
         }
         Ok(output) => {
             eprintln!(
@@ -630,7 +627,6 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     match output_adapted_stwo {
         Ok(output) if output.status.success() => {
             println!("Adapted command successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
         }
         Ok(output) => {
             eprintln!(

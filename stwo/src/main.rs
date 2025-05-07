@@ -255,31 +255,60 @@ fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
         "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
         output_path, program_input, public_input, private_input, trace, memory,
     );
+    println!("cairo-run: {:?}", run_command);
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running cairo-run: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        .output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!("cairo-run successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "cairo-run failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-run: {}", err);
+        }
     }
 
     println!("Running Stwo Prover...");
     let proof_path = format!("./sha2/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {}",
         public_input, private_input, proof_path
     );
 
+    println!("adapted_command: {:?}", adapted_command);
+
     let prover_start = Instant::now();
-    let _ = Command::new("sh")
+    let output_adapted_stwo = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()
-        .expect("Failed to execute adapted_stwo command");
+        .output();
     let prover_end = Instant::now();
+
+    match output_adapted_stwo {
+        Ok(output) if output.status.success() => {
+            println!("Adapted command successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "Adapted command failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run adapted_stwo command: {}", err);
+        }
+    }
 
     let proof = load_proof(&proof_path);
     let proof_size = size(&proof);
@@ -341,28 +370,56 @@ fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running cairo-run: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        .output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!("cairo-run successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "cairo-run failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-run: {}", err);
+        }
     }
 
     println!("Running Stwo Prover...");
     let proof_path = format!("./sha2-chain/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {}",
         public_input, private_input, proof_path
     );
 
+    println!("adapted_command: {:?}", adapted_command);
+
     let prover_start = Instant::now();
-    let _ = Command::new("sh")
+    let output_adapted_stwo = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()
-        .expect("Failed to execute adapted_stwo command");
+        .output();
     let prover_end = Instant::now();
+
+    match output_adapted_stwo {
+        Ok(output) if output.status.success() => {
+            println!("Adapted command successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "Adapted command failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run adapted_stwo command: {}", err);
+        }
+    }
 
     let proof = load_proof(&proof_path);
     let proof_size = size(&proof);
@@ -421,31 +478,60 @@ fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
         "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
         output_path, program_input, public_input, private_input, trace, memory,
     );
+    println!("cairo-run: {:?}", run_command);
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running cairo-run: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        .output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!("cairo-run successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "cairo-run failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-run: {}", err);
+        }
     }
 
     println!("Running Stwo Prover...");
     let proof_path = format!("./sha3/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {}",
         public_input, private_input, proof_path
     );
 
+    println!("adapted_command: {:?}", adapted_command);
+
     let prover_start = Instant::now();
-    let _ = Command::new("sh")
+    let output_adapted_stwo = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()
-        .expect("Failed to execute adapted_stwo command");
+        .output();
     let prover_end = Instant::now();
+
+    match output_adapted_stwo {
+        Ok(output) if output.status.success() => {
+            println!("Adapted command successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "Adapted command failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run adapted_stwo command: {}", err);
+        }
+    }
 
     let proof = load_proof(&proof_path);
     let proof_size = size(&proof);
@@ -508,29 +594,55 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let output = Command::new("sh")
         .arg("-c")
         .arg(run_command)
-        .output().unwrap();
-    if !output.status.success() {
-        eprintln!(
-            "Error running cairo-run: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        .output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!("cairo-run successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "cairo-run failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-run: {}", err);
+        }
     }
 
     println!("Running Stwo Prover...");
     let proof_path = format!("./sha3-chain/proof_{}.json", n);
     let adapted_command = format!(
-        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {} --display_components",
+        "./stwo-cairo/stwo_cairo_prover/target/release/adapted_stwo --pub_json {} --priv_json {} --proof_path {}",
         public_input, private_input, proof_path
     );
     println!("adapted_command: {:?}", adapted_command);
 
     let prover_start = Instant::now();
-    let _ = Command::new("sh")
+    let output_adapted_stwo = Command::new("sh")
         .arg("-c")
         .arg(adapted_command)
-        .output()
-        .expect("Failed to execute adapted_stwo command");
+        .output();
     let prover_end = Instant::now();
+
+    match output_adapted_stwo {
+        Ok(output) if output.status.success() => {
+            println!("Adapted command successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "Adapted command failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run adapted_stwo command: {}", err);
+        }
+    }
 
     let proof = load_proof(&proof_path);
     let proof_size = size(&proof);

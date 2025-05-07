@@ -55,7 +55,7 @@ pip install cairo-lang
 cargo install --git https://github.com/zksecurity/stone-cli.git
 
 # Install scarb
-curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v nightly-2025-02-26
+curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v nightly
 export PATH="$HOME/.local/bin:$PATH"
 
 # Check Setup

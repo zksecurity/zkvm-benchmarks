@@ -1,13 +1,13 @@
 - Overview of zkVM and Proof Systems
 
-    | zkVM / Proof System   | Architecture   | Frontend   | Backend       |
-    |:----------------------|:---------------|:-----------|:--------------|
-    | [RISC Zero](https://github.com/risc0/risc0)             | RISC-V         | Rust       | STARK-based   |
-    | [SP1](https://github.com/succinctlabs/sp1)       | RISC-V         | Rust       | STARK-based   |
-    | [OpenVM](https://github.com/openvm-org/openvm)       | RISC-V         | Rust       | STARK-based   |
-    | [Jolt](https://github.com/a16z/jolt)                  | RISC-V         | Rust       | Lookup-based  |
-    | [Stone](https://github.com/starkware-libs/stone-prover)                 | Cairo VM       | Cairo      | STARK-based   |
-    | [Stwo](https://github.com/starkware-libs/stwo)                  | Cairo VM       | Cairo      | STARK-based   |
+| zkVM / Proof System   | Architecture   | Frontend   | Backend       | Security Bits |
+|:----------------------|:---------------|:-----------|:--------------|:--------------|
+| [RISC Zero](https://github.com/risc0/risc0)             | RISC-V         | Rust       | STARK-based   | 96 bits       |
+| [SP1](https://github.com/succinctlabs/sp1)       | RISC-V         | Rust       | STARK-based   | 100 bits      |
+| [OpenVM](https://github.com/openvm-org/openvm)       | RISC-V         | Rust       | STARK-based   | 100 bits      |
+| [Jolt](https://github.com/a16z/jolt)                  | RISC-V         | Rust       | Lookup-based  | -             |
+| [Stone](https://github.com/starkware-libs/stone-prover)                 | Cairo VM       | Cairo      | STARK-based   | 100 bits      |
+| [Stwo](https://github.com/starkware-libs/stwo)                  | Cairo VM       | Cairo      | STARK-based   | 96 bits       |
 
 - Stone benchmarks were generated using the `dynamic` layout with the following configurations:
     - Parameters - `fri_step_list` and `last_layer_degree_bound` change depending on the size of the computation but other parameters remain same
@@ -56,12 +56,6 @@
             "table_prover_n_tasks_per_segment": 32
         }
         ```
-- Security bits for STARK-based zkVM / Proof Systems
-    - Stone: 100 bits
-    - Stwo: 96 bits
-    - OpenVM: 100 bits
-    - RISC Zero: 96 bits
-    - SP1: 100 bits
 - Benchmarks which run out of memory have been indicate by `*` in the tables.
 
 
@@ -89,17 +83,17 @@
 ## Fibonacci
 Benchmark `n` Fibonacci iterations.
 
-### Prover Time
+### Prover Time (s)
 {{ fib_data.tables.prover_time }}
 
 ![]({{ fib_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms) 
 {{ fib_data.tables.verifier_time }}
 
 ![]({{ fib_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ fib_data.tables.proof_size }}
 
 ![]({{ fib_data.plots.proof_size_plot }})
@@ -109,7 +103,7 @@ Benchmark `n` Fibonacci iterations.
 
 ![]({{ fib_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ fib_data.tables.peak_memory }}
 
 ![]({{ fib_data.plots.peak_memory_plot }})
@@ -118,17 +112,17 @@ Benchmark `n` Fibonacci iterations.
 ## Sha2
 Benchmark Sha256 hash of `n` bytes. For Stone, the [cairo implementation of sha256](https://github.com/cartridge-gg/cairo-sha256) by cartridge was used for benchmarking and for other zkvms [sha2 Rust crate](https://crates.io/crates/sha2) was used for benchmarking.
 
-### Prover Time
+### Prover Time (s)
 {{ sha2_data.tables.prover_time }}
 
 ![]({{ sha2_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms)
 {{ sha2_data.tables.verifier_time }}
 
 ![]({{ sha2_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ sha2_data.tables.proof_size }}
 
 ![]({{ sha2_data.plots.proof_size_plot }})
@@ -138,7 +132,7 @@ Benchmark Sha256 hash of `n` bytes. For Stone, the [cairo implementation of sha2
 
 ![]({{ sha2_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ sha2_data.tables.peak_memory }}
 
 ![]({{ sha2_data.plots.peak_memory_plot }})
@@ -146,17 +140,17 @@ Benchmark Sha256 hash of `n` bytes. For Stone, the [cairo implementation of sha2
 ## Sha2-Chain
 Benchmark Sha256 hash of 32 bytes for `n` iteration.
 
-### Prover Time
+### Prover Time (s)
 {{ sha2_chain_data.tables.prover_time }}
 
 ![]({{ sha2_chain_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms)
 {{ sha2_chain_data.tables.verifier_time }}
 
 ![]({{ sha2_chain_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ sha2_chain_data.tables.proof_size }}
 
 ![]({{ sha2_chain_data.plots.proof_size_plot }})
@@ -166,7 +160,7 @@ Benchmark Sha256 hash of 32 bytes for `n` iteration.
 
 ![]({{ sha2_chain_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ sha2_chain_data.tables.peak_memory }}
 
 ![]({{ sha2_chain_data.plots.peak_memory_plot }})
@@ -175,17 +169,17 @@ Benchmark Sha256 hash of 32 bytes for `n` iteration.
 ## Sha3
 Benchmark Keccak256 hash of `n` bytes. For Stone, the implementation of Keccak256 from stdlib as well as builtin was benchmarked.
 
-### Prover Time
+### Prover Time (s)
 {{ sha3_data.tables.prover_time }}
 
 ![]({{ sha3_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms)
 {{ sha3_data.tables.verifier_time }}
 
 ![]({{ sha3_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ sha3_data.tables.proof_size }}
 
 ![]({{ sha3_data.plots.proof_size_plot }})
@@ -195,7 +189,7 @@ Benchmark Keccak256 hash of `n` bytes. For Stone, the implementation of Keccak25
 
 ![]({{ sha3_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ sha3_data.tables.peak_memory }}
 
 ![]({{ sha3_data.plots.peak_memory_plot }})
@@ -208,17 +202,17 @@ Benchmark Keccak256 hash of `n` bytes. For Stone, the implementation of Keccak25
 ## Sha3-Chain
 Benchmark Keccak256 hash of 32 bytes for `n` iteration.
 
-### Prover Time
+### Prover Time (s)
 {{ sha3_chain_data.tables.prover_time }}
 
 ![]({{ sha3_chain_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms)
 {{ sha3_chain_data.tables.verifier_time }}
 
 ![]({{ sha3_chain_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ sha3_chain_data.tables.proof_size }}
 
 ![]({{ sha3_chain_data.plots.proof_size_plot }})
@@ -228,7 +222,7 @@ Benchmark Keccak256 hash of 32 bytes for `n` iteration.
 
 ![]({{ sha3_chain_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ sha3_chain_data.tables.peak_memory }}
 
 ![]({{ sha3_chain_data.plots.peak_memory_plot }})
@@ -240,17 +234,17 @@ Benchmark Keccak256 hash of 32 bytes for `n` iteration.
 ## Matrix Multiplication
 Benchmark multiplication of two matrices of size n x n.
 
-### Prover Time
+### Prover Time (s)
 {{ mat_mul_data.tables.prover_time }}
 
 ![]({{ mat_mul_data.plots.prover_time_plot }})
 
-### Verifier Time
+### Verifier Time (ms)
 {{ mat_mul_data.tables.verifier_time }}
 
 ![]({{ mat_mul_data.plots.verifier_time_plot }})
 
-### Proof Size
+### Proof Size (KB)
 {{ mat_mul_data.tables.proof_size }}
 
 ![]({{ mat_mul_data.plots.proof_size_plot }})
@@ -260,7 +254,7 @@ Benchmark multiplication of two matrices of size n x n.
 
 ![]({{ mat_mul_data.plots.cycle_count_plot }})
 
-### Peak Memory
+### Peak Memory (GB)
 {{ mat_mul_data.tables.peak_memory }}
 
 ![]({{ mat_mul_data.plots.peak_memory_plot }})

@@ -5,6 +5,7 @@ import itertools
 import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from tabulate import tabulate
+import math
 
 # Function to preprocess the dataframes
 def preprocess_data(df, column_name):
@@ -105,12 +106,22 @@ def plot_benchmark(df, title, y_label, bench_tuple, column_name):
         plt.plot(stone_df["n"], stone_df[column_name], marker=marker, color=color,
                     label="stone-builtin", linestyle='-')
 
-    plt.xlabel("n")
-    plt.ylabel(y_label)
+    plt.xlabel("n" + r"$\longrightarrow$", loc="right")
+    plt.ylabel(y_label + r"$\longrightarrow$ ", loc="top")
     plt.title(title)
     plt.yscale("log")
     plt.xscale("log")
-    plt.legend()
+
+    num_legend = len(df.columns) - 1  # number of legend entries (excluding 'n' column)
+    ncol = math.ceil(num_legend / 2)
+
+    plt.legend(
+        loc='upper center',
+        bbox_to_anchor=(0.4, -0.15),
+        ncol=ncol,
+        fontsize="small"
+    )
+    plt.subplots_adjust(bottom=0.2)
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
     plt.xticks(df["n"], df["n"], rotation=45)
@@ -133,25 +144,38 @@ def get_data(bench_tuple):
     return prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df
 
 def get_tables(bench_tuple):
-    prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = get_data(bench_tuple)
+    data_dfs_tuple = get_data(bench_tuple)
+    df_names = ["prover_time", "verifier_time", "proof_size", "cycle_count", "peak_memory"]
+    tables = {}
 
-    # Assuming your DataFrames may have NaN or empty strings
-    dataframes = [prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df]
+    for i, df_original in enumerate(data_dfs_tuple):
+        # Format all numbers to plain string (no scientific notation)
+        for col in df_original.columns:
+            if pd.api.types.is_numeric_dtype(df_original[col]):
+                df_original[col] = df_original[col].map(
+                    lambda x: f"{x:.0f}" if isinstance(x, (int, float)) and abs(x) >= 1e5 else str(x)
+                )
+            else:
+                df_original[col] = df_original[col].astype(str)
+        df_processed = df_original.replace({"nan": "*", "NaN": "*", "": "*"})
+        df_transposed = df_processed.T
 
-    # Replace NaN or empty strings with "*"
-    dataframes = [df.astype(str).replace({"nan": "*", "NaN": "*", "": "*"}) for df in dataframes]
+        bench_name, _, _ = bench_tuple
 
+        df_transposed = df_transposed.reset_index()
+        cols = df_transposed.columns.tolist()
 
-    # Unpack back to original variables if needed
-    prover_time_df, verifier_time_df, proof_size_df, cycle_count_df, peak_memory_df = dataframes
+        if bench_name == 'sha3-chain' or bench_name == 'sha2-chain':
+            keep_cols = [cols[0]] + cols[3:]
+            df_transposed = df_transposed[keep_cols]
 
-    tables = {
-        "prover_time": tabulate(prover_time_df.values.tolist(), headers=prover_time_df.columns, tablefmt="github"),
-        "verifier_time": tabulate(verifier_time_df.values.tolist(), headers=verifier_time_df.columns, tablefmt="github"),
-        "proof_size": tabulate(proof_size_df.values.tolist(), headers=proof_size_df.columns, tablefmt="github"),
-        "cycle_count": tabulate(cycle_count_df.values.tolist(), headers=cycle_count_df.columns, tablefmt="github"),
-        "peak_memory": tabulate(peak_memory_df.values.tolist(), headers=peak_memory_df.columns, tablefmt="github"),
-    }
+        table_data = df_transposed.values.tolist()
+        headers = table_data[0]
+        headers[0] = "n"
+        table_rows = table_data[1:]
+
+        table_markdown = tabulate(table_rows, headers=headers, tablefmt="github")
+        tables[df_names[i]] = table_markdown
 
     return tables
 

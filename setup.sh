@@ -9,6 +9,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/bin
 export PATH="$HOME/.cargo/bin:$PATH"
 rustup install 1.81.0
+rustup install 1.86.0
 rustup install nightly-2025-01-02
 
 # Install Python3.10
@@ -52,7 +53,7 @@ echo "Installing cairo-lang..."
 pip install cairo-lang
 
 # Install stone-cli
-cargo install --git https://github.com/zksecurity/stone-cli.git
+cargo +1.86.0 install --git https://github.com/zksecurity/stone-cli.git
 
 # Check Setup
 rustc --version

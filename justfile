@@ -197,8 +197,8 @@ bench-stone fib_args sha_args sha_chain_args matmul_args ec_args: build-stone
     just bench-stone-fib "{{fib_args}}"
     just bench-stone-sha3 "{{sha_args}}"
     just bench-stone-sha3-chain "{{sha_chain_args}}"
-    just bench-stone-sha3-builtin
-    just bench-stone-sha3-chain-builtin
+    just bench-stone-sha3-builtin "{{sha_args}}"
+    just bench-stone-sha3-chain-builtin "{{sha_chain_args}}"
     just bench-stone-mat "{{matmul_args}}"
     just bench-stone-sha2 "{{sha_args}}"
     just bench-stone-sha2-chain "{{sha_chain_args}}"

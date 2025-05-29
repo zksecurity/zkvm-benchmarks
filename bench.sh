@@ -22,7 +22,6 @@ cargo --version
 stone-cli --version
 python3.10 --version
 cairo-run --version
-scarb --version
 
 # Capture Machine Info
 REPORT_INFO_DIR="./report_info"
@@ -50,7 +49,7 @@ fi
 
 # Repo path comes first, default to current dir
 REPO_PATH="${1:-.}"
-shift # Drop the first argument, so $1 $2 $3 $4 are now the benchmarks
+shift # Drop the first argument, so $1 $2 $3 $4 $5 are now the benchmarks
 
 # Capture Latest Commit
 cd "$REPO_PATH" || { echo "Invalid repository path"; exit 1; }
@@ -67,5 +66,5 @@ gcc memuse.c -o memuse
 
 # Benchmark
 echo "Start benchmarking"
-just bench-all "$1" "$2" "$3" "$4"
+just bench-all "$1" "$2" "$3" "$4" "$5"
 echo "Finished benchmarking"

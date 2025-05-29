@@ -54,14 +54,9 @@ pip install cairo-lang
 # Install stone-cli
 cargo install --git https://github.com/zksecurity/stone-cli.git
 
-# Install scarb
-curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v nightly
-export PATH="$HOME/.local/bin:$PATH"
-
 # Check Setup
 rustc --version
 cargo --version
 stone-cli --version
 python3.10 --version
 cairo-run --version
-scarb --version

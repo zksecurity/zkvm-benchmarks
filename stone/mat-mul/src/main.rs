@@ -26,10 +26,11 @@ fn run(n: u32) {
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
     let parameter_file = match n {
-        10 => "../configs/parameter_131072.json".to_string(),
-        20 => "../configs/parameter_524288.json".to_string(),
-        40 => "../configs/parameter_4194304.json".to_string(),
-        60 => "../configs/parameter_16777216.json".to_string(),
+        4 => "../configs/parameter_65536_64.json".to_string(),
+        8 => "../configs/parameter_131072.json".to_string(),
+        16 => "../configs/parameter_524288.json".to_string(),
+        32 => "../configs/parameter_4194304.json".to_string(),
+        64 => "../configs/parameter_16777216.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();

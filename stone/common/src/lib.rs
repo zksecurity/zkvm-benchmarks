@@ -12,10 +12,6 @@ use std::env;
 pub struct Cli {
     #[arg(long)]
     pub n: u32,
-    
-    /// Run the benchmark under heaptrack for memory profiling
-    #[arg(long)]
-    pub bench_mem: bool,
 }
 
 pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (usize, Duration, Duration)  {

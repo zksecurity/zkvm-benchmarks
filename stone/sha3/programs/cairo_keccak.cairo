@@ -1,9 +1,11 @@
 %builtins range_check bitwise
 
 from starkware.cairo.common.cairo_keccak.keccak import cairo_keccak, finalize_keccak
-from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.alloc import alloc
+
+// For usage refer the following link:
+// https://github.com/starkware-libs/cairo-lang/blob/ab8be40403a7634ba296c467b26b8bd945ba5cfa/src/starkware/cairo/common/cairo_keccak/keccak.cairo#L1C1-L38C85
 
 func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
@@ -24,7 +26,7 @@ func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*}() {
 
     fill_input(input=inputs, length=iterations / 8, iterator=0);
 
-    let (res: Uint256) = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=iterations);
+    let res = cairo_keccak{keccak_ptr=keccak_ptr}(inputs=inputs, n_bytes=iterations);
 
     finalize_keccak(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=keccak_ptr);
 

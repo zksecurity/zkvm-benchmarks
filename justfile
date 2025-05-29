@@ -7,13 +7,13 @@ build-utils:
     cd utils && cargo build --release
 
 # Bench all
-bench-all fib_args sha_args sha_chain_args matmul_args: build-utils
-    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
-    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}"
+bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
+    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"}}"
+    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}""
 
 
 #####
@@ -25,7 +25,7 @@ build-jolt:
     cd jolt && cargo build --release
 
 # bench-all takes arguments for all benchmarks
-bench-jolt fib_args sha_args sha_chain_args matmul_args: build-jolt
+bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
     just bench-jolt-fib "{{fib_args}}"
     just bench-jolt-sha2 "{{sha_args}}"
     just bench-jolt-sha2-chain "{{sha_chain_args}}"
@@ -67,7 +67,7 @@ build-sp1:
 	cd sp1/ec-precompile && cargo prove build
 	cd sp1 && cargo build --release
 
-bench-sp1 fib_args sha_args sha_chain_args matmul_args: build-sp1
+bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-fib "{{fib_args}}"
     just bench-sp1-sha2 "{{sha_args}}"
     just bench-sp1-sha2-chain "{{sha_chain_args}}"
@@ -129,7 +129,7 @@ build-risczero:
     cd risczero/ec-precompile && cargo build --release    
     cd risczero/mat-mul && cargo build --release
 
-bench-risczero fib_args sha_args sha_chain_args matmul_args: build-risczero
+bench-risczero fib_args sha_args sha_chain_args matmul_args ec_args: build-risczero
     just bench-risczero-fib "{{fib_args}}"
     just bench-risczero-sha2 "{{sha_args}}"
     just bench-risczero-sha2-chain "{{sha_chain_args}}"
@@ -186,13 +186,14 @@ build-stone:
     cd stone/sha2 && cargo build --release
     cd stone/sha2-chain && cargo build --release
     cd stone/mat-mul && cargo build --release
+    cd stone/ec && cargo build --release
     -just build-stone-steps
 
 build-stone-steps:
 	-cd stone && git clone https://github.com/lambdaclass/cairo-vm.git
 	-cd stone/cairo-vm/cairo1-run && make deps
 
-bench-stone fib_args sha_args sha_chain_args matmul_args: build-stone
+bench-stone fib_args sha_args sha_chain_args matmul_args ec_args: build-stone
     just bench-stone-fib "{{fib_args}}"
     just bench-stone-sha3 "{{sha_args}}"
     just bench-stone-sha3-chain "{{sha_chain_args}}"
@@ -201,6 +202,7 @@ bench-stone fib_args sha_args sha_chain_args matmul_args: build-stone
     just bench-stone-mat "{{matmul_args}}"
     just bench-stone-sha2 "{{sha_args}}"
     just bench-stone-sha2-chain "{{sha_chain_args}}"
+    just bench-stone-ec "{{ec_args}}"
 
 bench-stone-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
@@ -214,31 +216,20 @@ bench-stone-sha3 sha_args:
 bench-stone-sha3-chain sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha3-chain" "$arg"; done
 
-# representing bytes 200, 400, 800, 1600, 3200
-# as each iteration of the sha3 builtin processes 200 bytes
-# let inputs = [1, 2, 4, 8, 16];
-bench-stone-sha3-builtin:
-    -for arg in 1 2 4 8 16; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
+bench-stone-sha3-builtin sha_args:
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha3-builtin" "$arg"; done
 
-# to adapt to the 200 bytes per iteration of the sha3 builtin,
-# the number of equivalent iterations is:
-# 32 bytes * 4 = 128 bytes     → 128 / 200 = 0.64
-# 32 bytes * 8 = 256 bytes     → 256 / 200 = 1.28
-# 32 bytes * 16 = 512 bytes    → 512 / 200 = 2.56
-# 32 bytes * 32 = 1024 bytes   → 1024 / 200 = 5.12
-# 32 bytes * 64 = 2048 bytes   → 2048 / 200 = 10.24
-# 32 bytes * 128 = 4096 bytes  → 4096 / 200 = 20.48
-# 32 bytes * 256 = 8192 bytes  → 8192 / 200 = 40.96
-# 32 bytes * 512 = 16384 bytes → 16384 / 200 = 81.92
-# 32 bytes * 1024 = 32768 bytes → 32768 / 200 = 163.84
-bench-stone-sha3-chain-builtin:
-    -for arg in 1 3 5 10 20 40 80 160; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
+bench-stone-sha3-chain-builtin sha_chain_args:
+    -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha3-chain-builtin" "$arg"; done
 
 bench-stone-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "stone" "sha2" "$arg"; done
 
 bench-stone-sha2-chain sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "stone" "sha2-chain" "$arg"; done
+
+bench-stone-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "stone" "ec" "$arg"; done
 
 
 #####
@@ -247,18 +238,15 @@ bench-stone-sha2-chain sha_chain_args:
 
 build-stwo:
     cd stwo && cargo build --release
-    cd stwo/fib && scarb build
-    cd stwo/mat_mul && scarb build
-    -cd stwo && git clone https://github.com/starkware-libs/stwo-cairo.git && cd stwo-cairo
-    cd stwo/stwo-cairo/stwo_cairo_prover && cargo build --release
 
-bench-stwo fib_args sha_args sha_chain_args matmul_args: build-stwo
+bench-stwo fib_args sha_args sha_chain_args matmul_args ec_args: build-stwo
     just bench-stwo-fib "{{fib_args}}"
     just bench-stwo-sha2 "{{sha_args}}"
     just bench-stwo-sha2-chain "{{sha_chain_args}}"
     just bench-stwo-sha3 "{{sha_args}}"
     just bench-stwo-sha3-chain "{{sha_chain_args}}"
     just bench-stwo-mat-mul "{{matmul_args}}"
+    just bench-stwo-ec "{{ec_args}}"
 
 bench-stwo-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done
@@ -278,6 +266,8 @@ bench-stwo-sha3-chain sha_chain_args:
 bench-stwo-mat-mul matmul_args:
     -for arg in {{matmul_args}}; do ./bench_zkvm.sh "stwo" "mat-mul" "$arg"; done
 
+bench-stwo-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "stwo" "ec" "$arg"; done
 
 
 #####
@@ -288,7 +278,7 @@ build-openvm:
     cd openvm && rustup install
     cd openvm && cargo build --release
 
-bench-openvm fib_args sha_args sha_chain_args matmul_args: build-openvm
+bench-openvm fib_args sha_args sha_chain_args matmul_args ec_args: build-openvm
     just bench-openvm-fib "{{fib_args}}"
     just bench-openvm-sha2 "{{sha_args}}"
     just bench-openvm-sha2-chain "{{sha_chain_args}}"

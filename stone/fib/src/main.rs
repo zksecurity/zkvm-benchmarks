@@ -26,12 +26,12 @@ fn run(n: u32) {
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
     let parameter_file = match n {
-        100 | 500 | 1000 | 5000 => "../configs/parameter_65536_32.json".to_string(),
-        10000 => "../configs/parameter_65536_64.json".to_string(),
-        50000 => "../configs/parameter_524288.json".to_string(),
-        100000 => "../configs/parameter_1048576.json".to_string(),
-        500000 => "../configs/parameter_4194304.json".to_string(),
-        1000000 => "../configs/parameter_8388608.json".to_string(),
+        4096 => "../configs/parameter_65536_32.json".to_string(),
+        16384 => "../configs/parameter_65536_64.json".to_string(),
+        65536 => "../configs/parameter_524288.json".to_string(),
+        262144 => "../configs/parameter_1048576.json".to_string(),
+        1048576 => "../configs/parameter_4194304.json".to_string(),
+        4194304 => "../configs/parameter_8388608.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     

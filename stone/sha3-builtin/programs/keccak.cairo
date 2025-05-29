@@ -1,38 +1,31 @@
-%builtins keccak
-from starkware.cairo.common.cairo_builtins import KeccakBuiltin
-from starkware.cairo.common.keccak_state import KeccakBuiltinState
+%builtins range_check bitwise keccak
 
-// A helper function that hashes the given state `n` times.
-func repeat_hash{keccak_ptr: KeccakBuiltin*}(state: KeccakBuiltinState, n: felt) -> KeccakBuiltinState{
-    if (n == 0) {
-        // If n is 0, we've done all the required hashing.
-        return (state);
-    }
+from starkware.cairo.common.builtin_keccak.keccak import keccak
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, KeccakBuiltin
+from starkware.cairo.common.alloc import alloc
 
-    // Provide the current state as input to Keccak.
-    assert keccak_ptr[0].input = state;
-    // Read the output of the hash.
-    let output = keccak_ptr[0].output;
-    // Advance the keccak pointer for the next iteration.
-    let keccak_ptr = keccak_ptr + KeccakBuiltin.SIZE;
-
-    // Recursively call repeat_hash with output as the new state and n-1 as the new count.
-    return repeat_hash(output, n - 1);
-}
+// For usage refer the following link:
+// https://github.com/starkware-libs/cairo-lang/blob/master/src/starkware/cairo/common/builtin_keccak/keccak.cairo#L1-L11
 
 // The main function now accepts a parameter `n` that indicates how many times to hash.
-func main{keccak_ptr: KeccakBuiltin*}() {
+func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: KeccakBuiltin*}() {
     alloc_locals;
 
     local iterations;
     %{ ids.iterations = program_input['iterations'] %}
 
-    // Define an initial Keccak state (can be replaced with your desired initial input).
-    let initial_state = KeccakBuiltinState(1, 2, 3, 4, 5, 6, 7, 8);
+    let (inputs: felt*) = alloc();
+    fill_input(input=inputs, length=iterations / 8, iterator=0);
 
-    // Apply the hash n times.
-    let final_state = repeat_hash(initial_state, iterations);
+    let res = keccak(inputs=inputs, n_bytes=iterations);
 
-    // final_state now holds the Keccak state after n iterations of hashing.
     return ();
+}
+
+func fill_input(input: felt*, length: felt, iterator: felt) {
+    if (iterator == length) {
+        return ();
+    }
+    assert input[iterator] = 1;
+    return fill_input(input, length, iterator + 1);
 }

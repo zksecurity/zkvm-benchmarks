@@ -1,4 +1,5 @@
 // Reference https://github.com/cartridge-gg/cairo-sha256
+// Refer the above link for usage
 
 %builtins range_check bitwise
 
@@ -391,7 +392,12 @@ func main{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     let (inputs: felt*) = alloc();
     fill_input(input=inputs, length=n_bytes / 4, iterator=0); 
 
-    let final_state = repeat_hash(inputs, iterations);
+    let (local sha256_ptr: felt*) = alloc();
+    let sha256_ptr_start = sha256_ptr;
+
+    let final_state = repeat_hash(inputs, iterations, sha256_ptr);
+
+    finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr);
 
     return ();
 }
@@ -400,22 +406,19 @@ func fill_input(input: felt*, length: felt, iterator: felt) {
     if (iterator == length) {
         return ();
     }
-    assert input[iterator] = '5555';
+    assert input[iterator] = 0x50505050; // 4 bytes
     return fill_input(input, length, iterator + 1);
 }
 
 // A helper function that hashes the given state `n` times.
-func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(input: felt*, iterations: felt) -> felt* {
+func repeat_hash{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(input: felt*, iterations: felt, sha256_ptr: felt*) -> felt* {
     alloc_locals;
 
     if (iterations == 0) {
         return input;
     }
 
-    let (local sha256_ptr: felt*) = alloc();
-    let sha256_ptr_start = sha256_ptr;
     let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 32);
-    finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr);
 
-    return repeat_hash(hash, iterations - 1);
+    return repeat_hash(hash, iterations - 1, sha256_ptr);
 }

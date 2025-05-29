@@ -1,6 +1,8 @@
 [package]
-name = "ec"
+name = "stone"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+common = { path = "../common" }
+clap = { version = "4.0.5", features = ["derive"] } 

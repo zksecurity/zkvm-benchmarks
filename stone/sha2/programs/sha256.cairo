@@ -1,4 +1,5 @@
 // Reference https://github.com/cartridge-gg/cairo-sha256
+// Refer the above link for usage
 
 %builtins range_check bitwise
 
@@ -403,6 +404,6 @@ func fill_input(input: felt*, length: felt, iterator: felt) {
     if (iterator == length) {
         return ();
     }
-    assert input[iterator] = '5555';
+    assert input[iterator] = 0x50505050; // 4 bytes
     return fill_input(input, length, iterator + 1);
 }

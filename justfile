@@ -4,13 +4,13 @@ default:
 
 # Build utilities
 build-utils:
-    cd utils && cargo build --release
+    cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
-    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"}}"
     # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}""
@@ -22,7 +22,7 @@ bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
 
 build-jolt:
     cd jolt && rustup install
-    cd jolt && cargo build --release
+    cd jolt && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # bench-all takes arguments for all benchmarks
 bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
@@ -31,6 +31,8 @@ bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
     just bench-jolt-sha2-chain "{{sha_chain_args}}"
     just bench-jolt-sha3 "{{sha_args}}"
     just bench-jolt-sha3-chain "{{sha_chain_args}}"
+    just bench-jolt-mat-mul "{{matmul_args}}"
+    just bench-jolt-ec "{{ec_args}}"
 
 bench-jolt-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
@@ -46,6 +48,12 @@ bench-jolt-sha3 sha_args:
 
 bench-jolt-sha3-chain sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "jolt" "sha3-chain" "$arg"; done
+
+bench-jolt-mat-mul matmul_args:
+    -for arg in {{matmul_args}}; do ./bench_zkvm.sh "jolt" "mat-mul" "$arg"; done
+
+bench-jolt-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "jolt" "ec" "$arg"; done
 
 
 #####

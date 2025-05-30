@@ -48,7 +48,7 @@ fn run(n: u32) {
     let layout = "automatic".to_string();
     let parameter_file = match n {
         256 | 512 | 1024 | 2048 => "../configs/parameter_65536_32.json".to_string(),
-        4096 => "../configs/parameter_1048576.json".to_string(),
+        4096 => "../configs/parameter_131072.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();

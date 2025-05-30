@@ -27,7 +27,7 @@ fn run(n: u32) {
     let layout = "automatic".to_string();
     let parameter_file = match n {
         4 => "../configs/parameter_65536_32.json".to_string(),
-        8 => "../configs/parameter_131072.json".to_string(),
+        8 => "../configs/parameter_65536_32.json".to_string(),
         16 => "../configs/parameter_262144.json".to_string(),
         32 => "../configs/parameter_2097152.json".to_string(),
         64 => "../configs/parameter_16777216.json".to_string(),

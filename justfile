@@ -8,8 +8,8 @@ build-utils:
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
-    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"}}"
@@ -185,16 +185,16 @@ bench-risczero-sha3-chain-precompile sha_chain_args:
 #####
 
 build-stone:
-    cd stone/common && cargo build --release
-    cd stone/fib && cargo build --release
-    cd stone/sha3 && cargo build --release
-    cd stone/sha3-chain && cargo build --release
-    cd stone/sha3-builtin && cargo build --release
-    cd stone/sha3-chain-builtin && cargo build --release
-    cd stone/sha2 && cargo build --release
-    cd stone/sha2-chain && cargo build --release
-    cd stone/mat-mul && cargo build --release
-    cd stone/ec && cargo build --release
+    cd stone/common && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha3-builtin && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha3-chain-builtin && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     -just build-stone-steps
 
 build-stone-steps:
@@ -245,7 +245,7 @@ bench-stone-ec ec_args:
 #####
 
 build-stwo:
-    cd stwo && cargo build --release
+    cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-stwo fib_args sha_args sha_chain_args matmul_args ec_args: build-stwo
     just bench-stwo-fib "{{fib_args}}"

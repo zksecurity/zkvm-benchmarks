@@ -1,10 +1,10 @@
 use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_cairo_adapter::vm_import::adapt_vm_output;
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::{
-    default_prod_prover_parameters, prove_cairo, ProverParameters,
+use stwo_cairo_prover::cairo_air::prover::{
+    default_prod_prover_parameters, prove_cairo, ProverParameters, ProverConfig,
 };
-use cairo_air::verifier::verify_cairo;
+use stwo_cairo_prover::cairo_air::verifier::verify_cairo;
 
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -14,9 +14,12 @@ pub fn prove_and_verify(stwo_public_input: String, stwo_private_input: String) -
     println!("Running Stwo Prover...");
     let vm_output: ProverInput =
         adapt_vm_output(Path::new(&stwo_public_input), Path::new(&stwo_private_input)).unwrap();
-    let ProverParameters { pcs_config, channel_hash: _, preprocessed_trace } = default_prod_prover_parameters();
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+    let config = ProverConfig {
+        display_components: false,
+    };
     let prover_start = Instant::now();
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, pcs_config, preprocessed_trace).unwrap();
+    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, config, pcs_config).unwrap();
     let prover_end = Instant::now();
     println!("Proof Generated Successfully...");
 
@@ -24,7 +27,7 @@ pub fn prove_and_verify(stwo_public_input: String, stwo_private_input: String) -
     
     println!("Running Stwo Verifier...");
     let verifier_start = Instant::now();
-    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace).unwrap();
+    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config).unwrap();
     let verifier_end = Instant::now();
     println!("Proof Verified Successfully...");
 

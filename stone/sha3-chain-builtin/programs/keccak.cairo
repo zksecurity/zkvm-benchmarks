@@ -19,7 +19,6 @@ func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: Kecca
     let n_bytes = 32;
     fill_input(input=inputs, length=n_bytes / 8, iterator=0);
 
-    let res = keccak(inputs=inputs, n_bytes=iterations);
     let final_state = repeat_hash(inputs, iterations-1);
 
     return ();

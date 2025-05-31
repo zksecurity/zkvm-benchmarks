@@ -55,29 +55,34 @@ fn main() {
 }
 
 fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
+    let program_input = format!("[{}]", n);
 
-    let program_input = format!("[{}]", n).to_string();
+    let current_dir = std::env::current_dir().unwrap();
+    let stone_dir = current_dir.join("../stone");
+    let stwo_dir = current_dir;
 
-    // generate prover input files
-    let program_file = "../../fib/programs/fibonacci.cairo".to_string();
-    let public_input = "../../../stwo/fib/public_input.json".to_string();
-    let private_input = "../../../stwo/fib/private_input.json".to_string();
-    let trace = "../../../stwo/fib/trace.bin".to_string();
-    let memory = "../../../stwo/fib/memory.bin".to_string();
+    // Generate prover input files with absolute paths
+    let program_file = stone_dir.join("fib/programs/fibonacci.cairo");
+    let public_input = stwo_dir.join("fib/public_input.json");
+    let private_input = stwo_dir.join("fib/private_input.json");
+    let trace = stwo_dir.join("fib/trace.bin");
+    let memory = stwo_dir.join("fib/memory.bin");
+    let layout_params = stone_dir.join("configs/cairo_layout_params_file.json");
 
-    let cairo_vm_dir = "../stone/cairo-vm/cairo1-run".to_string();
-    std::env::set_current_dir(&cairo_vm_dir).unwrap();
+    // Run command with explicit working directory
+    let cairo_vm_dir = stone_dir.join("cairo-vm/cairo1-run");
     let status = Command::new("cargo")
         .arg("run")
         .arg(program_file)
         .arg("--layout").arg("dynamic")
-        .arg("--cairo_layout_params_file").arg("../../configs/cairo_layout_params_file.json")
+        .arg("--cairo_layout_params_file").arg(layout_params)
         .arg("--args").arg(program_input)
-        .arg("--air_public_input").arg(public_input)
-        .arg("--air_private_input").arg(private_input)
-        .arg("--trace_file").arg(trace)
-        .arg("--memory_file").arg(memory)
+        .arg("--air_public_input").arg(&public_input)
+        .arg("--air_private_input").arg(&private_input)
+        .arg("--trace_file").arg(&trace)
+        .arg("--memory_file").arg(&memory)
         .arg("--proof_mode")
+        .current_dir(cairo_vm_dir)
         .status()
         .expect("Failed to run command");
 
@@ -85,39 +90,43 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
         eprintln!("Command failed with status: {:?}", status);
     }
 
-    // change back to the stwo directory
-    let stwo_dir = "../../../stwo".to_string();
-    std::env::set_current_dir(&stwo_dir).unwrap();
-    let stwo_public_input = "./fib/public_input.json".to_string();
-    let stwo_private_input = "./fib/private_input.json".to_string();
-
-    prove_and_verify(stwo_public_input, stwo_private_input)
+    // No need to change directories - use absolute paths
+    prove_and_verify(
+        public_input.to_string_lossy().to_string(),
+        private_input.to_string_lossy().to_string()
+    )
 }
 
 fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
 
-    let program_input = format!("[{}]", n).to_string();
+    let program_input = format!("[{}]", n);
 
-    // generate prover input files
-    let program_file = "../../mat-mul/programs/mat.cairo".to_string();
-    let public_input = "../../../stwo/mat_mul/public_input.json".to_string();
-    let private_input = "../../../stwo/mat_mul/private_input.json".to_string();
-    let trace = "../../../stwo/mat_mul/trace.bin".to_string();
-    let memory = "../../../stwo/mat_mul/memory.bin".to_string();
+    let current_dir = std::env::current_dir().unwrap();
+    let stone_dir = current_dir.join("../stone");
+    let stwo_dir = current_dir;
 
-    let cairo_vm_dir = "../stone/cairo-vm/cairo1-run".to_string();
-    std::env::set_current_dir(&cairo_vm_dir).unwrap();
+    // Generate prover input files with absolute paths
+    let program_file = stone_dir.join("mat-mul/programs/mat.cairo");
+    let public_input = stwo_dir.join("mat_mul/public_input.json");
+    let private_input = stwo_dir.join("mat_mul/private_input.json");
+    let trace = stwo_dir.join("mat_mul/trace.bin");
+    let memory = stwo_dir.join("mat_mul/memory.bin");
+    let layout_params = stone_dir.join("configs/cairo_layout_params_file.json");
+
+    // Run command with explicit working directory
+    let cairo_vm_dir = stone_dir.join("cairo-vm/cairo1-run");
     let status = Command::new("cargo")
         .arg("run")
         .arg(program_file)
         .arg("--layout").arg("dynamic")
-        .arg("--cairo_layout_params_file").arg("../../configs/cairo_layout_params_file.json")
+        .arg("--cairo_layout_params_file").arg(layout_params)
         .arg("--args").arg(program_input)
-        .arg("--air_public_input").arg(public_input)
-        .arg("--air_private_input").arg(private_input)
-        .arg("--trace_file").arg(trace)
-        .arg("--memory_file").arg(memory)
+        .arg("--air_public_input").arg(&public_input)
+        .arg("--air_private_input").arg(&private_input)
+        .arg("--trace_file").arg(&trace)
+        .arg("--memory_file").arg(&memory)
         .arg("--proof_mode")
+        .current_dir(cairo_vm_dir)
         .status()
         .expect("Failed to run command");
 
@@ -125,13 +134,11 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
         eprintln!("Command failed with status: {:?}", status);
     }
 
-    // change back to the stwo directory
-    let stwo_dir = "../../../stwo".to_string();
-    std::env::set_current_dir(&stwo_dir).unwrap();
-    let stwo_public_input = "./mat_mul/public_input.json".to_string();
-    let stwo_private_input = "./mat_mul/private_input.json".to_string();
-
-    prove_and_verify(stwo_public_input, stwo_private_input)
+    // No need to change directories - use absolute paths
+    prove_and_verify(
+        public_input.to_string_lossy().to_string(),
+        private_input.to_string_lossy().to_string()
+    )
 }
 
 fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {

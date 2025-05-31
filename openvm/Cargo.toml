@@ -9,29 +9,28 @@ members = [
     "sha2",
     "sha2-precompile",
     "sha2-chain",
+    "sha2-chain-precompile",
     "sha3",
+    "sha3-precompile",
     "sha3-chain",
-    "mat-mul",
+    "sha3-chain-precompile",
+    "mat-mul", 
+    "ec", 
 ]
 
-[dependencies]
-openvm = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
-openvm-build = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
+[workspace.dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-build = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
-openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", tag = "v1.0.0", default-features = false }
+openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", tag = "v1.0.1", default-features = false }
 openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
+
+[dependencies]
+openvm = { workspace = true }
+openvm-build = { workspace = true }
+openvm-sdk = { workspace = true }
+openvm-stark-sdk = { workspace = true }
+openvm-transpiler = { workspace = true }
 
 clap = { version = "4.5.26", features = ["derive"] } 
 utils = { path = "../utils" }
-
-fib = { path = "./fib" }
-sha2 = { path = "./sha2" }
-sha2-precompile = { path = "./sha2-precompile" }
-sha2-chain = { path = "./sha2-chain" }
-sha2-chain-precompile = { path = "./sha2-chain-precompile" }
-sha3 = { path = "./sha3" }
-sha3-precompile = { path = "./sha3-precompile" }
-sha3-chain = { path = "./sha3-chain" }
-sha3-chain-precompile = { path = "./sha3-chain-precompile" }
-mat-mul = { path = "./mat-mul" }
-

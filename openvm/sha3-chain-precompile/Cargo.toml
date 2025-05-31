@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-openvm = { git = "https://github.com/openvm-org/openvm.git" }
+openvm = { workspace = true }
 openvm-keccak256-guest = { git = "https://github.com/openvm-org/openvm.git" }
 
 [features]

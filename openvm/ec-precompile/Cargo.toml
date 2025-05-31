@@ -1,0 +1,14 @@
+[package]
+name = "ec-precompile"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { workspace = true }
+openvm-ecc-guest = { git = "https://github.com/openvm-org/openvm.git", features = ["k256"] }
+openvm-ecc-sw-macros = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-platform = { git = "https://github.com/openvm-org/openvm.git" }
+
+[features]
+default = []
+std = ["openvm/std"]

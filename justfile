@@ -13,7 +13,7 @@ bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
     just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"}}"
-    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}""
+    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}""
 
 
 #####
@@ -284,7 +284,7 @@ bench-stwo-ec ec_args:
 
 build-openvm:
     cd openvm && rustup install
-    cd openvm && cargo build --release
+    cd openvm && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-openvm fib_args sha_args sha_chain_args matmul_args ec_args: build-openvm
     just bench-openvm-fib "{{fib_args}}"
@@ -297,6 +297,8 @@ bench-openvm fib_args sha_args sha_chain_args matmul_args ec_args: build-openvm
     just bench-openvm-sha3-precompile "{{sha_args}}"
     just bench-openvm-sha3-chain-precompile "{{sha_chain_args}}"
     just bench-openvm-mat-mul "{{matmul_args}}"
+    just bench-openvm-ec "{{ec_args}}"
+    just bench-openvm-ec-precompile "{{ec_args}}"
 
 bench-openvm-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "openvm" "fib" "$arg"; done
@@ -328,3 +330,5 @@ bench-openvm-sha3-precompile sha_args:
 bench-openvm-sha3-chain-precompile sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "openvm" "sha3-chain-precompile" "$arg"; done
 
+bench-openvm-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "openvm" "ec" "$arg"; done

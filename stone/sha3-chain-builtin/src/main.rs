@@ -49,13 +49,13 @@ fn run(n: u32) {
     let parameter_file = match n {
         4 => "../configs/parameter_65536_32.json".to_string(),
         8 => "../configs/parameter_65536_32.json".to_string(),
-        16 => "../configs/parameter_65536_64.json".to_string(),
-        32 => "../configs/parameter_131072.json".to_string(),
-        64 => "../configs/parameter_262144.json".to_string(),
-        128 => "../configs/parameter_524288.json".to_string(),
-        256 => "../configs/parameter_1048576.json".to_string(),
-        512 => "../configs/parameter_2097152.json".to_string(),
-        1024 => "../configs/parameter_4194304.json".to_string(),
+        16 => "../configs/parameter_65536_32.json".to_string(),
+        32 => "../configs/parameter_65536_64.json".to_string(),
+        64 => "../configs/parameter_131072.json".to_string(),
+        128 => "../configs/parameter_262144.json".to_string(),
+        256 => "../configs/parameter_524288.json".to_string(),
+        512 => "../configs/parameter_1048576.json".to_string(),
+        1024 => "../configs/parameter_2097152.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();

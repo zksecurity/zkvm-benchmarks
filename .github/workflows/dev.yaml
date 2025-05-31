@@ -68,7 +68,7 @@ jobs:
             SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
             SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
             SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
-            bash -c "cd $WORK_DIR && ./bench.sh . \"4096 16384 65536 262144 1048576\" \"256 512 1024 2048 4096\" \"4 8 16 32 64 128 256 512 1024\" \"4 8 16 32 64\" \"16 32 64 128 256 512 1024\""
+            bash -c "cd $WORK_DIR && ./bench.sh . \"4096 16384 65536 262144 1048576\" \"256 512 1024 2048 4096\" \"8 16 32 64 128 256 512 1024\" \"4 8 16 32 64\" \"128 256 512 1024 2048\""
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v4

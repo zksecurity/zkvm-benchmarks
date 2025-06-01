@@ -8,12 +8,12 @@ build-utils:
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
-    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"}}"
-    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}""
+    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
 
 
 #####
@@ -73,7 +73,7 @@ build-sp1:
 	cd sp1/sha3-chain-precompile && cargo prove build
 	cd sp1/ec && cargo prove build
 	cd sp1/ec-precompile && cargo prove build
-	cd sp1 && cargo build --release
+	cd sp1 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-fib "{{fib_args}}"
@@ -86,6 +86,8 @@ bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-sp1-sha3-precompile "{{sha_args}}"
     just bench-sp1-sha3-chain-precompile "{{sha_chain_args}}"
+    just bench-sp1-ec "{{ec_args}}"
+    just bench-sp1-ec-precompile "{{ec_args}}"
 
 bench-sp1-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "sp1" "fib" "$arg"; done
@@ -117,6 +119,11 @@ bench-sp1-sha3-chain sha_chain_args:
 bench-sp1-mat-mul matmul_args:
     -for arg in {{matmul_args}}; do ./bench_zkvm.sh "sp1" "mat-mul" "$arg"; done
 
+bench-sp1-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "sp1" "ec" "$arg"; done
+
+bench-sp1-ec-precompile ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "sp1" "ec-precompile" "$arg"; done
 
 
 #####
@@ -124,18 +131,18 @@ bench-sp1-mat-mul matmul_args:
 #####
 
 build-risczero:
-    cd risczero/fib && cargo build --release
-    cd risczero/sha2 && cargo build --release
-    cd risczero/sha2-precompile && cargo build --release
-    cd risczero/sha3 && cargo build --release
-    cd risczero/sha3-precompile && cargo build --release
-    cd risczero/sha2-chain && cargo build --release
-    cd risczero/sha2-chain-precompile && cargo build --release
-    cd risczero/sha3-chain && cargo build --release
-    cd risczero/sha3-chain-precompile && cargo build --release
-    cd risczero/ec && cargo build --release
-    cd risczero/ec-precompile && cargo build --release    
-    cd risczero/mat-mul && cargo build --release
+    cd risczero/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2-chain-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3-chain-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/ec-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
+    cd risczero/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-risczero fib_args sha_args sha_chain_args matmul_args ec_args: build-risczero
     just bench-risczero-fib "{{fib_args}}"
@@ -148,6 +155,8 @@ bench-risczero fib_args sha_args sha_chain_args matmul_args ec_args: build-riscz
     just bench-risczero-sha3-chain "{{sha_chain_args}}"
     just bench-risczero-sha3-chain-precompile "{{sha_chain_args}}"
     just bench-risczero-mat-mul "{{matmul_args}}"
+    just bench-risczero-ec "{{ec_args}}"
+    just bench-risczero-ec-precompile "{{ec_args}}"
 
 bench-risczero-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "risczero" "fib" "$arg"; done
@@ -179,6 +188,11 @@ bench-risczero-sha3-chain sha_chain_args:
 bench-risczero-sha3-chain-precompile sha_chain_args:
     -for arg in {{sha_chain_args}}; do ./bench_zkvm.sh "risczero" "sha3-chain-precompile" "$arg"; done
 
+bench-risczero-ec ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "risczero" "ec" "$arg"; done
+
+bench-risczero-ec-precompile ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "risczero" "ec-precompile" "$arg"; done
 
 #####
 # Stone

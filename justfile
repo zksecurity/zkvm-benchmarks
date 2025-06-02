@@ -10,10 +10,10 @@ build-utils:
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
     # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
 
 
 #####
@@ -26,12 +26,12 @@ build-jolt:
 
 # bench-all takes arguments for all benchmarks
 bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
-    just bench-jolt-fib "{{fib_args}}"
-    just bench-jolt-sha2 "{{sha_args}}"
-    just bench-jolt-sha2-chain "{{sha_chain_args}}"
-    just bench-jolt-sha3 "{{sha_args}}"
-    just bench-jolt-sha3-chain "{{sha_chain_args}}"
-    just bench-jolt-mat-mul "{{matmul_args}}"
+    # just bench-jolt-fib "{{fib_args}}"
+    # just bench-jolt-sha2 "{{sha_args}}"
+    # just bench-jolt-sha2-chain "{{sha_chain_args}}"
+    # just bench-jolt-sha3 "{{sha_args}}"
+    # just bench-jolt-sha3-chain "{{sha_chain_args}}"
+    # just bench-jolt-mat-mul "{{matmul_args}}"
     just bench-jolt-ec "{{ec_args}}"
 
 bench-jolt-fib fib_args:

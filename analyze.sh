@@ -17,13 +17,10 @@ pip install ipython
 pip install numpy
 pip install jinja2 tabulate
 sudo apt -y install pandoc
-marimo --version
 
-# run marimo notebook
 echo "Creating report..."
 rm -rf report
 mkdir -p report
-# marimo export html analyze.py -o report/index.html --no-include-code
 
 python analyze_md.py
 cp -r plots report/

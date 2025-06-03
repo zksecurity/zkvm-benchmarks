@@ -39,11 +39,8 @@ def combine_benchmark(bench_tuple, column_name):
         file_paths["r0-precompile"] = f'./benchmark_outputs/risczero-{bench_name}-precompile.csv'
         file_paths["openvm-precompile"] = f'./benchmark_outputs/openvm-{bench_name}-precompile.csv'
 
-    if bench_name == 'sha3-chain' and is_builtin:
-        file_paths.pop("stone", None)
-
-    if bench_name == 'mat-mul':
-             file_paths.pop("jolt", None)
+    if is_builtin:
+        file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
     combined_df = None
 
@@ -66,16 +63,16 @@ def plot_benchmark(df, title, y_label, bench_tuple, column_name):
     bench_name, _, is_builtin = bench_tuple
 
     style_map = {
-        'jolt': ('o', 'b'),
-        'r0': ('s', 'r'),
-        'sp1': ('D', 'g'),
-        'stone': ('^', 'm'),
-        'stwo': ('v', 'c'),
-        'r0-precompile': ('*', 'y'),
-        'sp1-precompile': ('P', 'k'),
-        'stone-builtin': ('h', '#8B0000'),
-        'openvm': ('X', '#FF7F0E'),
-        'openvm-precompile': ('d', '#2CA02C'),
+        'jolt': ('o', '#644172'),
+        'r0': ('s', '#00FF00'),
+        'sp1': ('D', '#FE11C5'),
+        'stone': ('^', '#236B8E'),
+        'stwo': ('v', '#EC5631'),
+        'r0-precompile': ('*', '#699C52'),
+        'sp1-precompile': ('P', '#DC75CD'),
+        'stone-builtin': ('h', '#58C4DD'),
+        'openvm': ('X', '#505050'),
+        'openvm-precompile': ('d', '#A0A0A0'),
     }
 
     plt.figure(figsize=(8, 6))
@@ -90,34 +87,16 @@ def plot_benchmark(df, title, y_label, bench_tuple, column_name):
         plt.plot(df["n"][non_zero], df[col][non_zero], 
                     marker=marker, color=color, label=col, linestyle='-')
 
-    if bench_name == 'sha3' and is_builtin:
-        path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
-        stone_df = preprocess_data(pd.read_csv(path), column_name)
-        stone_df["n"] *= 200
-        marker, color = style_map["stone-builtin"]
-        plt.plot(stone_df["n"], stone_df[column_name], marker=marker, color=color,
-                    label="stone-builtin", linestyle='-')
-
-    if bench_name == 'sha3-chain' and is_builtin:
-        path = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
-        stone_df = preprocess_data(pd.read_csv(path), column_name)
-        stone_df["n"] = np.ceil(stone_df["n"] * (200 / 32))
-        marker, color = style_map["stone-builtin"]
-        plt.plot(stone_df["n"], stone_df[column_name], marker=marker, color=color,
-                    label="stone-builtin", linestyle='-')
-
-    plt.xlabel("n" + r"$\longrightarrow$", loc="right")
-    plt.ylabel(y_label + r"$\longrightarrow$ ", loc="top")
     plt.title(title)
     plt.yscale("log")
     plt.xscale("log")
 
-    num_legend = len(df.columns) - 1  # number of legend entries (excluding 'n' column)
+    num_legend = len(df.columns) - 1
     ncol = math.ceil(num_legend / 2)
 
     plt.legend(
         loc='upper center',
-        bbox_to_anchor=(0.4, -0.15),
+        bbox_to_anchor=(0.5, -0.15),
         ncol=ncol,
         fontsize="small"
     )
@@ -157,24 +136,22 @@ def get_tables(bench_tuple):
                 )
             else:
                 df_original[col] = df_original[col].astype(str)
-        df_processed = df_original.replace({"nan": "*", "NaN": "*", "": "*"})
-        df_transposed = df_processed.T
 
-        bench_name, _, _ = bench_tuple
+        # Replace NaN values based on column name
+        df_processed = df_original.copy()
+        for col in df_processed.columns:
+            if col == "stone" or col == "stone-builtin":
+                # for stone, this is likely due to benchmarks running out of memory
+                df_processed[col] = df_processed[col].replace({"nan": "*", "NaN": "*", "": "*"})
+            else:
+                # for others, this is due to some error in proof generation
+                df_processed[col] = df_processed[col].replace({"nan": "x", "NaN": "x", "": "x"})
 
-        df_transposed = df_transposed.reset_index()
-        cols = df_transposed.columns.tolist()
+        # Convert DataFrame to table format without transposing
+        table_data = df_processed.values.tolist()
+        headers = df_processed.columns.tolist()
 
-        if bench_name == 'sha3-chain' or bench_name == 'sha2-chain':
-            keep_cols = [cols[0]] + cols[3:]
-            df_transposed = df_transposed[keep_cols]
-
-        table_data = df_transposed.values.tolist()
-        headers = table_data[0]
-        headers[0] = "n"
-        table_rows = table_data[1:]
-
-        table_markdown = tabulate(table_rows, headers=headers, tablefmt="github")
+        table_markdown = tabulate(table_data, headers=headers, tablefmt="github")
         tables[df_names[i]] = table_markdown
 
     return tables
@@ -285,26 +262,23 @@ sha3_tables = get_tables(sha3_tuple)
 sha3_plots = get_plots(sha3_tuple)
 sha3_data = {"tables": sha3_tables, "plots": sha3_plots}
 
-path = f'./benchmark_outputs/stone-sha3-builtin.csv'
-stone_sha3_builtin_df = pd.read_csv(path)
-stone_sha3_builtin_df["n"] *= 200
-stone_sha3_builtin_table = tabulate(stone_sha3_builtin_df.values.tolist(), headers=stone_sha3_builtin_df.columns, tablefmt="github")
-
 # Sha3-chain
 sha3_chain_tuple = ("sha3-chain", True, True)
 sha3_chain_tables = get_tables(sha3_chain_tuple)
 sha3_chain_plots = get_plots(sha3_chain_tuple)
 sha3_chain_data = {"tables": sha3_chain_tables, "plots": sha3_chain_plots}
 
-path_chain = f'./benchmark_outputs/stone-sha3-chain-builtin.csv'
-stone_sha3_chain_builtin_df = pd.read_csv(path_chain)
-stone_sha3_chain_builtin_table = tabulate(stone_sha3_chain_builtin_df.values.tolist(), headers=stone_sha3_chain_builtin_df.columns, tablefmt="github")
-
 # Mat Mul
 mat_mul_tuple = ("mat-mul", False, False)
 mat_mul_tables = get_tables(mat_mul_tuple)
 mat_mul_plots = get_plots(mat_mul_tuple)
 mat_mul_data = {"tables": mat_mul_tables, "plots": mat_mul_plots}
+
+# # ec
+# ec_tuple = ("ec", True, False)
+# ec_tables = get_tables(ec_tuple)
+# ec_plots = get_plots(ec_tuple)
+# ec_data = {"tables": ec_tables, "plots": ec_plots}
 
 # Load template
 env = Environment(loader=FileSystemLoader("."))
@@ -321,10 +295,9 @@ output_md = template.render(
     sha2_data=sha2_data,
     sha2_chain_data=sha2_chain_data,
     sha3_data=sha3_data,
-    stone_sha3_builtin_table=stone_sha3_builtin_table,
     sha3_chain_data=sha3_chain_data,
-    stone_sha3_chain_builtin_table=stone_sha3_chain_builtin_table,
     mat_mul_data=mat_mul_data,
+    # ec_data=ec_data,
 )
 
 # Save to index.md

@@ -8,9 +8,9 @@ build-utils:
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
-    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
     # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
@@ -26,13 +26,13 @@ build-jolt:
 
 # bench-all takes arguments for all benchmarks
 bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
-    # just bench-jolt-fib "{{fib_args}}"
-    # just bench-jolt-sha2 "{{sha_args}}"
-    # just bench-jolt-sha2-chain "{{sha_chain_args}}"
-    # just bench-jolt-sha3 "{{sha_args}}"
-    # just bench-jolt-sha3-chain "{{sha_chain_args}}"
-    # just bench-jolt-mat-mul "{{matmul_args}}"
-    just bench-jolt-ec "{{ec_args}}"
+    just bench-jolt-fib "{{fib_args}}"
+    just bench-jolt-sha2 "{{sha_args}}"
+    just bench-jolt-sha2-chain "{{sha_chain_args}}"
+    just bench-jolt-sha3 "{{sha_args}}"
+    just bench-jolt-sha3-chain "{{sha_chain_args}}"
+    just bench-jolt-mat-mul "{{matmul_args}}"
+    # just bench-jolt-ec "{{ec_args}}"
 
 bench-jolt-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
@@ -86,8 +86,8 @@ bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-sp1-sha3-precompile "{{sha_args}}"
     just bench-sp1-sha3-chain-precompile "{{sha_chain_args}}"
-    just bench-sp1-ec "{{ec_args}}"
-    just bench-sp1-ec-precompile "{{ec_args}}"
+    # just bench-sp1-ec "{{ec_args}}"
+    # just bench-sp1-ec-precompile "{{ec_args}}"
 
 bench-sp1-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "sp1" "fib" "$arg"; done
@@ -155,8 +155,8 @@ bench-risczero fib_args sha_args sha_chain_args matmul_args ec_args: build-riscz
     just bench-risczero-sha3-chain "{{sha_chain_args}}"
     just bench-risczero-sha3-chain-precompile "{{sha_chain_args}}"
     just bench-risczero-mat-mul "{{matmul_args}}"
-    just bench-risczero-ec "{{ec_args}}"
-    just bench-risczero-ec-precompile "{{ec_args}}"
+    # just bench-risczero-ec "{{ec_args}}"
+    # just bench-risczero-ec-precompile "{{ec_args}}"
 
 bench-risczero-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "risczero" "fib" "$arg"; done
@@ -224,7 +224,7 @@ bench-stone fib_args sha_args sha_chain_args matmul_args ec_args: build-stone
     just bench-stone-mat "{{matmul_args}}"
     just bench-stone-sha2 "{{sha_args}}"
     just bench-stone-sha2-chain "{{sha_chain_args}}"
-    just bench-stone-ec "{{ec_args}}"
+    # just bench-stone-ec "{{ec_args}}"
 
 bench-stone-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
@@ -268,7 +268,7 @@ bench-stwo fib_args sha_args sha_chain_args matmul_args ec_args: build-stwo
     just bench-stwo-sha3 "{{sha_args}}"
     just bench-stwo-sha3-chain "{{sha_chain_args}}"
     just bench-stwo-mat-mul "{{matmul_args}}"
-    just bench-stwo-ec "{{ec_args}}"
+    # just bench-stwo-ec "{{ec_args}}"
 
 bench-stwo-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done
@@ -311,8 +311,8 @@ bench-openvm fib_args sha_args sha_chain_args matmul_args ec_args: build-openvm
     just bench-openvm-sha3-precompile "{{sha_args}}"
     just bench-openvm-sha3-chain-precompile "{{sha_chain_args}}"
     just bench-openvm-mat-mul "{{matmul_args}}"
-    just bench-openvm-ec "{{ec_args}}"
-    just bench-openvm-ec-precompile "{{ec_args}}"
+    # just bench-openvm-ec "{{ec_args}}"
+    # just bench-openvm-ec-precompile "{{ec_args}}"
 
 bench-openvm-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "openvm" "fib" "$arg"; done

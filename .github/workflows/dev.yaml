@@ -68,7 +68,7 @@ jobs:
             SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
             SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
             SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
-            bash -c "cd $WORK_DIR && ./bench.sh . \"4096 8192 16384 32768 65536 131072 262144 524288\" \"256 512 1024 2048 4096 8192 16384 32768\" \"32 64 128 256 512 1024 2048 4096 8192\" \"4 8 16 32 64\" \"16 32 64 128 256 512 1024 2048\""
+            bash -c "cd $WORK_DIR && ./bench.sh . \"4096 8192 16384 32768 65536 131072 262144 524288\" \"256 512 1024 2048 4096 8192 16384\" \"8 16 32 64 128 256 512 1024 2048 4096\" \"4 8 16 32 64\" \"16 32 64 128 256 512 1024 2048\""
         # fib_args sha_args sha_chain_args matmul_args ec_args
 
       - name: Upload Benchmark Results

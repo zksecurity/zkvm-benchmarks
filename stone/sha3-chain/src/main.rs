@@ -47,6 +47,7 @@ fn run(n: u32) {
 
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
+    // 32 64 128 256 512 1024 2048 4096 8192
     let parameter_file = match n {
         4 => "../configs/parameter_131072.json".to_string(),
         8 => "../configs/parameter_262144.json".to_string(),
@@ -57,6 +58,9 @@ fn run(n: u32) {
         256 => "../configs/parameter_8388608.json".to_string(),
         512 => "../configs/parameter_16777216.json".to_string(),
         1024 => "../configs/parameter_33554432.json".to_string(),
+        2048 => "../configs/parameter_67108864.json".to_string(),
+        4096 => "../configs/parameter_134217728.json".to_string(),
+        8192 => "../configs/parameter_268435456.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();

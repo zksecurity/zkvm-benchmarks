@@ -77,7 +77,6 @@ build-sp1:
 
 bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-fib "{{fib_args}}"
-    just bench-sp1-fib-compressed "{{fib_args}}"
     # just bench-sp1-sha2 "{{sha_args}}"
     # just bench-sp1-sha2-chain "{{sha_chain_args}}"
     # just bench-sp1-sha3 "{{sha_args}}"
@@ -92,9 +91,6 @@ bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
 
 bench-sp1-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "sp1" "fib" "$arg"; done
-
-bench-sp1-fib-compressed fib_args:
-    -for arg in {{fib_args}}; do ./bench_zkvm.sh "sp1" "fib-compressed" "$arg"; done
 
 bench-sp1-sha2 sha_args:
     -for arg in {{sha_args}}; do ./bench_zkvm.sh "sp1" "sha2" "$arg"; done

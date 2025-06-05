@@ -38,7 +38,6 @@ fn main() {
 
     let (duration, proof_size, verifier_duration, cycle_count) = match cli.program.as_str() {
         "fib" => bench_fibonacci(cli.n),
-        "fib-compressed" => bench_fibonacci_compressed(cli.n),
         "sha2" => benchmark_sha2(cli.n as usize),
         "sha2-precompile" => benchmark_sha2_precompile(cli.n as usize),
         "sha2-chain" => benchmark_sha2_chain(cli.n),
@@ -251,28 +250,6 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
 }
 
 fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    stdin.write(&n);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(FIBONACCI_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn bench_fibonacci_compressed(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
 

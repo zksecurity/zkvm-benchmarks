@@ -11,6 +11,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 rustup install 1.81.0
 rustup install 1.86.0
 rustup install nightly-2025-01-02
+rustup install stable
 
 # Install Python3.10
 sudo apt install -y software-properties-common

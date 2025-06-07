@@ -22,7 +22,7 @@ members = [
 openvm = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-build = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
-openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", tag = "v1.0.1", default-features = false }
+openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "f48090c9febd021f8ee0349bc929a775fb1fa3ad", default-features = false }
 openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
 
 [dependencies]

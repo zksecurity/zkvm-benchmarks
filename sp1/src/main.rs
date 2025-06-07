@@ -55,208 +55,14 @@ fn main() {
     file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_size, duration.as_millis(), verifier_duration.as_millis(), cycle_count).as_bytes()).unwrap();
 }
 
-fn benchmark_sha2_chain(iters: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-
+fn prove_and_verify(
+    stdin: &mut SP1Stdin,
+    elf: &[u8],
+) -> (Duration, usize, Duration, usize) {
     let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA2_CHAIN_ELF, &stdin).run().unwrap();
+    let (_, report) = client.execute(elf, &stdin).run().unwrap();
     let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA2_CHAIN_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha2_chain_precompile(iters: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client
-        .execute(SHA2_CHAIN_PRECOMPILE_ELF, &stdin)
-        .run()
-        .unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA2_CHAIN_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha3_chain(iters: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA3_CHAIN_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA3_CHAIN_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha3_chain_precompile(iters: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client
-        .execute(SHA3_CHAIN_PRECOMPILE_ELF, &stdin)
-        .run()
-        .unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA3_CHAIN_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha2(num_bytes: usize) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA2_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA2_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha2_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA2_PRECOMPILE_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA2_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha3_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA3_PRECOMPILE_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA3_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(SHA3_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(SHA3_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
-}
-
-fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    stdin.write(&n);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(FIBONACCI_ELF);
+    let (pk, vk) = client.setup(elf);
 
     let start = Instant::now();
     let proof = client.prove(&pk, &stdin).compressed().run().unwrap();
@@ -271,68 +77,86 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
     (duration, size(&proof), verifier_duration, cycle_count)
 }
 
+fn benchmark_sha2_chain(iters: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = [5u8; 32];
+    stdin.write(&input);
+    stdin.write(&iters);
+    prove_and_verify(&mut stdin, SHA2_CHAIN_ELF)
+}
+
+fn benchmark_sha2_chain_precompile(iters: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = [5u8; 32];
+    stdin.write(&input);
+    stdin.write(&iters);
+    prove_and_verify(&mut stdin, SHA2_CHAIN_PRECOMPILE_ELF)
+}
+
+fn benchmark_sha3_chain(iters: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = [5u8; 32];
+    stdin.write(&input);
+    stdin.write(&iters);
+    prove_and_verify(&mut stdin, SHA3_CHAIN_ELF)
+}
+
+fn benchmark_sha3_chain_precompile(iters: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = [5u8; 32];
+    stdin.write(&input);
+    stdin.write(&iters);
+    prove_and_verify(&mut stdin, SHA3_CHAIN_PRECOMPILE_ELF)
+}
+
+fn benchmark_sha2(num_bytes: usize) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = vec![5u8; num_bytes];
+    stdin.write(&input);
+    prove_and_verify(&mut stdin, SHA2_ELF)
+}
+
+fn benchmark_sha2_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = vec![5u8; num_bytes];
+    stdin.write(&input);
+    prove_and_verify(&mut stdin, SHA2_PRECOMPILE_ELF)
+}
+
+fn benchmark_sha3_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = vec![5u8; num_bytes];
+    stdin.write(&input);
+    prove_and_verify(&mut stdin, SHA3_PRECOMPILE_ELF)
+}
+
+fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    let input = vec![5u8; num_bytes];
+    stdin.write(&input);
+    prove_and_verify(&mut stdin, SHA3_ELF)
+}
+
+fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
+    let mut stdin = SP1Stdin::new();
+    stdin.write(&n);
+    prove_and_verify(&mut stdin, FIBONACCI_ELF)
+}
+
 fn bench_ecadd(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(ECADD_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(ECADD_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
+    prove_and_verify(&mut stdin, ECADD_ELF)
 }
 
 fn bench_ecadd_precompile(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(ECADD_PRECOMPILE_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(ECADD_PRECOMPILE_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
+    prove_and_verify(&mut stdin, ECADD_PRECOMPILE_ELF)
 }
 
 fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
-
-    let client = ProverClient::from_env();
-    let (_, report) = client.execute(MATMUL_ELF, &stdin).run().unwrap();
-    let cycle_count = report.total_instruction_count() as usize;
-    let (pk, vk) = client.setup(MATMUL_ELF);
-
-    let start = Instant::now();
-    let proof = client.prove(&pk, &stdin).run().unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    let verifier_start = std::time::Instant::now();
-    client.verify(&proof, &vk).expect("verification failed");
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
-
-    (duration, size(&proof), verifier_duration, cycle_count)
+    prove_and_verify(&mut stdin, MATMUL_ELF)
 }

@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::io::Write;
 use methods::{SHA2_CHAIN_BENCH_ELF, SHA2_CHAIN_BENCH_ID};
-use risc0_zkvm::{default_prover, ExecutorEnv};
+use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use utils::size;
 
 fn main() {
@@ -30,7 +30,7 @@ fn bench_sha2_chain(iters: usize) -> (Duration, usize, Duration, usize) {
     let prover = default_prover();
 
     let start = std::time::Instant::now();
-    let prove_info = prover.prove(env, SHA2_CHAIN_BENCH_ELF).unwrap();
+    let prove_info = prover.prove_with_opts(env, SHA2_CHAIN_BENCH_ELF, &ProverOpts::succinct()).unwrap();
     let end = std::time::Instant::now();
     let duration = end.duration_since(start);
 

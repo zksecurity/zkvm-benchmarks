@@ -3,7 +3,7 @@ use std::io::Write;
 use methods::{
     MAT_MUL_ELF, MAT_MUL_ID
 };
-use risc0_zkvm::{default_prover, ExecutorEnv};
+use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use utils::{size};
 
 fn main() {
@@ -25,7 +25,7 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     let prover = default_prover();
 
     let start = std::time::Instant::now();
-    let prove_info = prover.prove(env, MAT_MUL_ELF).unwrap();
+    let prove_info = prover.prove_with_opts(env, MAT_MUL_ELF, &ProverOpts::succinct()).unwrap();
     let end = std::time::Instant::now();
     let duration = end.duration_since(start);
 

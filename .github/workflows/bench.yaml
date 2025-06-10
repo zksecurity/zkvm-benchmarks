@@ -39,7 +39,7 @@ jobs:
 
   benchmark:
     name: Execute on the Benchmarking Machine
-    timeout-minutes: 1440 # 24 hrs
+    timeout-minutes: 7200 # 5 days
     needs: create-runner # required to start the main job when the runner is ready
     runs-on: ${{ needs.create-runner.outputs.label }} # run the job on the newly created runner
     env:

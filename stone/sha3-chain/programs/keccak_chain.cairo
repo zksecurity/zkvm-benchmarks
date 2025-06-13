@@ -1,4 +1,4 @@
-%builtins range_check bitwise
+%builtins output pedersen range_check ecdsa bitwise ec_op keccak poseidon range_check96 add_mod mul_mod
 
 from starkware.cairo.common.cairo_keccak.keccak import cairo_keccak, finalize_keccak
 from starkware.cairo.common.uint256 import Uint256
@@ -8,7 +8,19 @@ from starkware.cairo.common.alloc import alloc
 // For usage refer the following link:
 // https://github.com/starkware-libs/cairo-lang/blob/ab8be40403a7634ba296c467b26b8bd945ba5cfa/src/starkware/cairo/common/cairo_keccak/keccak.cairo#L1C1-L38C85
 
-func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*}() {
+func main{
+    output_ptr,
+    pedersen_ptr,
+    range_check_ptr,
+    ecdsa_ptr,
+    bitwise_ptr: BitwiseBuiltin*,
+    ec_op_ptr,
+    keccak_ptr,
+    poseidon_ptr,
+    range_check96_ptr,
+    add_mod_ptr,
+    mul_mod_ptr,
+}() {
     alloc_locals;
 
     local iterations;
@@ -23,12 +35,12 @@ func main{range_check_ptr: felt, bitwise_ptr: BitwiseBuiltin*}() {
     // so here we assume filling the input with 8 bytes
     fill_input(input=inputs, length=n_bytes / 8, iterator=0);
 
-    let (keccak_ptr: felt*) = alloc();
-    let keccak_ptr_start = keccak_ptr;
+    let (hash_ptr: felt*) = alloc();
+    let keccak_ptr_start = hash_ptr;
 
-    let final_state = repeat_hash{keccak_ptr=keccak_ptr}(inputs, iterations-1);
+    let final_state = repeat_hash{keccak_ptr=hash_ptr}(inputs, iterations-1);
 
-    finalize_keccak(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=keccak_ptr);
+    finalize_keccak(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=hash_ptr);
 
     return ();
 }

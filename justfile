@@ -212,7 +212,7 @@ build-stone:
     -just build-stone-steps
 
 build-stone-steps:
-	-cd stone && git clone https://github.com/lambdaclass/cairo-vm.git
+	-cd stone && git clone https://github.com/lambdaclass/cairo-vm.git && cd cairo-vm && git checkout starkware-development
 	-cd stone/cairo-vm/cairo1-run && make deps
 
 bench-stone fib_args sha_args sha_chain_args matmul_args ec_args: build-stone

@@ -40,7 +40,7 @@ bench-jolt fib_args sha_args sha_chain_args matmul_args ec_args: build-jolt
     just bench-jolt-sha3 "{{sha_args}}"
     just bench-jolt-sha3-chain "{{sha_chain_args}}"
     just bench-jolt-mat-mul "{{matmul_args}}"
-    # just bench-jolt-ec "{{ec_args}}"
+    just bench-jolt-ec "{{ec_args}}"
 
 bench-jolt-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "jolt" "fib" "$arg"; done
@@ -94,8 +94,8 @@ bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-sha2-chain-precompile "{{sha_chain_args}}"
     just bench-sp1-sha3-precompile "{{sha_args}}"
     just bench-sp1-sha3-chain-precompile "{{sha_chain_args}}"
-    # just bench-sp1-ec "{{ec_args}}"
-    # just bench-sp1-ec-precompile "{{ec_args}}"
+    just bench-sp1-ec "{{ec_args}}"
+    just bench-sp1-ec-precompile "{{ec_args}}"
 
 bench-sp1-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "sp1" "fib" "$arg"; done
@@ -227,7 +227,7 @@ bench-stone fib_args sha_args sha_chain_args matmul_args ec_args: build-stone
     just bench-stone-mat "{{matmul_args}}"
     just bench-stone-sha2 "{{sha_args}}"
     just bench-stone-sha2-chain "{{sha_chain_args}}"
-    # just bench-stone-ec "{{ec_args}}"
+    just bench-stone-ec "{{ec_args}}"
 
 bench-stone-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stone" "fib" "$arg"; done
@@ -271,7 +271,7 @@ bench-stwo fib_args sha_args sha_chain_args matmul_args ec_args: build-stwo
     just bench-stwo-sha3 "{{sha_args}}"
     just bench-stwo-sha3-chain "{{sha_chain_args}}"
     just bench-stwo-mat-mul "{{matmul_args}}"
-    # just bench-stwo-ec "{{ec_args}}"
+    just bench-stwo-ec "{{ec_args}}"
 
 bench-stwo-fib fib_args:
     -for arg in {{fib_args}}; do ./bench_zkvm.sh "stwo" "fib" "$arg"; done

@@ -97,49 +97,49 @@ fn main() {
 //     )
 // }
 
-fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
+// fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
 
-    let program_input = format!("[{}]", n);
+//     let program_input = format!("[{}]", n);
 
-    let current_dir = std::env::current_dir().unwrap();
-    let stone_dir = current_dir.join("../stone");
-    let stwo_dir = current_dir;
+//     let current_dir = std::env::current_dir().unwrap();
+//     let stone_dir = current_dir.join("../stone");
+//     let stwo_dir = current_dir;
 
-    // Generate prover input files with absolute paths
-    let program_file = stone_dir.join("mat-mul/programs/mat.cairo");
-    let public_input = stwo_dir.join("mat_mul/public_input.json");
-    let private_input = stwo_dir.join("mat_mul/private_input.json");
-    let trace = stwo_dir.join("mat_mul/trace.bin");
-    let memory = stwo_dir.join("mat_mul/memory.bin");
-    let layout_params = stone_dir.join("configs/cairo_layout_params_file.json");
+//     // Generate prover input files with absolute paths
+//     let program_file = stone_dir.join("mat-mul/programs/mat.cairo");
+//     let public_input = stwo_dir.join("mat_mul/public_input.json");
+//     let private_input = stwo_dir.join("mat_mul/private_input.json");
+//     let trace = stwo_dir.join("mat_mul/trace.bin");
+//     let memory = stwo_dir.join("mat_mul/memory.bin");
+//     let layout_params = stone_dir.join("configs/cairo_layout_params_file.json");
 
-    // Run command with explicit working directory
-    let cairo_vm_dir = stone_dir.join("cairo-vm/cairo1-run");
-    let status = Command::new("cargo")
-        .arg("run")
-        .arg(program_file)
-        .arg("--layout").arg("dynamic")
-        .arg("--cairo_layout_params_file").arg(layout_params)
-        .arg("--args").arg(program_input)
-        .arg("--air_public_input").arg(&public_input)
-        .arg("--air_private_input").arg(&private_input)
-        .arg("--trace_file").arg(&trace)
-        .arg("--memory_file").arg(&memory)
-        .arg("--proof_mode")
-        .current_dir(cairo_vm_dir)
-        .status()
-        .expect("Failed to run command");
+//     // Run command with explicit working directory
+//     let cairo_vm_dir = stone_dir.join("cairo-vm/cairo1-run");
+//     let status = Command::new("cargo")
+//         .arg("run")
+//         .arg(program_file)
+//         .arg("--layout").arg("dynamic")
+//         .arg("--cairo_layout_params_file").arg(layout_params)
+//         .arg("--args").arg(program_input)
+//         .arg("--air_public_input").arg(&public_input)
+//         .arg("--air_private_input").arg(&private_input)
+//         .arg("--trace_file").arg(&trace)
+//         .arg("--memory_file").arg(&memory)
+//         .arg("--proof_mode")
+//         .current_dir(cairo_vm_dir)
+//         .status()
+//         .expect("Failed to run command");
 
-    if !status.success() {
-        eprintln!("Command failed with status: {:?}", status);
-    }
+//     if !status.success() {
+//         eprintln!("Command failed with status: {:?}", status);
+//     }
 
-    // No need to change directories - use absolute paths
-    prove_and_verify(
-        public_input.to_string_lossy().to_string(),
-        private_input.to_string_lossy().to_string()
-    )
-}
+//     // No need to change directories - use absolute paths
+//     prove_and_verify(
+//         public_input.to_string_lossy().to_string(),
+//         private_input.to_string_lossy().to_string()
+//     )
+// }
 
 fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
 
@@ -154,6 +154,69 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
     let private_input = "./fib/private_input.json".to_string();
     let trace = "./fib/trace.bin".to_string();
     let memory = "./fib/memory.bin".to_string();
+
+    println!("Generating Prover Input Files...");
+    let status = Command::new("cairo-compile")
+        .arg(&program_path)
+        .arg("--output")
+        .arg(&output_path)
+        .arg("--proof_mode")
+        .status();
+
+    match status {
+        Ok(status) if status.success() => {
+            println!("Compilation successful! Compiled file saved to: {}", output_path);
+        }
+        Ok(status) => {
+            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-compile: {}", err);
+        }
+    }
+
+    let run_command = format!(
+        "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
+        output_path, program_input, public_input, private_input, trace, memory,
+    );
+    println!("cairo-run: {:?}", run_command);
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(run_command)
+        .output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!("cairo-run successful!");
+            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+        }
+        Ok(output) => {
+            eprintln!(
+                "cairo-run failed with exit code: {}",
+                output.status.code().unwrap_or(-1)
+            );
+            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-run: {}", err);
+        }
+    }
+
+    prove_and_verify(public_input, private_input)
+}
+
+fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
+
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "./mat_mul/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
+
+    let program_path = "../stone/mat-mul/programs/mat_mul.cairo".to_string();
+    let output_path = "./mat_mul/mat_mul.json".to_string();
+
+    let public_input = "./mat_mul/public_input.json".to_string();
+    let private_input = "./mat_mul/private_input.json".to_string();
+    let trace = "./mat_mul/trace.bin".to_string();
+    let memory = "./mat_mul/memory.bin".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")

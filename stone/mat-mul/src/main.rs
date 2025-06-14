@@ -22,7 +22,7 @@ fn run(n: u32) {
 
     // prove and verify command
     let command = "stone-cli";
-    let program_path = "programs/mat.cairo".to_string();
+    let program_path = "programs/mat_mul.cairo".to_string();
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
     let parameter_file = match n {

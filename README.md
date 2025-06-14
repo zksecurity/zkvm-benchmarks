@@ -1,5 +1,7 @@
 # zkVM Benchmarks
 
+This repository provides scripts and tools to benchmark various zkVM and proof systems on **Linux** and **macOS**.
+
 ## Installation
 
 Run the setup script to install all dependencies:
@@ -11,14 +13,16 @@ Run the setup script to install all dependencies:
 
 To run all benchmarks, use:
 ```bash
-just bench-all
+./bench local
 ```
 
 The benchmark results will be saved in CSV format in the `benchmark_outputs` directory.
 
-To run an individual benchmark, use `just bench-jolt`, `just bench-risczero`, `just bench-sp1`, `just bench-stone` or `just bench-stwo`.
+## Generating a Report
 
-## Acknowledgement
+To generate a local HTML report from the benchmark results, run:
+```bash
+./analyze.sh
+```
 
-These benchmarks are adapted from the following repository by a16z:  
-[zkvm-benchmarks by a16z](https://github.com/a16z/zkvm-benchmarks)
+The report will be generated at:  `./report/index.html`.

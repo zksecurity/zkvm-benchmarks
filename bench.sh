@@ -20,7 +20,11 @@ rustup show
 rustc --version
 cargo --version
 stone-cli --version
-python3.10 --version
+if command -v python3.10 &>/dev/null; then
+    python3.10 --version
+else
+    python3 --version
+fi
 cairo-run --version
 
 # Capture Machine Info
@@ -29,29 +33,40 @@ mkdir -p $REPORT_INFO_DIR
 
 echo "Capturing CPU information..."
 echo "=== CPU Information ===" > $REPORT_INFO_DIR/cpuinfo.txt
-lscpu >> $REPORT_INFO_DIR/cpuinfo.txt
+if [[ "$OS_TYPE" == "Linux" ]]; then
+    lscpu >> $REPORT_INFO_DIR/cpuinfo.txt
+elif [[ "$OS_TYPE" == "Darwin" ]]; then
+    sysctl -a | grep machdep.cpu >> $REPORT_INFO_DIR/cpuinfo.txt
+else
+    echo "Unknown OS for CPU info"
+    exit 1
+fi
 
 echo "Capturing OS version information..."
-if [ -f /etc/os-release ]; then
+if [[ "$OS_TYPE" == "Linux" && -f /etc/os-release ]]; then
     echo "=== OS Information ===" > $REPORT_INFO_DIR/os_version.txt
     cat /etc/os-release >> $REPORT_INFO_DIR/os_version.txt
+elif [[ "$OS_TYPE" == "Darwin" ]]; then
+    sw_vers > $REPORT_INFO_DIR/os_version.txt
 else
-    echo "OS information file not found." > $REPORT_INFO_DIR/os_version.txt
+    echo "OS information file not found."
+    exit 1
 fi
 
 echo "Capturing memory information..."
-if [ -f /proc/meminfo ]; then
+if [[ "$OS_TYPE" == "Linux" && -f /proc/meminfo ]]; then
     echo "=== Memory Information ===" > $REPORT_INFO_DIR/meminfo.txt
     cat /proc/meminfo >> $REPORT_INFO_DIR/meminfo.txt
+elif [[ "$OS_TYPE" == "Darwin" ]]; then
+    echo "=== Memory Information ===" > $REPORT_INFO_DIR/meminfo.txt
+    vm_stat >> $REPORT_INFO_DIR/meminfo.txt
 else
-    echo "Memory information file not found." >> $REPORT_INFO_DIR/meminfo.txt
+    echo "Memory information file not found."
+    exit 1
 fi
 
-# Repo path comes first, default to current dir
-REPO_PATH="${1:-.}"
-shift # Drop the first argument, so $1 $2 $3 $4 $5 are now the benchmarks
-
 # Capture Latest Commit
+REPO_PATH="."
 cd "$REPO_PATH" || { echo "Invalid repository path"; exit 1; }
 LATEST_COMMIT=$(git rev-parse HEAD)
 echo "$LATEST_COMMIT" > $REPORT_INFO_DIR/latest_commit.txt
@@ -62,9 +77,41 @@ date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/time_stamp.txt"
 echo "Timestamp saved to $REPORT_INFO_DIR/time_stamp.txt"
 
 # Compile the memuse program
-gcc memuse.c -o memuse
+if command -v gcc &>/dev/null; then
+    gcc memuse.c -o memuse
+else
+    echo "gcc not found"
+    exit 1
+fi
 
-# Benchmark
+# Accept a single mode argument: local, remote, or dev
+MODE="${1:-local}"
+
 echo "Start benchmarking"
-just bench-all "$1" "$2" "$3" "$4" "$5"
+if [ "$MODE" = "local" ]; then
+    FIB_ARG="4096 8192 16384 32768 65536 131072 262144 524288"
+    SHA_ARG="256 512 1024 2048 4096 8192 16384"
+    SHA_CHAIN_ARG="8 16 32 64 128 256 512 1024 2048 4096"
+    MATMUL_ARG="4 8 16 32 64"
+    EC_ARG="16 32 64 128 256 512 1024 2048"
+    just bench-local "$FIB_ARG" "$SHA_ARG" "$SHA_CHAIN_ARG" "$MATMUL_ARG" "$EC_ARG"
+elif [ "$MODE" = "remote" ]; then
+    FIB_ARG="8192 16384 32768 65536 131072 262144 524288 1048576"
+    SHA_ARG="512 1024 2048 4096 8192 16384 32768"
+    SHA_CHAIN_ARG="16 32 64 128 256 512 1024 2048 4096 8192"
+    MATMUL_ARG="8 16 32 64 128"
+    EC_ARG="32 64 128 256 512 1024 2048 4096"
+    just bench-all "$FIB_ARG" "$SHA_ARG" "$SHA_CHAIN_ARG" "$MATMUL_ARG" "$EC_ARG"
+elif [ "$MODE" = "dev" ]; then
+    FIB_ARG="1024 2048"
+    SHA_ARG="128 256"
+    SHA_CHAIN_ARG="4 8"
+    MATMUL_ARG="2 4"
+    EC_ARG="8 16"
+    just bench-all "$FIB_ARG" "$SHA_ARG" "$SHA_CHAIN_ARG" "$MATMUL_ARG" "$EC_ARG"
+else
+    echo "Unknown mode: $MODE"
+    echo "Usage: $0 [local|remote|dev]"
+    exit 1
+fi
 echo "Finished benchmarking"

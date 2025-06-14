@@ -10,13 +10,19 @@ source "$VENV_PATH/bin/activate"
 echo "Upgrading pip..."
 pip install --upgrade pip
 echo "Installing dependencies..."
-pip install marimo
 pip install pandas
 pip install matplotlib
-pip install ipython
 pip install numpy
 pip install jinja2 tabulate
-sudo apt -y install pandoc
+echo "Installing pandoc..."
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    sudo apt -y install pandoc
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install pandoc
+else
+    echo "Please install pandoc manually for your OS."
+    exit 1
+fi
 
 echo "Creating report..."
 rm -rf report

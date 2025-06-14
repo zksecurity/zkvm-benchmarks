@@ -10,10 +10,7 @@ source "$VENV_PATH/bin/activate"
 echo "Upgrading pip..."
 pip install --upgrade pip
 echo "Installing dependencies..."
-pip install pandas
-pip install matplotlib
-pip install numpy
-pip install jinja2 tabulate
+pip install pandas matplotlib numpy jinja2 tabulate
 echo "Installing pandoc..."
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo apt -y install pandoc
@@ -28,6 +25,6 @@ echo "Creating report..."
 rm -rf report
 mkdir -p report
 
-python analyze_md.py
+python analyze.py
 cp -r plots report/
 pandoc index.md -o report/index.html --standalone --metadata title="zkVM Benchmark Report"

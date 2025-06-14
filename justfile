@@ -346,3 +346,14 @@ bench-openvm-sha3-chain-precompile sha_chain_args:
 
 bench-openvm-ec ec_args:
     -for arg in {{ec_args}}; do ./bench_zkvm.sh "openvm" "ec" "$arg"; done
+
+
+#####
+# Bench Blake
+#####
+
+bench-blake sha_args: build-stwo
+    just bench-stwo-blake "{{sha_args}}"
+    
+bench-stwo-blake sha_args:
+    -for arg in {{sha_args}}; do ./bench_zkvm.sh "stwo" "blake" "$arg"; done

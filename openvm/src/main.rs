@@ -10,6 +10,8 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
+use openvm_ecc_circuit::{SECP256K1_CONFIG, WeierstrassExtension};
+use openvm_algebra_circuit::ModularExtension;
 
 #[derive(Parser, Debug)]
 #[clap()]
@@ -71,14 +73,8 @@ fn main() {
 fn prove_and_verify(
     target_path: &str,
     stdin: &mut StdIn,
+    vm_config: SdkVmConfig,
 ) -> (Duration, usize, Duration, usize) {
-    
-    let vm_config = SdkVmConfig::builder()
-        .system(Default::default())
-        .rv32i(Default::default())
-        .rv32m(Default::default())
-        .io(Default::default())
-        .build();
     
     let sdk = Sdk::new();
 
@@ -139,8 +135,15 @@ fn benchmark_fib(n: u32) -> (Duration, usize, Duration, usize) {
     
     let mut stdin = StdIn::default();
     stdin.write(&n);
+    
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
 
-    prove_and_verify(target_path, &mut stdin)
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha2(num_bytes: usize) -> (Duration, usize, Duration, usize) {
@@ -149,8 +152,15 @@ fn benchmark_sha2(num_bytes: usize) -> (Duration, usize, Duration, usize) {
     let input = vec![5u8; num_bytes];
     let mut stdin = StdIn::default();
     stdin.write(&input);
+    
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
 
-    prove_and_verify(target_path, &mut stdin)
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha2_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
@@ -160,7 +170,15 @@ fn benchmark_sha2_precompile(num_bytes: usize) -> (Duration, usize, Duration, us
     let mut stdin = StdIn::default();
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .sha256(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
@@ -171,7 +189,14 @@ fn benchmark_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     stdin.write(&n);
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha2_chain_precompile(n: u32) -> (Duration, usize, Duration, usize) {
@@ -182,7 +207,15 @@ fn benchmark_sha2_chain_precompile(n: u32) -> (Duration, usize, Duration, usize)
     stdin.write(&n);
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .sha256(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
@@ -192,7 +225,14 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize, Duration, usize) {
     let mut stdin = StdIn::default();
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha3_precompile(num_bytes: usize) -> (Duration, usize, Duration, usize) {
@@ -202,7 +242,15 @@ fn benchmark_sha3_precompile(num_bytes: usize) -> (Duration, usize, Duration, us
     let mut stdin = StdIn::default();
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .keccak(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
@@ -213,7 +261,14 @@ fn benchmark_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     stdin.write(&n);
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_sha3_chain_precompile(n: u32) -> (Duration, usize, Duration, usize) {
@@ -224,7 +279,15 @@ fn benchmark_sha3_chain_precompile(n: u32) -> (Duration, usize, Duration, usize)
     stdin.write(&n);
     stdin.write(&input);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .keccak(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_mat_mul(dim: u32) -> (Duration, usize, Duration, usize) {
@@ -233,7 +296,14 @@ fn benchmark_mat_mul(dim: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = StdIn::default();
     stdin.write(&dim);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_ec(n: u32) -> (Duration, usize, Duration, usize) {
@@ -242,7 +312,14 @@ fn benchmark_ec(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = StdIn::default();
     stdin.write(&n);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }
 
 fn benchmark_ec_precompile(n: u32) -> (Duration, usize, Duration, usize) {
@@ -251,5 +328,17 @@ fn benchmark_ec_precompile(n: u32) -> (Duration, usize, Duration, usize) {
     let mut stdin = StdIn::default();
     stdin.write(&n);
 
-    prove_and_verify(target_path, &mut stdin)
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .modular(ModularExtension::new(vec![
+            SECP256K1_CONFIG.modulus.clone(),
+            SECP256K1_CONFIG.scalar.clone(),
+        ]))
+        .ecc(WeierstrassExtension::new(vec![SECP256K1_CONFIG.clone()]))
+        .build();
+
+    prove_and_verify(target_path, &mut stdin, vm_config)
 }

@@ -3,7 +3,8 @@
 
 use sha3::{Keccak256, Digest};
 
-use openvm::io::read;
+use openvm::io::{read, reveal_bytes32};
+use core::hint::black_box;
 
 extern crate alloc;
 
@@ -17,8 +18,9 @@ pub fn main() {
 
     for _ in 0..num_iters {
         let mut hasher = Keccak256::new();
-        hasher.update(input);
+        hasher.update(&black_box(input));
         let res = &hasher.finalize();
         input = res.to_vec();
     }
+    reveal_bytes32(&Into::<[u8; 32]>::into(input));
 }

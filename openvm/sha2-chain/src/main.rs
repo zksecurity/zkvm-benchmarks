@@ -7,10 +7,11 @@ extern crate alloc;
 
 use alloc::vec::Vec;
 
-use openvm::io::read;
+use openvm::io::{read, reveal_bytes32};
 
 openvm::entry!(main);
 
+use core::hint::black_box;
 
 pub fn main() {
     let num_iters: u32 = read();
@@ -18,8 +19,9 @@ pub fn main() {
 
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
-        hasher.update(input);
+        hasher.update(&black_box(input));
         let res = &hasher.finalize();
         input = res.to_vec();
     }
+    reveal_bytes32(&Into::<[u8; 32]>::into(input));
 }

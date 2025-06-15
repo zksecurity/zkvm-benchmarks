@@ -6,13 +6,14 @@ extern crate alloc;
 use alloc::vec::Vec;
 use core::hint::black_box;
 
-use openvm_sha256_guest::sha256;
+use openvm_sha2::sha256;
 
-use openvm::io::read;
+use openvm::io::{read, reveal_bytes32};
 
 openvm::entry!(main);
 
 pub fn main() {
     let input: Vec<u8> = read();
-    let _output = sha256(&black_box(input));
+    let output = sha256(&black_box(input));
+    reveal_bytes32(&Into::<[u8; 32]>::into(output));
 }

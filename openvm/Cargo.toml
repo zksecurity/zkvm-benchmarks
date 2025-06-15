@@ -16,6 +16,7 @@ members = [
     "sha3-chain-precompile",
     "mat-mul", 
     "ec", 
+    "ec-precompile", 
 ]
 
 [workspace.dependencies]
@@ -24,6 +25,8 @@ openvm-build = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
 openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "f48090c9febd021f8ee0349bc929a775fb1fa3ad", default-features = false }
 openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
+openvm-ecc-circuit = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
+openvm-algebra-circuit = { git = "https://github.com/openvm-org/openvm.git", default-features = false }
 
 [dependencies]
 openvm = { workspace = true }
@@ -31,6 +34,8 @@ openvm-build = { workspace = true }
 openvm-sdk = { workspace = true }
 openvm-stark-sdk = { workspace = true }
 openvm-transpiler = { workspace = true }
+openvm-ecc-circuit = { workspace = true }
+openvm-algebra-circuit = { workspace = true }
 
 clap = { version = "4.5.26", features = ["derive"] } 
 utils = { path = "../utils" }

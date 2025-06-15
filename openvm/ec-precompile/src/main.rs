@@ -3,15 +3,17 @@
 
 use openvm::io::{read, reveal_u32};
 
-use openvm_ecc_guest::{
-    k256::Secp256k1Point,
-};
-
+use openvm_k256::Secp256k1Point;
 use openvm_ecc_guest::CyclicGroup;
 
-openvm_ecc_sw_macros::sw_init! {
+openvm_algebra_guest::moduli_macros::moduli_init! {
+    "0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F",
+    "0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141"
+}
+
+openvm_ecc_guest::sw_macros::sw_init! {
     Secp256k1Point,
-};
+}
 
 openvm::entry!(main);
 

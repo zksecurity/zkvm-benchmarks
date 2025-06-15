@@ -3,9 +3,9 @@
 
 use core::hint::black_box;
 
-use openvm_sha256_guest::sha256;
+use openvm_sha2::sha256;
 
-use openvm::io::read;
+use openvm::io::{read, reveal_bytes32};
 
 extern crate alloc;
 
@@ -21,4 +21,6 @@ pub fn main() {
         let output = sha256(&black_box(input));
         input = output.to_vec();
     }
+    let arr: [u8; 32] = input.try_into().expect("input must be 32 bytes");
+    reveal_bytes32(arr);
 }

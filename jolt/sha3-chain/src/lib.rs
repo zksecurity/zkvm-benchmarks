@@ -2,13 +2,14 @@
 #![no_main]
 
 use sha3::{Keccak256, Digest};
+use core::hint::black_box;
 
 #[jolt::provable]
 fn sha3_chain(input: [u8; 32], num_iters: u32) -> [u8; 32] {
     let mut hash = input;
     for _ in 0..num_iters {
         let mut hasher = Keccak256::new();
-        hasher.update(hash);
+        hasher.update(&black_box(hash));
         let res = &hasher.finalize();
         hash = Into::<[u8; 32]>::into (*res);
     }

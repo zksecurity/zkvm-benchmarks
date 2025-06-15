@@ -4,11 +4,11 @@ sp1_zkvm::entrypoint!(main);
 pub fn main() {
     let n = sp1_zkvm::io::read::<u32>();
 
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-    let mut sum: u128;
+    let mut a: u32 = 0;
+    let mut b: u32 = 1;
+    let mut sum: u32;
     for _ in 1..n {
-        sum = a + b;
+        sum = a.wrapping_add(b);
         a = b;
         b = sum;
     }

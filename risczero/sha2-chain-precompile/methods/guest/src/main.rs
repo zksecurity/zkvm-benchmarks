@@ -3,6 +3,7 @@
 
 use risc0_zkvm::guest::env;
 use sha2::{Digest, Sha256};
+use core::hint::black_box;
 
 risc0_zkvm::guest::entry!(main);
 
@@ -12,7 +13,7 @@ fn main() {
     let mut hash = input;
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
-        hasher.update(hash);
+        hasher.update(&black_box(hash));
         let res = &hasher.finalize();
         hash = Into::<[u8; 32]>::into (*res);
     }

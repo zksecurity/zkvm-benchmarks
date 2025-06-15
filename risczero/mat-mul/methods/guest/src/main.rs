@@ -4,7 +4,7 @@
 
 extern crate alloc;
 use alloc::vec;
-
+use core::hint::black_box;
 use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
@@ -21,14 +21,18 @@ pub fn main() {
 fn matrix_mul(size: usize) -> u32 {
     let a = vec![vec![2u32; size]; size];
     let b = vec![vec![3u32; size]; size];
-    
+
+    black_box(&a);
+    black_box(&b);
+
     let mut result = vec![vec![0u32; size]; size];
-    let mut sum = 0;
+    let mut sum = 0u32;
     for i in 0..size {
         for j in 0..size {
             for k in 0..size {
-                result[i][j] += a[i][k] * b[k][j];
-                sum += a[i][k] * b[k][j];
+                let prod = a[i][k].wrapping_mul(b[k][j]);
+                result[i][j] = result[i][j].wrapping_add(prod);
+                sum = sum.wrapping_add(prod);
             }
         }
     }

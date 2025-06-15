@@ -5,6 +5,7 @@ use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
 use tiny_keccak::{Hasher, Keccak};
+use core::hint::black_box;
 
 fn main() {
     let mut input: [u8; 32] = env::read();
@@ -12,7 +13,7 @@ fn main() {
     let mut output = [0u8; 32];
     for _ in 0..num_iters {
         let mut hasher = Keccak::v256();
-        hasher.update(&input);
+        hasher.update(&black_box(input));
         hasher.finalize(&mut output);
         input = output.into();
     }

@@ -3,6 +3,7 @@
 use sha2::{Digest, Sha256};
 
 sp1_zkvm::entrypoint!(main);
+use core::hint::black_box;
 
 pub fn main() {
     let input: [u8; 32] = sp1_zkvm::io::read();
@@ -10,7 +11,7 @@ pub fn main() {
     let mut hash = input;
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
-        hasher.update(hash);
+        hasher.update(&black_box(hash));
         let res = &hasher.finalize();
         hash = Into::<[u8; 32]>::into (*res);
     }

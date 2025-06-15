@@ -15,11 +15,11 @@ pub fn main() {
 }
 
 fn matrix_mul(size: usize) -> u32 {
-    let mut a = vec![vec![2u32; size]; size];
-    let mut b = vec![vec![3u32; size]; size];
+    let a = vec![vec![2u32; size]; size];
+    let b = vec![vec![3u32; size]; size];
 
-    black_box(&mut a);
-    black_box(&mut b);
+    black_box(&a);
+    black_box(&b);
 
     let mut result = vec![vec![0u32; size]; size];
     let mut sum = 0u32;

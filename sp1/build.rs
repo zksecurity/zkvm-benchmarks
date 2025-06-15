@@ -13,4 +13,6 @@ fn main() {
     build_program_with_args("mat-mul", Default::default());
     build_program_with_args("ec", Default::default());
     build_program_with_args("ec-precompile", Default::default());
+    build_program_with_args("blake", Default::default());
+    build_program_with_args("blake-chain", Default::default());
 }

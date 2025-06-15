@@ -1,0 +1,9 @@
+[workspace]
+[package]
+name = "blake"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sp1-zkvm = "4.0.1"
+blake2 = { version = "0.10.6", default-features = false }

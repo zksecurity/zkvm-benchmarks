@@ -31,6 +31,8 @@ cairo-run --version
 REPORT_INFO_DIR="./report_info"
 mkdir -p $REPORT_INFO_DIR
 
+OS_TYPE=$(uname)
+
 echo "Capturing CPU information..."
 echo "=== CPU Information ===" > $REPORT_INFO_DIR/cpuinfo.txt
 if [[ "$OS_TYPE" == "Linux" ]]; then

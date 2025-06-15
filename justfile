@@ -349,3 +349,6 @@ bench-openvm-sha3-chain-precompile sha_chain_args:
 
 bench-openvm-ec ec_args:
     -for arg in {{ec_args}}; do ./bench_zkvm.sh "openvm" "ec" "$arg"; done
+
+bench-openvm-ec-precompile ec_args:
+    -for arg in {{ec_args}}; do ./bench_zkvm.sh "openvm" "ec-precompile" "$arg"; done

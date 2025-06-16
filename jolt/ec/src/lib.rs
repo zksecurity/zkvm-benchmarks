@@ -1,21 +1,21 @@
 #![cfg_attr(feature = "guest", no_std)]
 #![no_main]
 
-use ark_secp256k1::{G_GENERATOR_X, G_GENERATOR_Y};
-use ark_secp256k1::Affine;
-use core::ops::Add;
+use k256::{AffinePoint, ProjectivePoint};
+use k256::elliptic_curve::point::AffineCoordinates;
 
 
 #[jolt::provable]
-fn ecadd(n: u32) {
-    let mut g = Affine::new_unchecked(
-        G_GENERATOR_X,
-        G_GENERATOR_Y
-    );
+fn ecadd(n: u32) -> [u8; 32] {
+    let g = AffinePoint::GENERATOR;
+    let mut res = ProjectivePoint::from(g);
 
-    for _i in 0..n {
-      g = Affine::add(g, g).into();
+    for _ in 0..n {
+        res += g;
     }
 
+    let affine = AffinePoint::from(res);
+    let x_bytes: [u8; 32] = affine.x().into();
+    x_bytes
 }
 

@@ -7,21 +7,21 @@ use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
 
-use ark_secp256k1::{G_GENERATOR_X, G_GENERATOR_Y};
-use ark_secp256k1::Affine;
-use core::ops::Add;
+use k256::{AffinePoint, ProjectivePoint};
+use k256::elliptic_curve::point::AffineCoordinates;
 
 
 fn main() {
     let n = env::read::<u32>();
-    let mut g = Affine::new_unchecked(
-        G_GENERATOR_X,
-        G_GENERATOR_Y
-    );
+    let g = AffinePoint::GENERATOR;
+    let mut res = ProjectivePoint::from(g);
 
-    for _i in 0..n {
-      g = Affine::add(g, g).into();
+    for _ in 0..n {
+        res += g;
     }
 
-    env::commit(&n);
+    let affine = AffinePoint::from(res);
+    let x_bytes: [u8; 32] = affine.x().into();
+
+    env::commit::<[u8; 32]>(&x_bytes);
 }

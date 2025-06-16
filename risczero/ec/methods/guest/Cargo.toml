@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 # If you want to try (experimental) std support, add `features = [ "std" ]` to risc0-zkvm
 risc0-zkvm = { version = "2.0.0", default-features = false }
-ark-secp256k1 = { version = "0.5.0", default-features = false }
+k256 = { version = "0.13.4", features = ["arithmetic"], default-features = false  }

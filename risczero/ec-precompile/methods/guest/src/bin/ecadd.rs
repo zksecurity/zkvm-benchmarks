@@ -1,17 +1,19 @@
 use risc0_zkvm::guest::env;
 
-use k256::ProjectivePoint;
-use std::ops::Add;
-
+use k256::{AffinePoint, ProjectivePoint};
+use k256::elliptic_curve::point::AffineCoordinates;
 
 fn main() {
-    let mut n = env::read::<u32>();
-    let mut g = ProjectivePoint::GENERATOR;
+    let n = env::read::<u32>();
+    let g = AffinePoint::GENERATOR;
+    let mut res = ProjectivePoint::from(g);
 
-    while n != 0 {
-        g = ProjectivePoint::add(g, &g);
-        n -= 1;
+    for _ in 0..n {
+        res += g;
     }
 
-    env::commit(&n);
+    let affine = AffinePoint::from(res);
+    let x_bytes: [u8; 32] = affine.x().into();
+
+    env::commit::<[u8; 32]>(&x_bytes);
 }

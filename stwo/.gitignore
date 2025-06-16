@@ -3,3 +3,4 @@ target
 *.zst
 *.data
 stwo-cairo
+!cairo_layout_params_file.json

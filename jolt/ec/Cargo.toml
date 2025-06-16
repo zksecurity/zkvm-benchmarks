@@ -8,4 +8,4 @@ guest = []
 
 [dependencies]
 jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt" }
-k256 = { version = "0.13.4" }
+k256 = { version = "0.13.4", features = ["arithmetic"], default-features = false  }

@@ -2,20 +2,20 @@
 
 sp1_zkvm::entrypoint!(main);
 
-use secp256k1::{Secp256k1, SecretKey, PublicKey};
+use k256::{AffinePoint, ProjectivePoint};
+use k256::elliptic_curve::point::AffineCoordinates;
 
 pub fn main() {
-    let mut n = sp1_zkvm::io::read::<u32>();
+    let n = sp1_zkvm::io::read::<u32>();
+    let g = AffinePoint::generator();
+    let mut res = ProjectivePoint::from(g);
 
-    let one = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
-    let secp = Secp256k1::new();
-    let secret_key = SecretKey::from_slice(&one).unwrap();
-    let mut g = PublicKey::from_secret_key(&secp, &secret_key);
-
-    while n != 0 {
-        g = PublicKey::combine(&g, &g).unwrap();
-        n -= 1;
+    for _ in 0..n {
+        res += g;
     }
 
-    sp1_zkvm::io::commit(&n);
+    let affine = AffinePoint::from(res);
+    let x_bytes: [u8; 32] = affine.x().into();
+
+    sp1_zkvm::io::commit::<[u8; 32]>(&x_bytes);
 }

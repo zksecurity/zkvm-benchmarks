@@ -2,20 +2,20 @@
 
 sp1_zkvm::entrypoint!(main);
 
-use ark_secp256k1::{G_GENERATOR_X, G_GENERATOR_Y};
-use ark_secp256k1::Affine;
-use std::ops::Add;
+use k256::{AffinePoint, ProjectivePoint};
+use k256::elliptic_curve::point::AffineCoordinates;
 
 pub fn main() {
     let n = sp1_zkvm::io::read::<u32>();
-    let mut g = Affine::new_unchecked(
-        G_GENERATOR_X,
-        G_GENERATOR_Y
-    );
+    let g = AffinePoint::GENERATOR;
+    let mut res = ProjectivePoint::from(g);
 
-    for _i in 0..n {
-      g = Affine::add(g, g).into();  
+    for _ in 0..n {
+        res += g;
     }
 
-    sp1_zkvm::io::commit(&n);
+    let affine = AffinePoint::from(res);
+    let x_bytes: [u8; 32] = affine.x().into();
+
+    sp1_zkvm::io::commit::<[u8; 32]>(&x_bytes);
 }

@@ -6,4 +6,4 @@ edition = "2021"
 
 [dependencies]
 sp1-zkvm = "5.0.0"
-ark-secp256k1 = { version = "0.5.0", default-features = false }
+k256 = { version = "0.13.4" }

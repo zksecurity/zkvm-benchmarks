@@ -18,13 +18,13 @@ func main{
     local iterations;
     %{ ids.iterations = program_input['iterations'] %}
 
-    let res = fib(1, 1, iterations);
+    let res = fib(0, 1, iterations);
 
     return ();
 }
 
 func fib(first_element: felt, second_element: felt, n: felt) -> felt {
-    if (n == 0) {
+    if (n == 1) {
         return second_element;
     }
 

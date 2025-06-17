@@ -9,10 +9,10 @@ fn main() {
     let n: u32 = read();
     let mut a: u32 = 0;
     let mut b: u32 = 1;
-    for _ in 0..n {
+    for _ in 1..n {
         let c: u32 = a.wrapping_add(b);
         a = b;
         b = c;
     }
-    reveal_u32(a as u32, 0);
+    reveal_u32(b as u32, 0);
 }

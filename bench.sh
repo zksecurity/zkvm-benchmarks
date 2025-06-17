@@ -105,11 +105,11 @@ elif [ "$MODE" = "remote" ]; then
     EC_ARG="32 64 128 256 512 1024 2048 4096"
     just bench-all "$FIB_ARG" "$SHA_ARG" "$SHA_CHAIN_ARG" "$MATMUL_ARG" "$EC_ARG"
 elif [ "$MODE" = "dev" ]; then
-    FIB_ARG="1024 2048"
-    SHA_ARG="128 256"
-    SHA_CHAIN_ARG="4 8"
-    MATMUL_ARG="2 4"
-    EC_ARG="8 16"
+    FIB_ARG="8192 16384"
+    SHA_ARG="512 1024"
+    SHA_CHAIN_ARG="16 32"
+    MATMUL_ARG="8 16"
+    EC_ARG="32 64"
     just bench-all "$FIB_ARG" "$SHA_ARG" "$SHA_CHAIN_ARG" "$MATMUL_ARG" "$EC_ARG"
 else
     echo "Unknown mode: $MODE"

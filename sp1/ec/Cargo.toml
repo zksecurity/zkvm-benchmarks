@@ -6,4 +6,4 @@ edition = "2021"
 
 [dependencies]
 sp1-zkvm = "5.0.0"
-k256 = { version = "0.13.4" }
+k256 = { version = "0.13.4", features = ["arithmetic"], default-features = false }

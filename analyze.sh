@@ -2,6 +2,8 @@
 
 set -e
 
+OS_TYPE=$(uname)
+
 VENV_PATH=".venv"
 echo "Creating virtual environment in $VENV_PATH..."
 python3 -m venv "$VENV_PATH"
@@ -12,9 +14,9 @@ pip install --upgrade pip
 echo "Installing dependencies..."
 pip install pandas matplotlib numpy jinja2 tabulate
 echo "Installing pandoc..."
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [[ "$OS_TYPE" == "Linux" ]]; then
     sudo apt -y install pandoc
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [[ "$OS_TYPE" == "Darwin" ]]; then
     brew install pandoc
 else
     echo "Please install pandoc manually for your OS."

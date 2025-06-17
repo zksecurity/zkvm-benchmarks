@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 openvm = { workspace = true }
-k256 = { version = "0.13.4" }
+k256 = { version = "0.13.4", features = ["arithmetic"], default-features = false }
 
 [features]
 default = []

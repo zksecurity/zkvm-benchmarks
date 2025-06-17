@@ -25,6 +25,6 @@ fn main() {
     for _i in 0..n {
       res = res + &g;
     }
-    let x_bytes: [u8; 32] = res.x().into();
+    let x_bytes: [u8; 32] = res.x_be_bytes();
     reveal_bytes32(x_bytes);
 }

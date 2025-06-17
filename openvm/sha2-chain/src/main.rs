@@ -23,5 +23,6 @@ pub fn main() {
         let res = &hasher.finalize();
         input = res.to_vec();
     }
-    reveal_bytes32(&Into::<[u8; 32]>::into(input));
+    let arr: [u8; 32] = input.try_into().expect("input must be 32 bytes");
+    reveal_bytes32(arr);
 }

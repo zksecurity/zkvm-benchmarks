@@ -17,5 +17,5 @@ pub fn main() {
     let mut hasher = Keccak256::new();
     hasher.update(&black_box(input));
     let result = hasher.finalize();
-    reveal_bytes32(&Into::<[u8; 32]>::into(result));
+    reveal_bytes32(Into::<[u8; 32]>::into(result));
 }

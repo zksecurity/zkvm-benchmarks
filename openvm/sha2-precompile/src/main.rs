@@ -15,5 +15,5 @@ openvm::entry!(main);
 pub fn main() {
     let input: Vec<u8> = read();
     let output = sha256(&black_box(input));
-    reveal_bytes32(&Into::<[u8; 32]>::into(output));
+    reveal_bytes32(Into::<[u8; 32]>::into(output));
 }

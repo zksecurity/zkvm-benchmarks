@@ -19,10 +19,6 @@ struct Cli {
     #[arg(long)]
     bench_arg: String,
 
-    /// Run the benchmark under heaptrack for memory profiling
-    #[arg(long)]
-    bench_mem: bool,
-
     /// Name of the benchmark
     #[arg(long)]
     bench_name: String,

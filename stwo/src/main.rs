@@ -70,7 +70,7 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
     let program_input = "./fib/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
-    let program_path = "../fib/fibonacci.cairo".to_string();
+    let program_path = "./fib/fibonacci.cairo".to_string();
     let output_path = "./fib/fib.json".to_string();
 
     let public_input = "./fib/public_input.json".to_string();

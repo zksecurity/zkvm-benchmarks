@@ -59,7 +59,7 @@ fn run(n: u32) {
         512 => "../configs/parameter_16777216.json".to_string(),
         1024 => "../configs/parameter_33554432.json".to_string(),
         2048 => "../configs/parameter_67108864.json".to_string(),
-        4096 => "../configs/parameter_67108864.json".to_string(),
+        4096 => "../configs/parameter_134217728.json".to_string(),
         8192 => "../configs/parameter_134217728.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };

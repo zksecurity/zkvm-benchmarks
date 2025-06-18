@@ -42,6 +42,9 @@ def combine_benchmark(bench_tuple, column_name):
     if is_builtin:
         file_paths["stone-builtin"] = f'./benchmark_outputs/stone-{bench_name}-builtin.csv'
 
+    if bench_name == "ec":
+        file_paths.pop("sp1-precompile", None)
+    
     combined_df = None
 
     for name, path in file_paths.items():
@@ -140,13 +143,13 @@ def get_tables(bench_tuple):
         # Replace NaN values based on column name
         df_processed = df_original.copy()
         for col in df_processed.columns:
-            if col == "stone" or col == "stone-builtin":
+            if col == "stone" or col == "stone-builtin" or col == "stwo":
                 # for stone, this is likely due to benchmarks running out of memory
                 df_processed[col] = df_processed[col].replace({"nan": "*", "NaN": "*", "": "*"})
             else:
                 # for others, this is due to some error in proof generation
-                df_processed[col] = df_processed[col].replace({"nan": "x", "NaN": "x", "": "x"})
-
+                df_processed[col] = df_processed[col].replace({"nan": "✗", "NaN": "✗", "": "✗"})
+        
         # Convert DataFrame to table format without transposing
         table_data = df_processed.values.tolist()
         headers = df_processed.columns.tolist()
@@ -274,11 +277,11 @@ mat_mul_tables = get_tables(mat_mul_tuple)
 mat_mul_plots = get_plots(mat_mul_tuple)
 mat_mul_data = {"tables": mat_mul_tables, "plots": mat_mul_plots}
 
-# # ec
-# ec_tuple = ("ec", True, False)
-# ec_tables = get_tables(ec_tuple)
-# ec_plots = get_plots(ec_tuple)
-# ec_data = {"tables": ec_tables, "plots": ec_plots}
+# ec
+ec_tuple = ("ec", True, False)
+ec_tables = get_tables(ec_tuple)
+ec_plots = get_plots(ec_tuple)
+ec_data = {"tables": ec_tables, "plots": ec_plots}
 
 # Load template
 env = Environment(loader=FileSystemLoader("."))
@@ -297,7 +300,7 @@ output_md = template.render(
     sha3_data=sha3_data,
     sha3_chain_data=sha3_chain_data,
     mat_mul_data=mat_mul_data,
-    # ec_data=ec_data,
+    ec_data=ec_data,
 )
 
 # Save to index.md

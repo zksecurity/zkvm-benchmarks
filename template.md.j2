@@ -241,3 +241,31 @@ Benchmark multiplication of two matrices of size n x n.
 {{ mat_mul_data.tables.peak_memory }}
 
 ![]({{ mat_mul_data.plots.peak_memory_plot }})
+
+## Elliptic Curve Addition
+Benchmark n point doubling for secp256k1.
+
+### Prover Time (s)
+{{ ec_data.tables.prover_time }}
+
+![]({{ ec_data.plots.prover_time_plot }})
+
+### Verifier Time (ms)
+{{ ec_data.tables.verifier_time }}
+
+![]({{ ec_data.plots.verifier_time_plot }})
+
+### Proof Size (KB)
+{{ ec_data.tables.proof_size }}
+
+![]({{ ec_data.plots.proof_size_plot }})
+
+### Cycle Count
+{{ ec_data.tables.cycle_count }}
+
+![]({{ ec_data.plots.cycle_count_plot }})
+
+### Peak Memory (GB)
+{{ ec_data.tables.peak_memory }}
+
+![]({{ ec_data.plots.peak_memory_plot }})

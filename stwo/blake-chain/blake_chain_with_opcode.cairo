@@ -117,12 +117,26 @@ func main{
     local iterations;
     %{ ids.iterations = program_input['iterations'] %}
 
+    let n_bytes = 32;
     let (inputs: felt*) = alloc();
     let (out_ptr: felt*) = alloc();
 
-    fill_input(input=inputs, length=iterations / 4, iterator=0);
+    fill_input(input=inputs, length=n_bytes / 4, iterator=0);
 
-    blake_with_opcode(iterations / 4, inputs, out_ptr);
+    let _out = repeat_hash(inputs, iterations, out_ptr);
 
     return ();
+}
+
+// A helper function that hashes the given state `n` times.
+func repeat_hash{range_check_ptr}(input: felt*, iterations: felt, out_ptr: felt*) -> felt* {
+    alloc_locals;
+
+    if (iterations == 0) {
+        return input;
+    }
+
+    blake_with_opcode(8, input, out_ptr);
+
+    return repeat_hash(input, iterations - 1, out_ptr);
 }

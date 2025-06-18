@@ -352,8 +352,12 @@ bench-openvm-ec ec_args:
 # Bench Blake
 #####
 
-bench-blake sha_args: build-stwo
-    just bench-stwo-blake "{{sha_args}}"
+bench-blake: build-stwo
+    just bench-stwo-blake
+    just bench-stwo-blake-chain
     
-bench-stwo-blake sha_args:
-    -for arg in {{sha_args}}; do ./bench_zkvm.sh "stwo" "blake" "$arg"; done
+bench-stwo-blake:
+    -for arg in 2048 4096 8192 16384 32768 65536 131072 262144; do ./bench_zkvm.sh "stwo" "blake" "$arg"; done
+
+bench-stwo-blake-chain:
+    -for arg in 128 256 512 1024 2048 4096 8192 16384; do ./bench_zkvm.sh "stwo" "blake-chain" "$arg"; done

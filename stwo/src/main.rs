@@ -48,6 +48,9 @@ fn main() {
         "blake" => {
             bench_blake(cli.n)
         },
+        "blake-chain" => {
+            bench_blake_chain(cli.n)
+        },
         _ => unreachable!()
 
     };
@@ -525,6 +528,8 @@ fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
     prove_and_verify(public_input, private_input)
 }
 
+use util::gen_prover_input;
+
 fn bench_blake(n: u32) -> (Duration, usize, Duration, usize) {
 
     let input = format!("{{\"iterations\": {}}}", n);
@@ -536,8 +541,8 @@ fn bench_blake(n: u32) -> (Duration, usize, Duration, usize) {
 
     let public_input = "./blake/public_input.json".to_string();
     let private_input = "./blake/private_input.json".to_string();
-    let trace = "./blake/trace.bin".to_string();
-    let memory = "./blake/memory.bin".to_string();
+
+    let output_dir = "./blake".to_string();
 
     println!("Generating Prover Input Files...");
     let status = Command::new("cairo-compile")
@@ -559,31 +564,46 @@ fn bench_blake(n: u32) -> (Duration, usize, Duration, usize) {
         }
     }
 
-    let run_command = format!(
-        "cairo-run --program={} --cairo_layout_params_file=../stone/configs/cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
-        output_path, program_input, public_input, private_input, trace, memory,
-    );
-    println!("cairo-run: {:?}", run_command);
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(run_command)
-        .output();
-    match output {
-        Ok(output) if output.status.success() => {
-            println!("cairo-run successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+    gen_prover_input(&output_path, program_input, &output_dir);
+
+    prove_and_verify(public_input, private_input)
+}
+
+fn bench_blake_chain(n: u32) -> (Duration, usize, Duration, usize) {
+
+    let input = format!("{{\"iterations\": {}}}", n);
+    let program_input = "./blake-chain/input.json";
+    fs::write(program_input, input).expect("Failed to write input file");
+
+    let program_path = "./blake-chain/blake_chain_with_opcode.cairo".to_string();
+    let output_path = "./blake-chain/blake-chain.json".to_string();
+
+    let public_input = "./blake-chain/public_input.json".to_string();
+    let private_input = "./blake-chain/private_input.json".to_string();
+
+    let output_dir = "./blake-chain".to_string();
+
+    println!("Generating Prover Input Files...");
+    let status = Command::new("cairo-compile")
+        .arg(&program_path)
+        .arg("--output")
+        .arg(&output_path)
+        .arg("--proof_mode")
+        .status();
+
+    match status {
+        Ok(status) if status.success() => {
+            println!("Compilation successful! Compiled file saved to: {}", output_path);
         }
-        Ok(output) => {
-            eprintln!(
-                "cairo-run failed with exit code: {}",
-                output.status.code().unwrap_or(-1)
-            );
-            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        Ok(status) => {
+            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
         }
         Err(err) => {
-            eprintln!("Failed to run cairo-run: {}", err);
+            eprintln!("Failed to run cairo-compile: {}", err);
         }
     }
+
+    gen_prover_input(&output_path, program_input, &output_dir);
 
     prove_and_verify(public_input, private_input)
 }

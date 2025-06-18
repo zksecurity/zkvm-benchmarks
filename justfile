@@ -8,12 +8,13 @@ build-utils:
 
 # Bench all
 bench-all fib_args sha_args sha_chain_args matmul_args ec_args: build-utils
-    just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
-    just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-stone "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-stwo "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-jolt "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-sp1 "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-risczero "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    # just bench-openvm "{{fib_args}}" "{{sha_args}}" "{{sha_chain_args}}" "{{matmul_args}}" "{{ec_args}}"
+    just bench-blake
 
 
 #####
@@ -73,6 +74,8 @@ build-sp1:
 	cd sp1/sha3-chain-precompile && cargo prove build
 	cd sp1/ec && cargo prove build
 	cd sp1/ec-precompile && cargo prove build
+	cd sp1/blake && cargo prove build
+	cd sp1/blake-chain && cargo prove build
 	cd sp1 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-sp1 fib_args sha_args sha_chain_args matmul_args ec_args: build-sp1
@@ -143,6 +146,8 @@ build-risczero:
     cd risczero/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/ec-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
     cd risczero/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/blake && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/blake-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-risczero fib_args sha_args sha_chain_args matmul_args ec_args: build-risczero
     just bench-risczero-fib "{{fib_args}}"
@@ -352,12 +357,28 @@ bench-openvm-ec ec_args:
 # Bench Blake
 #####
 
-bench-blake: build-stwo
+bench-blake: build-stwo build-sp1 build-risczero
     just bench-stwo-blake
     just bench-stwo-blake-chain
+    just bench-sp1-blake
+    just bench-sp1-blake-chain
+    just bench-risczero-blake
+    just bench-risczero-blake-chain
     
 bench-stwo-blake:
     -for arg in 2048 4096 8192 16384 32768 65536 131072 262144; do ./bench_zkvm.sh "stwo" "blake" "$arg"; done
 
 bench-stwo-blake-chain:
     -for arg in 128 256 512 1024 2048 4096 8192 16384; do ./bench_zkvm.sh "stwo" "blake-chain" "$arg"; done
+
+bench-sp1-blake:
+    -for arg in 2048 4096 8192 16384 32768 65536 131072 262144; do ./bench_zkvm.sh "sp1" "blake" "$arg"; done
+
+bench-sp1-blake-chain:
+    -for arg in 128 256 512 1024 2048 4096 8192 16384; do ./bench_zkvm.sh "sp1" "blake-chain" "$arg"; done
+
+bench-risczero-blake:
+    -for arg in 2048 4096 8192 16384 32768 65536 131072 262144; do ./bench_zkvm.sh "risczero" "blake" "$arg"; done
+
+bench-risczero-blake-chain:
+    -for arg in 128 256 512 1024 2048 4096 8192 16384; do ./bench_zkvm.sh "risczero" "blake-chain" "$arg"; done

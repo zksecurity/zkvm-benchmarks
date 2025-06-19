@@ -6,10 +6,11 @@ use std::fs;
 use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo_cairo_adapter::vm_import::adapt_vm_output;
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::{
-    default_prod_prover_parameters, prove_cairo, ProverParameters,
-};
+use stwo_cairo_prover::prover::prove_cairo;
+use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
 use cairo_air::verifier::verify_cairo;
+use cairo_air::PreProcessedTraceVariant;
 
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -243,7 +244,15 @@ pub fn prove_and_verify(
     println!("Running Stwo Prover...");
     let vm_output: ProverInput =
         adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
-    let ProverParameters { pcs_config, preprocessed_trace, .. } = default_prod_prover_parameters();
+    let pcs_config = PcsConfig {
+        pow_bits: 26,
+        fri_config: FriConfig {
+            log_last_layer_degree_bound: 0,
+            log_blowup_factor: 1,
+            n_queries: 70,
+        },
+    };
+    let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
     let prover_start = Instant::now();
     let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, pcs_config, preprocessed_trace).unwrap();
     let prover_end = Instant::now();

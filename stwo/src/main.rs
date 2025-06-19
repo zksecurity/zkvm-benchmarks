@@ -3,13 +3,13 @@ use std::process::Command;
 use std::io::Write;
 use std::fs;
 
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_cairo_adapter::vm_import::adapt_vm_output;
-use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::{
-    default_prod_prover_parameters, prove_cairo, ProverParameters,
-};
-use cairo_air::verifier::verify_cairo;
+// use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+// use stwo_cairo_adapter::vm_import::adapt_vm_output;
+// use stwo_cairo_adapter::ProverInput;
+// use stwo_cairo_prover::prover::{
+//     default_prod_prover_parameters, prove_cairo, ProverParameters,
+// };
+// use cairo_air::verifier::verify_cairo;
 
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -184,6 +184,95 @@ fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
     prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
 }
 
+// pub fn prove_and_verify(
+//     program_input: String,
+//     program_path: String, 
+//     output_path: String, 
+//     public_input: String, 
+//     private_input: String, 
+//     trace: String, 
+//     memory: String
+// ) -> (Duration, usize, Duration, usize) {
+    
+//     println!("Generating Prover Input Files...");
+//     let status = Command::new("cairo-compile")
+//         .arg(&program_path)
+//         .arg("--output")
+//         .arg(&output_path)
+//         .arg("--proof_mode")
+//         .status();
+
+//     match status {
+//         Ok(status) if status.success() => {
+//             println!("Compilation successful! Compiled file saved to: {}", output_path);
+//         }
+//         Ok(status) => {
+//             eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
+//         }
+//         Err(err) => {
+//             eprintln!("Failed to run cairo-compile: {}", err);
+//         }
+//     }
+
+//     let run_command = format!(
+//         "cairo-run --program={} --cairo_layout_params_file=cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
+//         output_path, program_input, public_input, private_input, trace, memory,
+//     );
+//     println!("cairo-run: {:?}", run_command);
+//     let output = Command::new("sh")
+//         .arg("-c")
+//         .arg(run_command)
+//         .output();
+//     match output {
+//         Ok(output) if output.status.success() => {
+//             println!("cairo-run successful!");
+//             println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+//         }
+//         Ok(output) => {
+//             eprintln!(
+//                 "cairo-run failed with exit code: {}",
+//                 output.status.code().unwrap_or(-1)
+//             );
+//             eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+//         }
+//         Err(err) => {
+//             eprintln!("Failed to run cairo-run: {}", err);
+//         }
+//     }
+
+//     println!("Running Stwo Prover...");
+//     let vm_output: ProverInput =
+//         adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
+//     let ProverParameters { pcs_config, preprocessed_trace, .. } = default_prod_prover_parameters();
+//     let prover_start = Instant::now();
+//     let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, pcs_config, preprocessed_trace).unwrap();
+//     let prover_end = Instant::now();
+//     println!("Proof Generated Successfully...");
+
+//     let proof_size = size(&proof);
+    
+//     println!("Running Stwo Verifier...");
+//     let verifier_start = Instant::now();
+//     verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace).unwrap();
+//     let verifier_end = Instant::now();
+//     println!("Proof Verified Successfully...");
+
+//     let vm_output: ProverInput =
+//         adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
+//     let counts = &vm_output.state_transitions.casm_states_by_opcode.counts();
+//     let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
+
+//     (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
+// }
+
+use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo_cairo_adapter::vm_import::adapt_vm_output;
+use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_prover::cairo_air::prover::{
+    default_prod_prover_parameters, prove_cairo, ProverParameters, ProverConfig,
+};
+use stwo_cairo_prover::cairo_air::verifier::verify_cairo;
+
 pub fn prove_and_verify(
     program_input: String,
     program_path: String, 
@@ -239,13 +328,16 @@ pub fn prove_and_verify(
             eprintln!("Failed to run cairo-run: {}", err);
         }
     }
-
+    
     println!("Running Stwo Prover...");
     let vm_output: ProverInput =
         adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
-    let ProverParameters { pcs_config, preprocessed_trace, .. } = default_prod_prover_parameters();
+    let ProverParameters { pcs_config } = default_prod_prover_parameters();
+    let config = ProverConfig {
+        display_components: false,
+    };
     let prover_start = Instant::now();
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, pcs_config, preprocessed_trace).unwrap();
+    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, config, pcs_config).unwrap();
     let prover_end = Instant::now();
     println!("Proof Generated Successfully...");
 
@@ -253,7 +345,7 @@ pub fn prove_and_verify(
     
     println!("Running Stwo Verifier...");
     let verifier_start = Instant::now();
-    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace).unwrap();
+    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config).unwrap();
     let verifier_end = Instant::now();
     println!("Proof Verified Successfully...");
 

@@ -6,6 +6,8 @@ on:
       - main
       - master
       - dev
+      - stwo-old
+      - stwo-blake
     paths-ignore:
       - "**.md"
   workflow_dispatch:

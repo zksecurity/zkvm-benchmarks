@@ -6,6 +6,7 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from tabulate import tabulate
 import math
+from matplotlib.ticker import FixedLocator
 
 # Function to preprocess the dataframes
 def preprocess_data(df, column_name):
@@ -106,7 +107,13 @@ def plot_benchmark(df, title, y_label, bench_tuple, column_name):
     plt.subplots_adjust(bottom=0.2)
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
-    plt.xticks(df["n"], df["n"], rotation=45)
+    # plt.xticks(df["n"], df["n"], rotation=45)
+
+    ax = plt.gca()
+    ax.set_xscale("log")  # Keep log scale
+    ax.xaxis.set_major_locator(FixedLocator(df["n"]))  # Force only these ticks
+    ax.set_xticklabels(df["n"], rotation=45)  # Label them
+    ax.xaxis.set_minor_locator(FixedLocator([]))
 
     # Save the plot
     filename = f"./plots/{bench_name}_{title.replace(' ', '_').lower()}.png"
@@ -140,15 +147,10 @@ def get_tables(bench_tuple):
             else:
                 df_original[col] = df_original[col].astype(str)
 
-        # Replace NaN values based on column name
+        # Replace NaN values
         df_processed = df_original.copy()
         for col in df_processed.columns:
-            if col == "stone" or col == "stone-builtin" or col == "stwo":
-                # for stone, this is likely due to benchmarks running out of memory
-                df_processed[col] = df_processed[col].replace({"nan": "*", "NaN": "*", "": "*"})
-            else:
-                # for others, this is due to some error in proof generation
-                df_processed[col] = df_processed[col].replace({"nan": "✗", "NaN": "✗", "": "✗"})
+            df_processed[col] = df_processed[col].replace({"nan": "*", "NaN": "*", "": "*"})
         
         # Convert DataFrame to table format without transposing
         table_data = df_processed.values.tolist()

@@ -44,9 +44,8 @@
 
 - All benchmarks presented here are **CPU-only** and do not utilize any GPU acceleration.
 - Stone benchmarks were generated using the `dynamic` layout with these [configurations](https://github.com/zksecurity/zkvm-benchmarks/tree/master/stone/configs).
-- Benchmarks which run out of memory have been indicated by `*` in the tables.
-- Benchmarks which generate errors in proof generation have been indicated by `x` in the tables.
-
+- The benchmarks for SP1, R0 and OpenVM use compressed or succinct prover type, which aggragates all the STARK proofs into a single STARK proof.
+- Benchmarks which run out of memory or generate errors in proof generation have been indicated by `*` in the tables.
 
 ## Time and Commit Hash
 - **Commit Hash**: {{ commit_hash }}

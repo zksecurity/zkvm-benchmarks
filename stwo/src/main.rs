@@ -1,20 +1,10 @@
 use clap::Parser;
-use std::process::Command;
 use std::io::Write;
 use std::fs;
+use std::time::Duration;
 
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo_cairo_adapter::vm_import::adapt_vm_output;
-use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::prove_cairo;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
-use cairo_air::verifier::verify_cairo;
-use cairo_air::PreProcessedTraceVariant;
-
-use std::path::Path;
-use std::time::{Duration, Instant};
-use utils::size;
+pub mod util;
+use util::prove_and_verify;
 
 
 /// A tool to build and optionally benchmark a cargo project
@@ -79,7 +69,8 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./fib/trace.bin".to_string();
     let memory = "./fib/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./fib".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
@@ -96,7 +87,8 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./mat_mul/trace.bin".to_string();
     let memory = "./mat_mul/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./mat_mul".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
@@ -113,7 +105,8 @@ fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./sha2/trace.bin".to_string();
     let memory = "./sha2/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./sha2".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
@@ -130,7 +123,8 @@ fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./sha2-chain/trace.bin".to_string();
     let memory = "./sha2-chain/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./sha2-chain".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 
@@ -148,7 +142,8 @@ fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./sha3/trace.bin".to_string();
     let memory = "./sha3/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./sha3".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
@@ -165,7 +160,8 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./sha3-chain/trace.bin".to_string();
     let memory = "./sha3-chain/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
+    let out_dir = "./sha3-chain".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }
 
 fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
@@ -182,94 +178,6 @@ fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
     let trace = "./ec/trace.bin".to_string();
     let memory = "./ec/memory.bin".to_string();
 
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory)
-}
-
-pub fn prove_and_verify(
-    program_input: String,
-    program_path: String, 
-    output_path: String, 
-    public_input: String, 
-    private_input: String, 
-    trace: String, 
-    memory: String
-) -> (Duration, usize, Duration, usize) {
-    
-    println!("Generating Prover Input Files...");
-    let status = Command::new("cairo-compile")
-        .arg(&program_path)
-        .arg("--output")
-        .arg(&output_path)
-        .arg("--proof_mode")
-        .status();
-
-    match status {
-        Ok(status) if status.success() => {
-            println!("Compilation successful! Compiled file saved to: {}", output_path);
-        }
-        Ok(status) => {
-            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
-        }
-        Err(err) => {
-            eprintln!("Failed to run cairo-compile: {}", err);
-        }
-    }
-
-    let run_command = format!(
-        "cairo-run --program={} --cairo_layout_params_file=cairo_layout_params_file.json --layout=dynamic --program_input={} --air_public_input={} --air_private_input={} --trace_file={} --memory_file={} --proof_mode", 
-        output_path, program_input, public_input, private_input, trace, memory,
-    );
-    println!("cairo-run: {:?}", run_command);
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg(run_command)
-        .output();
-    match output {
-        Ok(output) if output.status.success() => {
-            println!("cairo-run successful!");
-            println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-        }
-        Ok(output) => {
-            eprintln!(
-                "cairo-run failed with exit code: {}",
-                output.status.code().unwrap_or(-1)
-            );
-            eprintln!("stderr: {}", String::from_utf8_lossy(&output.stderr));
-        }
-        Err(err) => {
-            eprintln!("Failed to run cairo-run: {}", err);
-        }
-    }
-
-    println!("Running Stwo Prover...");
-    let vm_output: ProverInput =
-        adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
-    let pcs_config = PcsConfig {
-        pow_bits: 26,
-        fri_config: FriConfig {
-            log_last_layer_degree_bound: 0,
-            log_blowup_factor: 1,
-            n_queries: 70,
-        },
-    };
-    let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-    let prover_start = Instant::now();
-    let proof = prove_cairo::<Blake2sMerkleChannel>(vm_output, pcs_config, preprocessed_trace).unwrap();
-    let prover_end = Instant::now();
-    println!("Proof Generated Successfully...");
-
-    let proof_size = size(&proof);
-    
-    println!("Running Stwo Verifier...");
-    let verifier_start = Instant::now();
-    verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace).unwrap();
-    let verifier_end = Instant::now();
-    println!("Proof Verified Successfully...");
-
-    let vm_output: ProverInput =
-        adapt_vm_output(Path::new(&public_input), Path::new(&private_input)).unwrap();
-    let counts = &vm_output.state_transitions.casm_states_by_opcode.counts();
-    let cycle_count = counts.iter().map(|(_, count)| count).sum::<usize>();
-
-    (prover_end.duration_since(prover_start), proof_size, verifier_end.duration_since(verifier_start), cycle_count)
+    let out_dir = "./ec".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
 }

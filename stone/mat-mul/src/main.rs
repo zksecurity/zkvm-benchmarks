@@ -53,7 +53,7 @@ fn run(n: u32) {
         8 => "../configs/parameter_65536_32.json".to_string(),
         16 => "../configs/parameter_131072.json".to_string(),
         32 => "../configs/parameter_1048576.json".to_string(),
-        64 => "../configs/parameter_8388608.json".to_string(),
+        // 64 => "../configs/parameter_8388608.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };
     let prover_config_file = "../configs/prover_config.json".to_string();

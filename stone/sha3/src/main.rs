@@ -53,9 +53,9 @@ fn run(n: u32) {
         1024 => "../configs/parameter_262144.json".to_string(),
         2048 => "../configs/parameter_524288.json".to_string(),
         4096 => "../configs/parameter_1048576.json".to_string(),
-        8192 => "../configs/parameter_2097152.json".to_string(),
-        16384 => "../configs/parameter_2097152.json".to_string(),
-        32768 => "../configs/parameter_4194304.json".to_string(),
+        // 8192 => "../configs/parameter_2097152.json".to_string(),
+        // 16384 => "../configs/parameter_2097152.json".to_string(),
+        // 32768 => "../configs/parameter_4194304.json".to_string(),
         _ => unreachable!("Unexpected value for n: {}", n),
     };    
     let prover_config_file = "../configs/prover_config.json".to_string();

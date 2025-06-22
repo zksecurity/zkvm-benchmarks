@@ -16,6 +16,17 @@ fn run(n: u32) {
     let input = format!("{{\"iterations\": {}}}", n);
     let program_input = "programs/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
+    let parameter_file = match n {
+        4096 => "../configs/parameter_65536_32.json".to_string(),
+        8192 => "../configs/parameter_65536_64.json".to_string(),
+        16384 => "../configs/parameter_131072.json".to_string(),
+        32768 => "../configs/parameter_262144.json".to_string(),
+        65536 => "../configs/parameter_524288.json".to_string(),
+        131072 => "../configs/parameter_1048576.json".to_string(),
+        // 262144 => "../configs/parameter_2097152.json".to_string(),
+        // 524288 => "../configs/parameter_4194304.json".to_string(),
+        _ => unreachable!("Unexpected value for n: {}", n),
+    };
 
 
      // Compile Cairo code
@@ -48,17 +59,6 @@ fn run(n: u32) {
 
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
-    let parameter_file = match n {
-        4096 => "../configs/parameter_65536_32.json".to_string(),
-        8192 => "../configs/parameter_65536_64.json".to_string(),
-        16384 => "../configs/parameter_131072.json".to_string(),
-        32768 => "../configs/parameter_262144.json".to_string(),
-        65536 => "../configs/parameter_524288.json".to_string(),
-        131072 => "../configs/parameter_1048576.json".to_string(),
-        // 262144 => "../configs/parameter_2097152.json".to_string(),
-        // 524288 => "../configs/parameter_4194304.json".to_string(),
-        _ => unreachable!("Unexpected value for n: {}", n),
-    };
     let prover_config_file = "../configs/prover_config.json".to_string();
 
     let args = vec![

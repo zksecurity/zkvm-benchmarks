@@ -16,6 +16,14 @@ fn run(n: u32) {
     let input = format!("{{\"iterations\": {}}}", n);
     let program_input = "programs/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
+    let parameter_file = match n {
+        256 | 512 | 1024 | 2048 => "../configs/parameter_65536_32.json".to_string(),
+        4096 => "../configs/parameter_65536_64.json".to_string(),
+        8192 => "../configs/parameter_131072.json".to_string(),
+        16384 => "../configs/parameter_262144.json".to_string(),
+        32768 => "../configs/parameter_524288.json".to_string(),
+        _ => unreachable!("Unexpected value for n: {}", n),
+    };
 
      // Compile Cairo code
      let status = Command::new("cairo-compile")
@@ -46,16 +54,6 @@ fn run(n: u32) {
 
     let output_file = format!("proof_{}.json", n);
     let layout = "automatic".to_string();
-
-    let parameter_file = match n {
-        256 | 512 | 1024 | 2048 => "../configs/parameter_65536_32.json".to_string(),
-        4096 => "../configs/parameter_65536_64.json".to_string(),
-        8192 => "../configs/parameter_131072.json".to_string(),
-        16384 => "../configs/parameter_262144.json".to_string(),
-        32768 => "../configs/parameter_524288.json".to_string(),
-        _ => unreachable!("Unexpected value for n: {}", n),
-    };
-
     let prover_config_file = "../configs/prover_config.json".to_string();
 
     let args = vec![

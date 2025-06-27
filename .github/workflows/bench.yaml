@@ -52,7 +52,7 @@ on:
       - "**.md"
 
 concurrency:
-  group: ${{ github.workflow }}-bench
+  group: ${{ github.workflow }}-bench-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -312,7 +312,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ contains(inputs.vm, 'jolt') }}
+    if: ${{ inputs.vm-jolt == true || startsWith(github.ref, 'refs/tags/bench-') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner

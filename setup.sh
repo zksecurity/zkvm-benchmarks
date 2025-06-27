@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "Setting up benchmark..."
+set -e
 
-whoami
+echo "Setting up benchmark..."
 
 OS_TYPE=$(uname)
 
@@ -37,45 +37,3 @@ rustup install 1.81.0
 rustup install 1.86.0
 rustup install nightly-2025-01-02
 rustup install stable
-
-# Install Jolt
-rustup target add riscv32i-unknown-none-elf
-
-# Install Risc Zero
-curl -L https://risczero.com/install | bash
-export PATH="$HOME/.risc0/bin:$PATH"
-rzup install
-
-# Install SP1
-curl -L https://sp1.succinct.xyz | bash
-export PATH="$HOME/.sp1/bin:$PATH"
-sp1up
-
-# Install cairo
-VENV_PATH="$HOME/bench-venv"
-echo "Creating virtual environment in $VENV_PATH..."
-if [[ "$OS_TYPE" == "Linux" ]]; then
-    python3.10 -m venv "$VENV_PATH"
-else
-    python3 -m venv "$VENV_PATH"
-fi
-echo "Activating virtual environment..."
-source "$VENV_PATH/bin/activate"
-echo "Upgrading pip..."
-pip install --upgrade pip
-echo "Installing cairo-lang..."
-pip install cairo-lang
-
-# Install stone-cli
-cargo +1.86.0 install --git https://github.com/zksecurity/stone-cli.git
-
-# Check Setup
-rustc --version
-cargo --version
-stone-cli --version
-if [[ "$OS_TYPE" == "Linux" ]]; then
-    python3.10 --version
-else
-    python3 --version
-fi
-cairo-run --version

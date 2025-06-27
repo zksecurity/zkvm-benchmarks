@@ -110,6 +110,10 @@ jobs:
           echo "$BENCH_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$BENCH_USER
           sudo chown -R $BENCH_USER:$BENCH_USER .
 
+      - name: Install Dependencies
+        run: |
+          sudo -u $BENCH_USER ./setup.sh
+
       - name: Capture Machine Information
         run: sudo -u $BENCH_USER just machine-info
 

@@ -1,17 +1,93 @@
-name: "Benchmark Run"
-
+name: Benchmark
 on:
+  workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        description: "Run with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
+        required: false
+        default: false
+      vm-openvm:
+        description: "Run OpenVM benchmark"
+        required: false
+        default: false
+        type: boolean
+      vm-stwo:
+        description: "Run Stwo benchmark"
+        required: false
+        default: false
+        type: boolean
+      vm-risc0:
+        description: "Run RISC0 benchmark"
+        required: false
+        default: false
+        type: boolean
+      vm-stone:
+        description: "Run Stone benchmark"
+        required: false
+        default: false
+        type: boolean
+      vm-sp1:
+        description: "Run SP1 benchmark"
+        required: false
+        default: false
+        type: boolean
+      vm-jolt:
+        description: "Run Jolt benchmark"
+        required: false
+        default: false
+        type: boolean
+      arg-fib:
+        description: "Fibonacci suite arguments"
+        required: false
+        default: "32768 65536"
+        type: string
+      arg-sha2:
+        description: "SHA2 benchmark arguments"
+        required: false
+        default: "256 512"
+        type: string
+      arg-sha2-chain:
+        description: "SHA2 chain benchmark arguments"
+        required: false
+        default: "8 16"
+        type: string
+      arg-sha3:
+        description: "SHA3 benchmark arguments"
+        required: false
+        default: "256 512"
+        type: string
+      arg-sha3-chain:
+        description: "SHA3 chain benchmark arguments"
+        required: false
+        default: "8 16"
+        type: string
+      arg-matmul:
+        description: "Matrix multiplication suite arguments"
+        required: false
+        default: "4 8"
+        type: string
+      arg-ec:
+        description: "Elliptic curve suite arguments"
+        required: false
+        default: "256 512"
+        type: string
   push:
-    branches:
-      - main
-      - master
     paths-ignore:
       - "**.md"
-  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-bench
   cancel-in-progress: true
+
+env:
+  FIB_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '32768 65536 131072 262144 524288 1048576 2097152 4194304' || inputs.arg-fib }}
+  SHA2_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-sha2 }}
+  SHA2_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536' || inputs.arg-sha2-chain }}
+  SHA3_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-sha3 }}
+  SHA3_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536' || inputs.arg-sha3-chain }}
+  MATMUL_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '4 8 16 32 64 128' || inputs.arg-matmul }}
+  EC_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-ec }}
 
 jobs:
   create-runner:
@@ -37,16 +113,20 @@ jobs:
           ssh_key: 27148616
           image: ubuntu-24.04
 
-  benchmark:
-    name: Execute on the Benchmarking Machine
+  setup:
+    name: Setup Environment
     timeout-minutes: 7200 # 5 days
-    needs: create-runner # required to start the main job when the runner is ready
-    runs-on: ${{ needs.create-runner.outputs.label }} # run the job on the newly created runner
+    needs: create-runner
+    runs-on: ${{ needs.create-runner.outputs.label }}
     env:
       BENCH_USER: shodan
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Setup tmate session
+        if: ${{ inputs.debug == true }}
+        uses: mxschmitt/action-tmate@v3
 
       - name: Create Benchmark User
         run: |
@@ -55,11 +135,143 @@ jobs:
           echo "$BENCH_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$BENCH_USER
           sudo chown -R $BENCH_USER:$BENCH_USER .
 
-      - name: Setup Benchmark Dependencies
-        run: |
-          sudo -u $BENCH_USER ./setup.sh
+      - name: Capture Machine Information
+        run: sudo -u $BENCH_USER just machine-info
 
-      - name: Run Benchmark
+      - name: Upload Machine Info Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-info
+          path: results/
+
+  benchmark-openvm:
+    name: Benchmark OpenVM
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-openvm == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup OpenVM
+        run: sudo -u $BENCH_USER just setup-openvm
+
+      - name: Run OpenVM benchmark
+        run: |
+          sudo -u $BENCH_USER just bench-openvm \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
+
+      - name: Upload OpenVM results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-openvm
+          path: results/
+
+  benchmark-stwo:
+    name: Benchmark Stwo
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-stwo == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Stwo
+        run: sudo -u $BENCH_USER just setup-stwo
+
+      - name: Run Stwo benchmark
+        run: |
+          sudo -u $BENCH_USER just bench-stwo \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
+
+      - name: Upload Stwo results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-stwo
+          path: results/
+
+  benchmark-risc0:
+    name: Benchmark RISC0
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-risc0 == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup RISC0
+        run: sudo -u $BENCH_USER just setup-risc0
+
+      - name: Run RISC0 benchmark
+        run: |
+          sudo -u $BENCH_USER just bench-risczero \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
+
+      - name: Upload RISC0 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-risc0
+          path: results/
+
+  benchmark-stone:
+    name: Benchmark Stone
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-stone == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Stone
+        run: sudo -u $BENCH_USER just setup-stone
+
+      - name: Run Stone benchmark
         run: |
           WORK_DIR=$(pwd)
           echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
@@ -69,31 +281,142 @@ jobs:
             SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
             SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
             SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
-            bash -c "cd $WORK_DIR && ./bench.sh remote"
+            just bench-stone \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
 
-      - name: Upload Benchmark Results
+      - name: Upload Stone results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results
+          name: benchmark-results-stone
+          path: results/
+
+  benchmark-sp1:
+    name: Benchmark SP1
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-sp1 == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup SP1
+        run: sudo -u $BENCH_USER just setup-sp1
+
+      - name: Run SP1 benchmark
+        run: |
+          sudo -u $BENCH_USER just bench-sp1 \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
+
+      - name: Upload SP1 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-sp1
+          path: results/
+
+  benchmark-jolt:
+    name: Benchmark Jolt
+    timeout-minutes: 7200
+    needs:
+      - setup
+    if: ${{ inputs.vm-jolt == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    runs-on: ${{ needs.create-runner.outputs.label }}
+    concurrency:
+      group: benchmark-runner
+      cancel-in-progress: false
+    env:
+      BENCH_USER: shodan
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Jolt
+        run: sudo -u $BENCH_USER just setup-jolt
+
+      - name: Run Jolt benchmark
+        run: |
+          sudo -u $BENCH_USER just bench-jolt \
+            "${{ env.FIB_ARG }}" \
+            "${{ env.SHA2_ARG }}" \
+            "${{ env.SHA2_CHAIN_ARG }}" \
+            "${{ env.SHA3_ARG }}" \
+            "${{ env.SHA3_CHAIN_ARG }}" \
+            "${{ env.MATMUL_ARG }}" \
+            "${{ env.EC_ARG }}"
+
+      - name: Upload Jolt results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-jolt
+          path: results/
+
+  merge-results:
+    name: Merge Results
+    needs:
+      - setup
+      - benchmark-openvm
+      - benchmark-stwo
+      - benchmark-risc0
+      - benchmark-stone
+      - benchmark-sp1
+      - benchmark-jolt
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all results
+        uses: actions/download-artifact@v4
+        with:
+          path: all-results
+
+      - name: Merge results and create zip
+        run: |
+          mkdir -p merged-results
+          # Copy all files from all results directories
+          find all-results -type f -exec cp {} merged-results/ \;
+          # Create zip file
+          cd merged-results
+          zip -r ../benchmark-results.zip .
+          cd ..
+
+      - name: Upload Merged Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-benchmark-results
           path: |
-            *.txt
-            *.log
-            ./benchmark_outputs/*.csv
-            ./report_info/*.txt
-            *.csv
-            *.json
-            *.data
-            *.png
-            *.jpg
-            *.svg
+            merged-results/
+            benchmark-results.zip
+
+      - name: Create Release From Results
+        if: startsWith(github.ref, 'refs/tags/bench-')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: benchmark-results.zip
 
   delete-runner:
     name: Delete Hetzner Cloud Runner
     needs:
-      - create-runner # required to get output from the create-runner job
-      - benchmark # required to wait when the main job is done
+      - create-runner
+      - merge-results
     runs-on: ubuntu-24.04
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs, or the main job was canceled
+    if: ${{ always() }}
     steps:
       - name: Delete runner
         uses: Cyclenerd/hcloud-github-runner@v1
@@ -103,40 +426,3 @@ jobs:
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           name: ${{ needs.create-runner.outputs.label }}
           server_id: ${{ needs.create-runner.outputs.server_id }}
-
-  analyze:
-    name: Analyze Benchmark Results
-    needs:
-      - benchmark
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Download Benchmark Results
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-results
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y python3-pip
-
-      - name: Run Analysis
-        run: |
-          ./analyze.sh
-
-      - name: Upload report
-        uses: actions/upload-artifact@v4
-        with:
-          name: report
-          path: ./report/
-
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./report --project-name=zcjjnygdkpjup --commit-dirty=true

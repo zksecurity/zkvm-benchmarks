@@ -2,8 +2,6 @@
 
 set -e
 
-echo "Setting up benchmark..."
-
 OS_TYPE=$(uname)
 
 # OS-specific dependencies
@@ -27,13 +25,7 @@ else
     exit 1
 fi
 
-# Common steps for all OSes
-
-# Install Rust
+# Install Rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source $HOME/.cargo/bin
+source $HOME/.cargo/env
 export PATH="$HOME/.cargo/bin:$PATH"
-rustup install 1.81.0
-rustup install 1.86.0
-rustup install nightly-2025-01-02
-rustup install stable

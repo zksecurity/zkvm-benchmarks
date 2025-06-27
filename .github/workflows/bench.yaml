@@ -120,7 +120,7 @@ jobs:
       - name: Upload Machine Info Results
         uses: actions/upload-artifact@v4
         with:
-          name: machine-info
+          name: result-machine-info
           path: results/
 
   benchmark-openvm:
@@ -156,7 +156,7 @@ jobs:
       - name: Upload OpenVM results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-openvm
+          name: result-bench-openvm
           path: results/
 
   benchmark-stwo:
@@ -192,7 +192,7 @@ jobs:
       - name: Upload Stwo results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-stwo
+          name: result-bench-stwo
           path: results/
 
   benchmark-risc0:
@@ -228,7 +228,7 @@ jobs:
       - name: Upload RISC0 results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-risc0
+          name: result-bench-risc0
           path: results/
 
   benchmark-stone:
@@ -272,7 +272,7 @@ jobs:
       - name: Upload Stone results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-stone
+          name: result-bench-stone
           path: results/
 
   benchmark-sp1:
@@ -308,7 +308,7 @@ jobs:
       - name: Upload SP1 results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-sp1
+          name: result-bench-sp1
           path: results/
 
   benchmark-jolt:
@@ -316,7 +316,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-jolt == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'jolt') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -344,7 +344,7 @@ jobs:
       - name: Upload Jolt results
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results-jolt
+          name: result-bench-jolt
           path: results/
 
   merge-results:
@@ -362,17 +362,26 @@ jobs:
     steps:
       - name: Download all results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           path: all-results
+          pattern: "result-*"
 
       - name: Merge results and create zip
         run: |
           mkdir -p merged-results
-          # Copy all files from all results directories
-          find all-results -type f -exec cp {} merged-results/ \;
-          # Create zip file
+          # Copy all files from all results directories if they exist
+          if [ -d "all-results" ]; then
+            find all-results -type f -exec cp {} merged-results/ \; 2>/dev/null || true
+          fi
+          # Create zip file (even if empty)
           cd merged-results
-          zip -r ../benchmark-results.zip .
+          if [ "$(ls -A .)" ]; then
+            zip -r ../benchmark-results.zip .
+          else
+            echo "No results found" > no-results.txt
+            zip -r ../benchmark-results.zip no-results.txt
+          fi
           cd ..
 
       - name: Upload Merged Results

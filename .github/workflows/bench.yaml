@@ -7,36 +7,11 @@ on:
         description: "Run with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
         required: false
         default: false
-      vm-openvm:
-        description: "Run OpenVM benchmark"
+      vm:
+        description: "Space-separated list of VMs to benchmark (openvm stwo risc0 stone sp1 jolt)"
         required: false
-        default: false
-        type: boolean
-      vm-stwo:
-        description: "Run Stwo benchmark"
-        required: false
-        default: false
-        type: boolean
-      vm-risc0:
-        description: "Run RISC0 benchmark"
-        required: false
-        default: false
-        type: boolean
-      vm-stone:
-        description: "Run Stone benchmark"
-        required: false
-        default: false
-        type: boolean
-      vm-sp1:
-        description: "Run SP1 benchmark"
-        required: false
-        default: false
-        type: boolean
-      vm-jolt:
-        description: "Run Jolt benchmark"
-        required: false
-        default: false
-        type: boolean
+        default: "openvm stwo risc0 stone sp1 jolt"
+        type: string
       arg-fib:
         description: "Fibonacci suite arguments"
         required: false
@@ -149,7 +124,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-openvm == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'openvm') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -185,7 +160,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-stwo == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'stwo') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -221,7 +196,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-risc0 == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'risc0') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -257,7 +232,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-stone == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'stone') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -301,7 +276,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-sp1 == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'sp1') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner
@@ -337,7 +312,7 @@ jobs:
     timeout-minutes: 7200
     needs:
       - setup
-    if: ${{ inputs.vm-jolt == true || startsWith(github.ref, 'refs/tags/bench-') }}
+    if: ${{ contains(inputs.vm, 'jolt') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
       group: benchmark-runner

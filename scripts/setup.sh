@@ -70,14 +70,6 @@ pip install cairo-lang
 # Install stone-cli
 cargo +1.86.0 install --git https://github.com/zksecurity/stone-cli.git
 
-# Compile the memuse program
-if command -v gcc &>/dev/null; then
-    gcc ./scripts/memuse.c -o memuse
-else
-    echo "gcc not found"
-    exit 1
-fi
-
 # Check Setup
 rustc --version
 cargo --version

@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# Set Env
-./set_env.sh
+# Compile the memuse program
+if command -v gcc &>/dev/null; then
+    gcc ./scripts/memuse.c -o memuse
+else
+    echo "gcc not found"
+    exit 1
+fi
 
 # Variables
 BENCH_ZKVM="$1"

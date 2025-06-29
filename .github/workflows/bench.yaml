@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-machine-info
-          path: results/
+          path: ./report_info/*.txt
 
   benchmark-openvm:
     name: Benchmark OpenVM
@@ -157,7 +157,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-openvm
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   benchmark-stwo:
     name: Benchmark Stwo
@@ -193,7 +193,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-stwo
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   benchmark-risc0:
     name: Benchmark RISC0
@@ -229,7 +229,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-risc0
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   benchmark-stone:
     name: Benchmark Stone
@@ -273,7 +273,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-stone
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   benchmark-sp1:
     name: Benchmark SP1
@@ -309,7 +309,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-sp1
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   benchmark-jolt:
     name: Benchmark Jolt
@@ -345,7 +345,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-jolt
-          path: results/
+          path: ./benchmark_outputs/*.csv
 
   merge-results:
     name: Merge Results

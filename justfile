@@ -1,3 +1,5 @@
+export PATH := env_var('HOME') + "/.rustup:" + env_var('HOME') + "/.cargo/bin:" + env_var('HOME') + "/.risc0/bin:" + env_var('HOME') + "/.sp1/bin:" + env_var('HOME') + "/.local/bin:" + env_var('PATH')
+
 FIB_ARG_LOCAL := "4096 8192 16384 32768 65536 131072"
 SHA2_ARG_LOCAL := "256 512 1024 2048 4096 8192"
 SHA2_CHAIN_ARG_LOCAL := "64 128 256 512 1024 2048 4096"
@@ -16,7 +18,6 @@ machine-info:
 
 # Build utilities
 build-utils:
-    ./scripts/set_env.sh
     cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # Bench local
@@ -32,8 +33,7 @@ bench-local: build-utils machine-info
 # jolt
 #####
 
-build-jolt:
-    ./scripts/set_env.sh
+build-jolt: build-utils
     cd jolt && rustup install
     cd jolt && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
@@ -73,8 +73,7 @@ bench-jolt-ec ec_args:
 # sp1
 #####
 
-build-sp1:
-	./scripts/set_env.sh
+build-sp1: build-utils
 	cd sp1/fib && cargo prove build
 	cd sp1/sha2-chain && cargo prove build
 	cd sp1/sha3-chain && cargo prove build
@@ -144,8 +143,7 @@ bench-sp1-ec-precompile ec_args:
 # risczero
 #####
 
-build-risczero:
-    ./scripts/set_env.sh
+build-risczero: build-utils
     cd risczero/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
@@ -213,8 +211,7 @@ bench-risczero-ec-precompile ec_args:
 # Stone
 #####
 
-build-stone:
-    ./scripts/set_env.sh
+build-stone: build-utils
     cd stone/common && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
@@ -269,8 +266,7 @@ bench-stone-ec ec_args:
 # Stwo
 #####
 
-build-stwo:
-    ./scripts/set_env.sh
+build-stwo: build-utils
     cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-stwo
@@ -308,8 +304,7 @@ bench-stwo-ec ec_args:
 # openvm
 #####
 
-build-openvm:
-    ./scripts/set_env.sh
+build-openvm: build-utils
     cd openvm && rustup install
     cd openvm && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 

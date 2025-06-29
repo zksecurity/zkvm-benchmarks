@@ -1,6 +1,5 @@
-set shell := ["./scripts/just-shell.sh"]
 set export
-PATH := "$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
+PATH := "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin"
 
 FIB_ARG_LOCAL := "4096 8192 16384 32768 65536 131072"
 SHA2_ARG_LOCAL := "256 512 1024 2048 4096 8192"

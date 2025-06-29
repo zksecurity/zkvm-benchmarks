@@ -9,8 +9,8 @@ whoami
 OS_TYPE=$(uname)
 
 source $HOME/.cargo/env
+export PATH="$HOME/.cargo/bin:$PATH"
 source $HOME/.bashrc
-export PATH="$HOME/.cargo/env:$PATH"
 export PATH="$HOME/.risc0/bin:$PATH"
 export PATH="$HOME/.sp1/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"

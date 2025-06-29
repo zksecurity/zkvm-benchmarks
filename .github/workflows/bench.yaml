@@ -142,7 +142,6 @@ jobs:
 
       - name: Run OpenVM benchmark
         run: |
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER just bench-openvm \
             "${{ env.FIB_ARG }}" \
@@ -178,7 +177,6 @@ jobs:
 
       - name: Run Stwo benchmark
         run: |
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER just bench-stwo \
             "${{ env.FIB_ARG }}" \
@@ -214,7 +212,6 @@ jobs:
 
       - name: Run RISC0 benchmark
         run: |
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER just bench-risczero \
             "${{ env.FIB_ARG }}" \
@@ -254,7 +251,6 @@ jobs:
           echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
           echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
           chmod 644 user-cert.pem user-key.pem
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER \
             SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
@@ -294,7 +290,6 @@ jobs:
 
       - name: Run SP1 benchmark
         run: |
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER just bench-sp1 \
             "${{ env.FIB_ARG }}" \
@@ -330,7 +325,6 @@ jobs:
 
       - name: Run Jolt benchmark
         run: |
-          source $HOME/.cargo/env
           export PATH="$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
           sudo -u $BENCH_USER just bench-jolt \
             "${{ env.FIB_ARG }}" \

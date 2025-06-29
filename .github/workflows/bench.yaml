@@ -112,7 +112,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo -u $BENCH_USER ./setup.sh
+          sudo -u $BENCH_USER ./scripts/setup.sh
 
       - name: Capture Machine Information
         run: sudo -u $BENCH_USER just machine-info

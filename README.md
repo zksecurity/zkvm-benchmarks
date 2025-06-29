@@ -6,14 +6,14 @@ This repository provides scripts and tools to benchmark various zkVM and proof s
 
 Run the setup script to install all dependencies:
 ```bash
-./setup.sh
+./scripts/setup.sh
 ```
 
 ## Running Benchmarks
 
 To run all benchmarks, use:
 ```bash
-./bench local
+./scripts/bench local
 ```
 
 The benchmark results will be saved in CSV format in the `benchmark_outputs` directory.
@@ -22,7 +22,7 @@ The benchmark results will be saved in CSV format in the `benchmark_outputs` dir
 
 To generate a local HTML report from the benchmark results, run:
 ```bash
-./analyze.sh
+./scripts/analyze.sh
 ```
 
 The report will be generated at:  `./report/index.html`.

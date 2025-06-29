@@ -127,6 +127,7 @@ jobs:
     name: Benchmark OpenVM
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'openvm') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -138,9 +139,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup OpenVM
-        run: sudo -u $BENCH_USER just setup-openvm
 
       - name: Run OpenVM benchmark
         run: |
@@ -163,6 +161,7 @@ jobs:
     name: Benchmark Stwo
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'stwo') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -174,9 +173,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Stwo
-        run: sudo -u $BENCH_USER just setup-stwo
 
       - name: Run Stwo benchmark
         run: |
@@ -199,6 +195,7 @@ jobs:
     name: Benchmark RISC0
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'risc0') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -210,9 +207,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup RISC0
-        run: sudo -u $BENCH_USER just setup-risc0
 
       - name: Run RISC0 benchmark
         run: |
@@ -235,6 +229,7 @@ jobs:
     name: Benchmark Stone
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'stone') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -246,9 +241,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Stone
-        run: sudo -u $BENCH_USER just setup-stone
 
       - name: Run Stone benchmark
         run: |
@@ -279,6 +271,7 @@ jobs:
     name: Benchmark SP1
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'sp1') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -290,9 +283,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup SP1
-        run: sudo -u $BENCH_USER just setup-sp1
 
       - name: Run SP1 benchmark
         run: |
@@ -315,6 +305,7 @@ jobs:
     name: Benchmark Jolt
     timeout-minutes: 7200
     needs:
+      - create-runner
       - setup
     if: ${{ contains(inputs.vm, 'jolt') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
@@ -326,9 +317,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Jolt
-        run: sudo -u $BENCH_USER just setup-jolt
 
       - name: Run Jolt benchmark
         run: |

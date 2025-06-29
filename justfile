@@ -1,3 +1,4 @@
+set shell := ["./scripts/just-shell.sh"]
 set export
 PATH := "$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin:$PATH"
 

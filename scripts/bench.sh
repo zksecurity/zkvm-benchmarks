@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Check if enough arguments are provided
-if [ "$#" -lt 3 ]; then
-    echo "Usage: $0 <bench> '<bench_name>' <bench_arg>"
-    exit 1
-fi
+# Set Env
+./set_env.sh
 
 # Variables
 BENCH_ZKVM="$1"

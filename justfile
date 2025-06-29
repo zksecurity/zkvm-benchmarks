@@ -1,6 +1,3 @@
-set export
-PATH := "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.cargo/bin:$HOME/.risc0/bin:$HOME/.sp1/bin:$HOME/.local/bin"
-
 FIB_ARG_LOCAL := "4096 8192 16384 32768 65536 131072"
 SHA2_ARG_LOCAL := "256 512 1024 2048 4096 8192"
 SHA2_CHAIN_ARG_LOCAL := "64 128 256 512 1024 2048 4096"
@@ -13,20 +10,17 @@ EC_ARG_LOCAL := "16 32 64 128 256 512 1024 2048"
 default:
     just bench-local
 
-# Check Setup
-check-setup:
-    ./scripts/check_setup.sh
-
 # Capture machine information
 machine-info:
     ./scripts/machine_info.sh
 
 # Build utilities
 build-utils:
+    ./scripts/set_env.sh
     cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # Bench local
-bench-local: build-utils machine-info check-setup
+bench-local: build-utils machine-info
     just bench-stwo      {{FIB_ARG_LOCAL}} {{SHA2_ARG_LOCAL}} {{SHA2_CHAIN_ARG_LOCAL}} {{SHA3_ARG_LOCAL}} {{SHA3_CHAIN_ARG_LOCAL}} {{MATMUL_ARG_LOCAL}} {{EC_ARG_LOCAL}}
     just bench-jolt      {{FIB_ARG_LOCAL}} {{SHA2_ARG_LOCAL}} {{SHA2_CHAIN_ARG_LOCAL}} {{SHA3_ARG_LOCAL}} {{SHA3_CHAIN_ARG_LOCAL}} {{MATMUL_ARG_LOCAL}} {{EC_ARG_LOCAL}}
     just bench-sp1       {{FIB_ARG_LOCAL}} {{SHA2_ARG_LOCAL}} {{SHA2_CHAIN_ARG_LOCAL}} {{SHA3_ARG_LOCAL}} {{SHA3_CHAIN_ARG_LOCAL}} {{MATMUL_ARG_LOCAL}} {{EC_ARG_LOCAL}}
@@ -39,11 +33,12 @@ bench-local: build-utils machine-info check-setup
 #####
 
 build-jolt:
+    ./scripts/set_env.sh
     cd jolt && rustup install
     cd jolt && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # bench-all takes arguments for all benchmarks
-bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-jolt
+bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-jolt
     just bench-jolt-fib "{{fib_args}}"
     just bench-jolt-sha2 "{{sha2_args}}"
     just bench-jolt-sha2-chain "{{sha2_chain_args}}"
@@ -79,6 +74,7 @@ bench-jolt-ec ec_args:
 #####
 
 build-sp1:
+	./scripts/set_env.sh
 	cd sp1/fib && cargo prove build
 	cd sp1/sha2-chain && cargo prove build
 	cd sp1/sha3-chain && cargo prove build
@@ -93,7 +89,7 @@ build-sp1:
 	cd sp1/ec-precompile && cargo prove build
 	cd sp1 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-sp1
+bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-sp1
     just bench-sp1-fib "{{fib_args}}"
     just bench-sp1-sha2 "{{sha2_args}}"
     just bench-sp1-sha2-chain "{{sha2_chain_args}}"
@@ -149,6 +145,7 @@ bench-sp1-ec-precompile ec_args:
 #####
 
 build-risczero:
+    ./scripts/set_env.sh
     cd risczero/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
@@ -162,7 +159,7 @@ build-risczero:
     cd risczero/ec-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
     cd risczero/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-risczero
+bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-risczero
     just bench-risczero-fib "{{fib_args}}"
     just bench-risczero-sha2 "{{sha2_args}}"
     just bench-risczero-sha2-chain "{{sha2_chain_args}}"
@@ -217,6 +214,7 @@ bench-risczero-ec-precompile ec_args:
 #####
 
 build-stone:
+    ./scripts/set_env.sh
     cd stone/common && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
@@ -228,7 +226,7 @@ build-stone:
     cd stone/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-stone
+bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-stone
     just bench-stone-fib "{{fib_args}}"
     just bench-stone-sha3 "{{sha3_args}}"
     just bench-stone-sha3-chain "{{sha3_chain_args}}"
@@ -272,9 +270,10 @@ bench-stone-ec ec_args:
 #####
 
 build-stwo:
+    ./scripts/set_env.sh
     cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-stwo
+bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-stwo
     just bench-stwo-fib "{{fib_args}}"
     just bench-stwo-sha2 "{{sha2_args}}"
     just bench-stwo-sha2-chain "{{sha2_chain_args}}"
@@ -310,10 +309,11 @@ bench-stwo-ec ec_args:
 #####
 
 build-openvm:
+    ./scripts/set_env.sh
     cd openvm && rustup install
     cd openvm && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: check-setup build-openvm
+bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-openvm
     just bench-openvm-fib "{{fib_args}}"
     just bench-openvm-sha2 "{{sha2_args}}"
     just bench-openvm-sha2-chain "{{sha2_chain_args}}"

@@ -8,6 +8,11 @@ else
     exit 1
 fi
 
+# Activate venv
+VENV_PATH="$HOME/bench-venv"
+echo "Activating virtual environment..."
+source "$VENV_PATH/bin/activate"
+
 # Variables
 BENCH_ZKVM="$1"
 BENCH_NAME="$2"

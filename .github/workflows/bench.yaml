@@ -166,7 +166,6 @@ jobs:
     needs:
       - create-runner
       - setup
-      - benchmark-openvm
     if: ${{ contains(inputs.vm, 'stwo') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
@@ -204,7 +203,6 @@ jobs:
     needs:
       - create-runner
       - setup
-      - benchmark-stwo
     if: ${{ contains(inputs.vm, 'risc0') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
@@ -242,7 +240,6 @@ jobs:
     needs:
       - create-runner
       - setup
-      - benchmark-risc0
     if: ${{ contains(inputs.vm, 'stone') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
@@ -288,7 +285,6 @@ jobs:
     needs:
       - create-runner
       - setup
-      - benchmark-stone
     if: ${{ contains(inputs.vm, 'sp1') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:
@@ -326,7 +322,6 @@ jobs:
     needs:
       - create-runner
       - setup
-      - benchmark-sp1
     if: ${{ contains(inputs.vm, 'jolt') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     concurrency:

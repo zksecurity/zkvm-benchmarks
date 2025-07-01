@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-machine-info
-          path: report_info/
+          path: ./report_info
 
   benchmark-openvm:
     name: Benchmark OpenVM
@@ -155,7 +155,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-openvm
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   benchmark-stwo:
     name: Benchmark Stwo
@@ -190,7 +190,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-stwo
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   benchmark-risc0:
     name: Benchmark RISC0
@@ -225,7 +225,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-risc0
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   benchmark-stone:
     name: Benchmark Stone
@@ -268,7 +268,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-stone
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   benchmark-sp1:
     name: Benchmark SP1
@@ -303,7 +303,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-sp1
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   benchmark-jolt:
     name: Benchmark Jolt
@@ -338,7 +338,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-bench-jolt
-          path: ./benchmark_outputs/*.csv
+          path: ./benchmark_outputs
 
   merge-results:
     name: Merge Results
@@ -362,14 +362,22 @@ jobs:
 
       - name: Merge results and create zip
         run: |
-          mkdir -p merged-results
-          # Copy all files from all results directories if they exist
-          if [ -d "all-results" ]; then
-            find all-results -type f -exec cp {} merged-results/ \; 2>/dev/null || true
+          mkdir -p merged-results/benchmark_outputs
+          mkdir -p merged-results/report_info
+          
+          # Copy machine info (report_info) as-is
+          if [ -d "all-results/result-machine-info/report_info" ]; then
+            cp -r all-results/result-machine-info/report_info/* merged-results/report_info/ 2>/dev/null || true
           fi
-          # Create zip file (even if empty)
+          
+          # Copy all benchmark outputs from all VMs into benchmark_outputs folder
+          if [ -d "all-results" ]; then
+            find all-results -path "*/benchmark_outputs/*" -type f -exec cp {} merged-results/benchmark_outputs/ \; 2>/dev/null || true
+          fi
+          
+          # Create zip file
           cd merged-results
-          if [ "$(ls -A .)" ]; then
+          if [ "$(find . -type f | wc -l)" -gt 0 ]; then
             zip -r ../benchmark-results.zip .
           else
             echo "No results found" > no-results.txt

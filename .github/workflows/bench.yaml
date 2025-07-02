@@ -121,8 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: result-machine-info
-          path: |
-            report_info
+          path: ./report_info
 
   benchmark-openvm:
     name: Benchmark OpenVM
@@ -363,22 +362,14 @@ jobs:
 
       - name: Merge results and create zip
         run: |
-          mkdir -p merged-results/benchmark_outputs
-          mkdir -p merged-results/report_info
-          
-          # Copy machine info (report_info) as-is
-          if [ -d "all-results/result-machine-info/report_info" ]; then
-            cp -r all-results/result-machine-info/report_info/* merged-results/report_info/ 2>/dev/null || true
-          fi
-          
-          # Copy all benchmark outputs from all VMs into benchmark_outputs folder
+          mkdir -p merged-results
+          # Copy all files from all results directories if they exist
           if [ -d "all-results" ]; then
-            find all-results -path "*/benchmark_outputs/*" -type f -exec cp {} merged-results/benchmark_outputs/ \; 2>/dev/null || true
+            find all-results -type f -exec cp {} merged-results/ \; 2>/dev/null || true
           fi
-          
-          # Create zip file
+          # Create zip file (even if empty)
           cd merged-results
-          if [ "$(find . -type f | wc -l)" -gt 0 ]; then
+          if [ "$(ls -A .)" ]; then
             zip -r ../benchmark-results.zip .
           else
             echo "No results found" > no-results.txt

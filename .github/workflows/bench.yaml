@@ -56,7 +56,6 @@ on:
 #   cancel-in-progress: true
 
 env:
-  VM_LIST: ${{ inputs.vm || 'openvm stwo risc0 stone sp1 jolt' }}
   FIB_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '32768 65536 131072 262144 524288 1048576 2097152 4194304' || inputs.arg-fib }}
   SHA2_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-sha2 }}
   SHA2_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-sha2-chain }}
@@ -130,7 +129,7 @@ jobs:
     needs:
       - create-runner
       - setup
-    if: ${{ always() && contains(env.VM_LIST, 'openvm') }}
+    if: ${{ always() && contains(inputs.vm, 'openvm') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner
@@ -165,7 +164,7 @@ jobs:
       - create-runner
       - setup
       - benchmark-openvm
-    if: ${{ always() && contains(env.VM_LIST, 'stwo') }}
+    if: ${{ always() && contains(inputs.vm, 'stwo') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner
@@ -200,7 +199,7 @@ jobs:
       - create-runner
       - setup
       - benchmark-stwo
-    if: ${{ always() && contains(env.VM_LIST, 'risc0') }}
+    if: ${{ always() && contains(inputs.vm, 'risc0') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner
@@ -235,7 +234,7 @@ jobs:
       - create-runner
       - setup
       - benchmark-risc0
-    if: ${{ always() && contains(env.VM_LIST, 'stone') }}
+    if: ${{ always() && contains(inputs.vm, 'stone') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner
@@ -278,7 +277,7 @@ jobs:
       - create-runner
       - setup
       - benchmark-stone
-    if: ${{ always() && contains(env.VM_LIST, 'sp1') }}
+    if: ${{ always() && contains(inputs.vm, 'sp1') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner
@@ -313,7 +312,7 @@ jobs:
       - create-runner
       - setup
       - benchmark-sp1
-    if: ${{ always() && contains(env.VM_LIST, 'jolt') }}
+    if: ${{ always() && contains(inputs.vm, 'jolt') }}
     runs-on: ${{ needs.create-runner.outputs.label }}
     # concurrency:
     #   group: benchmark-runner

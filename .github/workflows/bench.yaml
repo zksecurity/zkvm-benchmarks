@@ -88,7 +88,7 @@ jobs:
           # ccx53: dedicated CPU, 32 cores, 128 GB RAM
           # ccx63: dedicated CPU, 48 cores, 192 GB RAM
           server_type: ccx63
-          location: sin
+          location: fsn1
           ssh_key: 27148616
           image: ubuntu-24.04
 

@@ -51,6 +51,10 @@ on:
     paths-ignore:
       - "**.md"
 
+permissions:
+  contents: write
+  actions: read 
+
 # concurrency:
 #   group: ${{ github.workflow }}-bench-${{ github.ref }}
 #   cancel-in-progress: true

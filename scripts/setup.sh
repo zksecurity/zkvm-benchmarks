@@ -23,7 +23,7 @@ elif [[ "$OS_TYPE" == "Darwin" ]]; then
         echo "Homebrew not found. Please install Homebrew first: https://brew.sh/"
         exit 1
     fi
-    brew install python pkg-config openssl gmp clang just unzip
+    brew install python@3.10 pkg-config openssl gmp just unzip
 else
     echo "Unsupported OS: $OS_TYPE"
     exit 1
@@ -54,12 +54,7 @@ sp1up
 
 # Install cairo
 VENV_PATH="$HOME/bench-venv"
-echo "Creating virtual environment in $VENV_PATH..."
-if [[ "$OS_TYPE" == "Linux" ]]; then
-    python3.10 -m venv "$VENV_PATH"
-else
-    python3 -m venv "$VENV_PATH"
-fi
+python3.10 -m venv "$VENV_PATH"
 echo "Activating virtual environment..."
 source "$VENV_PATH/bin/activate"
 echo "Upgrading pip..."
@@ -74,9 +69,5 @@ cargo +1.86.0 install --git https://github.com/zksecurity/stone-cli.git
 rustc --version
 cargo --version
 stone-cli --version
-if [[ "$OS_TYPE" == "Linux" ]]; then
-    python3.10 --version
-else
-    python3 --version
-fi
+python3.10 --version
 cairo-run --version

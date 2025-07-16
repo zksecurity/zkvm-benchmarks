@@ -31,7 +31,8 @@ fibonacci-guest = { path = "./fib" }
 mat-mul-guest = { path = "./mat-mul" }
 ec-guest = { path = "./ec" }
 
-clap = { version = "4.5.26", features = ["derive"] } 
+clap = { version = "4.5.26", features = ["derive"] }
+ark-serialize = { version = "0.5.0" } 
 
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "v0.5.0-optimize-mul-u64" }

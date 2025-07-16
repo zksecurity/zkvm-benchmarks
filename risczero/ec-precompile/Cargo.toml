@@ -6,6 +6,7 @@ edition = "2021"
 default-run = "host"
 
 [dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
 ecadd = { path = "methods" }
 risc0-zkvm = { version = "2.0.0" }
 utils = { path = "../../utils" }

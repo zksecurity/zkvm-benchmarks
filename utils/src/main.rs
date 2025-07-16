@@ -23,6 +23,10 @@ struct Cli {
     #[arg(long)]
     bench_name: String,
 
+    /// Number of verifier iterations to run (default: 1)
+    #[arg(long, default_value = "1")]
+    verifier_iterations: u32,
+
     /// Arguments to pass to the benchmark binary
     #[arg(trailing_var_arg = true)]
     args: Vec<String>,
@@ -38,6 +42,8 @@ fn main() {
     Command::new(cli.bin.clone())
             .arg("--n")
             .arg(&bench_arg)
+            .arg("--verifier-iterations")
+            .arg(&cli.verifier_iterations.to_string())
             .args(cli.args)
             .status()
             .expect("Failed to run the benchmark");
@@ -60,11 +66,14 @@ fn main() {
         .as_u64()
         .expect("Failed to convert duration to u64");
 
-    let verifier_duration = json
-        .get("verifier_duration")
-        .expect("Failed to get verifier time")
-        .as_u64()
-        .expect("Failed to convert duration to u64");
+    let verifier_durations = json
+        .get("verifier_durations")
+        .expect("Failed to get verifier times")
+        .as_array()
+        .expect("Failed to convert verifier durations to array")
+        .iter()
+        .map(|v| v.as_u64().expect("Failed to convert verifier duration to u64"))
+        .collect::<Vec<u64>>();
 
     let cycle_count = json
         .get("cycle_count")
@@ -72,7 +81,7 @@ fn main() {
         .as_u64()
         .expect("Failed to convert duration to u64");
 
-    update_or_insert_record(&file, &bench_arg, Some(duration), Some(proof_size), Some(verifier_duration), Some(cycle_count), None)
+    update_or_insert_record(&file, &bench_arg, Some(duration), Some(proof_size), Some(verifier_durations), Some(cycle_count), None)
         .expect("Failed to update or insert record");
 
     // remove json file

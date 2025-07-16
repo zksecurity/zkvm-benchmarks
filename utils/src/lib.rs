@@ -3,6 +3,59 @@ use csv::{ReaderBuilder, WriterBuilder};
 use std::{fs, error::Error};
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkConfig {
+    pub n: u32,
+    pub program: String,
+    pub verifier_iterations: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkResult {
+    pub proof_size: usize,
+    #[serde(serialize_with = "serialize_duration_as_millis", rename = "duration")]
+    pub prover_duration: Duration,
+    #[serde(serialize_with = "serialize_durations_as_millis")]
+    pub verifier_durations: Vec<Duration>,
+    pub cycle_count: usize,
+}
+
+fn serialize_duration_as_millis<S>(duration: &Duration, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_u64(duration.as_millis() as u64)
+}
+
+fn serialize_durations_as_millis<S>(durations: &Vec<Duration>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let millis: Vec<u64> = durations.iter().map(|d| d.as_millis() as u64).collect();
+    millis.serialize(serializer)
+}
+
+impl BenchmarkResult {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct OldRecord {
+    pub n: String,
+    #[serde(rename = "prover time(ms)")]
+    pub time_ms: u64,
+    #[serde(rename = "proof size(bytes)")]
+    pub proof_size: u64,
+    #[serde(rename = "verifier time(ms)")]
+    pub verifier_time_ms: u64,
+    #[serde(rename = "cycle count")]
+    pub cycle_count: u64,
+    #[serde(rename = "peak memory")]
+    pub memory: String,
+}
+
 
 pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, usize), inputs: &[T], file: &str, input_name: &str) {
     let mut results = Vec::new();
@@ -35,6 +88,8 @@ pub struct Record {
     pub proof_size: u64,
     #[serde(rename = "verifier time(ms)")]
     pub verifier_time_ms: u64,
+    #[serde(rename = "verifier times(ms)")]
+    pub verifier_times_ms: String,
     #[serde(rename = "cycle count")]
     pub cycle_count: u64,
     #[serde(rename = "peak memory")]
@@ -46,7 +101,7 @@ pub fn update_or_insert_record(
     bench_arg: &str,
     duration: Option<u64>,
     proof_size: Option<u64>,
-    verifier_duration: Option<u64>,
+    verifier_durations: Option<Vec<u64>>,
     cycle_count: Option<u64>,
     memory: Option<String>,
 ) -> Result<(), Box<dyn Error>> {
@@ -58,9 +113,29 @@ pub fn update_or_insert_record(
         let mut rdr = ReaderBuilder::new()
             .has_headers(true)
             .from_path(file_path)?;
-        for result in rdr.deserialize::<Record>() {
-            let record = result?;
-            records.push(record);
+        
+        // Try to read as new format first, fall back to old format if needed
+        let mut raw_records = Vec::new();
+        for result in rdr.records() {
+            raw_records.push(result?);
+        }
+        
+        for record in raw_records {
+            // Try new format first
+            if let Ok(new_record) = record.deserialize::<Record>(None) {
+                records.push(new_record);
+            } else if let Ok(old_record) = record.deserialize::<OldRecord>(None) {
+                // Convert old format to new format
+                records.push(Record {
+                    n: old_record.n,
+                    time_ms: old_record.time_ms,
+                    proof_size: old_record.proof_size,
+                    verifier_time_ms: old_record.verifier_time_ms,
+                    verifier_times_ms: old_record.verifier_time_ms.to_string(),
+                    cycle_count: old_record.cycle_count,
+                    memory: old_record.memory,
+                });
+            }
         }
     }
 
@@ -74,8 +149,15 @@ pub fn update_or_insert_record(
             if let Some(proof_size) = proof_size {
                 record.proof_size = proof_size;
             }
-            if let Some(verifier_duration) = verifier_duration {
-                record.verifier_time_ms = verifier_duration;
+            if let Some(ref verifier_durations) = verifier_durations {
+                // Calculate average for backward compatibility
+                let avg_verifier_time = verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
+                record.verifier_time_ms = avg_verifier_time;
+                // Store all times as comma-separated string
+                record.verifier_times_ms = verifier_durations.iter()
+                    .map(|t| t.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",");
             }
             if let Some(cycle_count) = cycle_count {
                 record.cycle_count = cycle_count;
@@ -92,14 +174,26 @@ pub fn update_or_insert_record(
     if !updated {
         let duration = duration.unwrap_or(0);
         let proof_size = proof_size.unwrap_or(0);
-        let verifier_duration = verifier_duration.unwrap_or(0);
         let cycle_count = cycle_count.unwrap_or(0);
         let memory = memory.unwrap_or(0.to_string());
+        
+        let (verifier_time_ms, verifier_times_ms) = if let Some(ref verifier_durations) = verifier_durations {
+            let avg_verifier_time = verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
+            let times_str = verifier_durations.iter()
+                .map(|t| t.to_string())
+                .collect::<Vec<String>>()
+                .join(",");
+            (avg_verifier_time, times_str)
+        } else {
+            (0, "0".to_string())
+        };
+        
         records.push(Record {
             n: bench_arg.to_string(),
             time_ms: duration,
             proof_size,
-            verifier_time_ms: verifier_duration,
+            verifier_time_ms,
+            verifier_times_ms,
             cycle_count,
             memory,
         });

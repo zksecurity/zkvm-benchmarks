@@ -1,49 +1,71 @@
-use std::time::Duration;
-use std::io::Write;
+use clap::Parser;
 use methods::{SHA2_CHAIN_BENCH_ELF, SHA2_CHAIN_BENCH_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
-use utils::size;
+use std::time::Duration;
+use utils::{size, BenchmarkConfig, BenchmarkResult};
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let n = args.iter().position(|arg| arg == "--n")
-        .and_then(|i| args.get(i + 1))
-        .expect("Please provide --n <number>")
-        .parse::<usize>()
-        .expect("Invalid number");
+#[derive(Parser, Debug)]
+#[clap()]
+pub struct Cli {
+    #[arg(long)]
+    pub n: u32,
 
-    let (duration, proof_size, verifier_duration, cycle_count) = bench_sha2_chain(n);
-    let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_size, duration.as_millis(), verifier_duration.as_millis(), cycle_count).as_bytes()).unwrap();
+    #[arg(long)]
+    pub program: String,
+
+    #[arg(long, default_value = "1")]
+    pub verifier_iterations: u32,
 }
 
-fn bench_sha2_chain(iters: usize) -> (Duration, usize, Duration, usize) {
+fn main() {
+    let cli = Cli::parse();
+
+    let config = BenchmarkConfig {
+        n: cli.n,
+        program: cli.program,
+        verifier_iterations: cli.verifier_iterations,
+    };
+
+    let result = bench_sha2_chain(&config);
+    std::fs::write("results.json", result.to_json()).unwrap();
+}
+
+fn bench_sha2_chain(config: &BenchmarkConfig) -> BenchmarkResult {
     let input = [5u8; 32];
     let env = ExecutorEnv::builder()
         .write(&input)
         .unwrap()
-        .write(&iters)
+        .write(&(config.n as usize))
         .unwrap()
         .build()
         .unwrap();
 
     let prover = default_prover();
 
-    let start = std::time::Instant::now();
+    let prover_start = std::time::Instant::now();
     let prove_info = prover.prove_with_opts(env, SHA2_CHAIN_BENCH_ELF, &ProverOpts::succinct()).unwrap();
-    let end = std::time::Instant::now();
-    let duration = end.duration_since(start);
+    let prover_end = std::time::Instant::now();
+    let prover_duration = prover_end.duration_since(prover_start);
 
     let receipt = prove_info.receipt;
     let cycle_count = prove_info.stats.user_cycles as usize;
+    let proof_size = size(&receipt);
 
     let _output: [u8; 32] = receipt.journal.decode().unwrap();
 
-    let verifier_start = std::time::Instant::now();
-    receipt.verify(SHA2_CHAIN_BENCH_ID).unwrap();
-    let verifier_end = std::time::Instant::now();
-    let verifier_duration = verifier_end.duration_since(verifier_start);
+    let mut verifier_durations = Vec::new();
+    for _ in 0..config.verifier_iterations {
+        let verifier_start = std::time::Instant::now();
+        receipt.verify(SHA2_CHAIN_BENCH_ID).unwrap();
+        let verifier_end = std::time::Instant::now();
+        verifier_durations.push(verifier_end.duration_since(verifier_start));
+    }
 
-    (duration, size(&receipt), verifier_duration, cycle_count)
+    BenchmarkResult {
+        proof_size,
+        prover_duration,
+        verifier_durations,
+        cycle_count,
+    }
 }
 

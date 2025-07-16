@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 common = { path = "../common" }
-clap = { version = "4.0.5", features = ["derive"] } 
+clap = { version = "4.0.5", features = ["derive"] }
+utils = { path = "../../utils" } 

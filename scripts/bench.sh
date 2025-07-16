@@ -17,6 +17,7 @@ source "$VENV_PATH/bin/activate"
 BENCH_ZKVM="$1"
 BENCH_NAME="$2"
 BENCH_ARG="$3"
+VERIFIER_ITERATIONS="${4:-1}"  # Default to 1 if not provided
 ROW_IDENTIFIER=$BENCH_ARG
 CSV_FILE="benchmark_outputs/${BENCH_ZKVM}-${BENCH_NAME}.csv"
 BENCH_DIR="${BENCH_ZKVM}/${BENCH_NAME}"
@@ -30,22 +31,22 @@ BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
 # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
 if [ "$BENCH_ZKVM" == "risczero" ]; then
     BENCH_BIN="target/release/host"
-    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
 elif [ "$BENCH_ZKVM" == "sp1" ]; then
     BENCH_BIN="../target/release/sp1-script"
-    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
 elif [ "$BENCH_ZKVM" == "jolt" ]; then
     BENCH_BIN="target/release/jolt-benchmarks"
-    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
 elif [ "$BENCH_ZKVM" == "stwo" ]; then
     BENCH_BIN="target/release/stwo-script"
-    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
 elif [ "$BENCH_ZKVM" == "stone" ]; then
     BENCH_BIN="target/release/stone"
-    COMMAND="sudo SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT SHARP_KEY_PATH=$SHARP_KEY_PATH SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG'"
+    COMMAND="sudo SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT SHARP_KEY_PATH=$SHARP_KEY_PATH SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
 elif [ "$BENCH_ZKVM" == "openvm" ]; then
     BENCH_BIN="target/release/openvm-benchmarks"
-    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG -- --program $BENCH_NAME'"
+    COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
 else
     echo "Error: Unknown zkVM '$BENCH_ZKVM'"
     exit 1

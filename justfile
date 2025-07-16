@@ -20,8 +20,101 @@ machine-info:
 build-utils:
     cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
+# Build memuse program
+build-memuse:
+    gcc ./scripts/memuse.c -o memuse
+
+# Activate venv and run benchmark with memory monitoring
+run-bench zkvm benchmark arg verifier_iterations="1":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    # Activate venv
+    VENV_PATH="$HOME/bench-venv"
+    source "$VENV_PATH/bin/activate"
+    
+    # Variables
+    BENCH_ZKVM="{{zkvm}}"
+    BENCH_NAME="{{benchmark}}"
+    BENCH_ARG="{{arg}}"
+    VERIFIER_ITERATIONS="{{verifier_iterations}}"
+    CSV_FILE="benchmark_outputs/${BENCH_ZKVM}-${BENCH_NAME}.csv"
+    BENCH_DIR="${BENCH_ZKVM}/${BENCH_NAME}"
+    BENCH_ZKVM_NAME="${BENCH_ZKVM}-${BENCH_NAME}"
+    MEM_DIR="./memory_outputs"
+    mkdir -p $MEM_DIR
+    BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
+    
+    # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
+    if [ "$BENCH_ZKVM" == "risczero" ]; then
+        BENCH_BIN="target/release/host"
+        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
+    elif [ "$BENCH_ZKVM" == "sp1" ]; then
+        BENCH_BIN="../target/release/sp1-script"
+        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
+    elif [ "$BENCH_ZKVM" == "jolt" ]; then
+        BENCH_BIN="target/release/jolt-benchmarks"
+        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
+    elif [ "$BENCH_ZKVM" == "stwo" ]; then
+        BENCH_BIN="target/release/stwo-script"
+        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
+    elif [ "$BENCH_ZKVM" == "stone" ]; then
+        BENCH_BIN="target/release/stone"
+        COMMAND="sudo SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT SHARP_KEY_PATH=$SHARP_KEY_PATH SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
+    elif [ "$BENCH_ZKVM" == "openvm" ]; then
+        BENCH_BIN="target/release/openvm-benchmarks"
+        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
+    else
+        echo "Error: Unknown zkVM '$BENCH_ZKVM'"
+        exit 1
+    fi
+    
+    # Print info
+    echo "BENCH_ZKVM: $BENCH_ZKVM"
+    echo "BENCH_NAME: $BENCH_NAME"
+    echo "BENCH_ARG: $BENCH_ARG"
+    echo "VERIFIER_ITERATIONS: $VERIFIER_ITERATIONS"
+    echo "CSV_FILE: $CSV_FILE"
+    echo "BENCH_DIR: $BENCH_DIR"
+    echo "BENCH_BIN: $BENCH_BIN"
+    echo "COMMAND: $COMMAND"
+    
+    # Run the benchmark
+    echo "Running benchmark..."
+    eval "$COMMAND"
+    
+    # Extract peak memory
+    if [ -f "$BENCH_OUT" ]; then
+        PEAK_MEMORY_BYTES=$(grep "PEAK" "$BENCH_OUT" | awk '{print $2}')
+        echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
+    else
+        echo "Error: Benchmark output file not found at $BENCH_OUT"
+        exit 1
+    fi
+    
+    # Convert bytes to GB
+    PEAK_MEMORY_GB=$(echo "scale=2; $PEAK_MEMORY_BYTES / (1024 * 1024 * 1024)" | bc)
+    echo "Extracted peak memory: $PEAK_MEMORY_GB GB"
+    
+    # Update the CSV file
+    if [ ! -f "$CSV_FILE" ]; then
+        echo "Error: CSV file $CSV_FILE not found."
+        exit 1
+    fi
+    
+    awk -v peak_memory="$PEAK_MEMORY_GB" -v row_id="$BENCH_ARG" -F, '
+    BEGIN { OFS = FS } 
+    {
+        if ($1 == row_id) {
+            $6 = peak_memory;
+        }
+        print
+    }' "$CSV_FILE" > tmp_csv_update.csv && mv tmp_csv_update.csv "$CSV_FILE"
+    
+    echo "Updated $CSV_FILE with peak memory $PEAK_MEMORY_GB GB for row $BENCH_ARG."
+
 # Bench local
-bench-local: build-utils machine-info
+bench-local: build-utils build-memuse machine-info
     just bench-stwo      "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
     just bench-jolt      "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
     just bench-sp1       "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
@@ -47,26 +140,26 @@ bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_a
     just bench-jolt-mat-mul "{{matmul_args}}"
     just bench-jolt-ec "{{ec_args}}"
 
-bench-jolt-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "jolt" "fib" "$arg"; done
+bench-jolt-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do just run-bench "jolt" "fib" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "jolt" "sha2" "$arg"; done
+bench-jolt-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench "jolt" "sha2" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "jolt" "sha2-chain" "$arg"; done
+bench-jolt-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do just run-bench "jolt" "sha2-chain" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "jolt" "sha3" "$arg"; done
+bench-jolt-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench "jolt" "sha3" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "jolt" "sha3-chain" "$arg"; done
+bench-jolt-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do just run-bench "jolt" "sha3-chain" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "jolt" "mat-mul" "$arg"; done
+bench-jolt-mat-mul matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do just run-bench "jolt" "mat-mul" "$arg" "{{verifier_iterations}}"; done
 
-bench-jolt-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "jolt" "ec" "$arg"; done
+bench-jolt-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench "jolt" "ec" "$arg" "{{verifier_iterations}}"; done
 
 
 #####

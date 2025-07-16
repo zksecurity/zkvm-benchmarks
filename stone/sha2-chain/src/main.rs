@@ -1,23 +1,29 @@
 
 use clap::{Parser};
-use common::{prove_and_verify, Cli, compute_cycle_count};
+use common::{bench, Cli};
 use std::fs;
-use std::process::Command;
+use utils::{BenchmarkConfig, BenchmarkResult};
 
 fn main() {
     let cli = Cli::parse();
 
-    run(cli.n);
+    let config = BenchmarkConfig {
+        n: cli.n,
+        program: cli.program.clone(),
+        verifier_iterations: cli.verifier_iterations,
+    };
+
+    let result = run(config);
+    std::fs::write("results.json", result.to_json()).unwrap();
 }
 
 
-fn run(n: u32) {
+fn run(config: BenchmarkConfig) -> BenchmarkResult {
     let program_path = "programs/sha256_chain.cairo".to_string();
-    let output_path = "programs/sha256_chain.json".to_string();
-    let input = format!("{{\"iterations\": {}}}", n);
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "programs/input.json";
     fs::write(program_input, input).expect("Failed to write input file");
-    let parameter_file = match n {
+    let parameter_file = match config.n {
         8 => "../configs/parameter_65536_32.json".to_string(),
         16 => "../configs/parameter_65536_32.json".to_string(),
         32 => "../configs/parameter_65536_32.json".to_string(),
@@ -29,67 +35,9 @@ fn run(n: u32) {
         2048 => "../configs/parameter_1048576.json".to_string(),
         // 4096 => "../configs/parameter_2097152.json".to_string(),
         // 8192 => "../configs/parameter_4194304.json".to_string(),
-        _ => unreachable!("Unexpected value for n: {}", n),
+        _ => unreachable!("Unexpected value for n: {}", config.n),
     };
 
 
-   // Compile Cairo code
-   let status = Command::new("cairo-compile")
-        .arg(&program_path) // Path to the Cairo program
-        .arg("--output")
-        .arg(&output_path) // Output file path
-        .arg("--proof_mode")
-        .status();
-
-    match status {
-        Ok(status) if status.success() => {
-            println!("Compilation successful! Compiled file saved to: {}", output_path);
-        }
-        Ok(status) => {
-            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
-        }
-        Err(err) => {
-            eprintln!("Failed to run cairo-compile: {}", err);
-        }
-    }
-
-    // compute cycle count
-    let steps_command = format!("cairo-run --program={} --cairo_layout_params_file=../configs/cairo_layout_params_file.json --cairo_pie_output=get_steps.zip --layout=dynamic --program_input={}", output_path, program_input);
-    let cycle_count = compute_cycle_count(&steps_command);
-
-    // prove and verify command
-    let command = "stone-cli";
-
-    let output_file = format!("proof_{}.json", n);
-    let layout = "automatic".to_string();
-    let prover_config_file = "../configs/prover_config.json".to_string();
-
-    let args = vec![
-        "prove",
-        "--cairo_version",
-        "cairo0",
-        "--cairo_program",
-        &output_path,
-        "--layout",
-        &layout,
-        "--program_input_file",
-        program_input,
-        "--output",
-        &output_file,
-        "--parameter_file",
-        &parameter_file,
-        "--prover_config_file",
-        &prover_config_file,
-        "--stone_version",
-        "v6",
-    ];
-
-    // prove and verify
-    let (proof_bytes, duration, verifier_duration) = prove_and_verify(command, args.to_vec(), output_file.clone());
-
-    // save in a json file
-    let data_file = "results.json";
-    let data_json = format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_bytes, duration.as_millis(), verifier_duration.as_millis(), cycle_count);
-    fs::write(data_file, data_json).expect("Failed to write the JSON file");
-
+    bench(config, &program_path, program_input, &parameter_file)
 }

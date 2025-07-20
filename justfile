@@ -1,4 +1,9 @@
-export PATH := env_var('HOME') + "/.rustup:" + env_var('HOME') + "/.cargo/bin:" + env_var('HOME') + "/.risc0/bin:" + env_var('HOME') + "/.sp1/bin:" + env_var('HOME') + "/.local/bin:" + env_var('PATH')
+export PATH := env_var('HOME') + "/.rustup:" + \
+    env_var('HOME') + "/.cargo/bin:" + \
+    env_var('HOME') + "/.risc0/bin:" + \
+    env_var('HOME') + "/.sp1/bin:" + \
+    env_var('HOME') + "/.local/bin:" + \
+    env_var('PATH')
 
 FIB_ARG_LOCAL := "4096 8192 16384 32768 65536 131072"
 SHA2_ARG_LOCAL := "256 512 1024 2048 4096 8192"
@@ -24,77 +29,26 @@ build-utils:
 build-memuse:
     gcc ./scripts/memuse.c -o memuse
 
-# Activate venv and run benchmark with memory monitoring
-run-bench zkvm benchmark arg verifier_iterations="1":
+# Run command with memory monitoring and update CSV
+run-with-memory zkvm benchmark arg command env_vars="":
     #!/usr/bin/env bash
     set -euo pipefail
+    source "$HOME/bench-venv/bin/activate"
+    mkdir -p memory_outputs
     
-    # Activate venv
-    VENV_PATH="$HOME/bench-venv"
-    source "$VENV_PATH/bin/activate"
+    # Run benchmark with memory monitoring
+    MEMORY_FILE="memory_outputs/{{zkvm}}_{{benchmark}}_{{arg}}.txt"
+    sudo {{env_vars}} HOME=$HOME PATH=$PATH ./memuse "$MEMORY_FILE" '{{command}}'
     
-    # Variables
-    BENCH_ZKVM="{{zkvm}}"
-    BENCH_NAME="{{benchmark}}"
-    BENCH_ARG="{{arg}}"
-    VERIFIER_ITERATIONS="{{verifier_iterations}}"
-    CSV_FILE="benchmark_outputs/${BENCH_ZKVM}-${BENCH_NAME}.csv"
-    BENCH_DIR="${BENCH_ZKVM}/${BENCH_NAME}"
-    BENCH_ZKVM_NAME="${BENCH_ZKVM}-${BENCH_NAME}"
-    MEM_DIR="./memory_outputs"
-    mkdir -p $MEM_DIR
-    BENCH_OUT="${MEM_DIR}/${BENCH_ZKVM}_${BENCH_NAME}_${BENCH_ARG}.txt"
-    
-    # Determine BENCH_BIN and COMMAND based on BENCH_ZKVM
-    if [ "$BENCH_ZKVM" == "risczero" ]; then
-        BENCH_BIN="target/release/host"
-        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
-    elif [ "$BENCH_ZKVM" == "sp1" ]; then
-        BENCH_BIN="../target/release/sp1-script"
-        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
-    elif [ "$BENCH_ZKVM" == "jolt" ]; then
-        BENCH_BIN="target/release/jolt-benchmarks"
-        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
-    elif [ "$BENCH_ZKVM" == "stwo" ]; then
-        BENCH_BIN="target/release/stwo-script"
-        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
-    elif [ "$BENCH_ZKVM" == "stone" ]; then
-        BENCH_BIN="target/release/stone"
-        COMMAND="sudo SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT SHARP_KEY_PATH=$SHARP_KEY_PATH SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_DIR && ../../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS'"
-    elif [ "$BENCH_ZKVM" == "openvm" ]; then
-        BENCH_BIN="target/release/openvm-benchmarks"
-        COMMAND="sudo HOME=$HOME PATH=$PATH ./memuse $BENCH_OUT 'cd $BENCH_ZKVM && ../utils/target/release/utils --bench-name $BENCH_ZKVM_NAME --bin $BENCH_BIN --bench-arg $BENCH_ARG --verifier-iterations $VERIFIER_ITERATIONS -- --program $BENCH_NAME'"
-    else
-        echo "Error: Unknown zkVM '$BENCH_ZKVM'"
+    # Extract peak memory and update CSV
+    CSV_FILE="benchmark_outputs/{{zkvm}}-{{benchmark}}.csv"
+    if [ ! -f "$MEMORY_FILE" ]; then
+        echo "Error: Memory output file not found at $MEMORY_FILE"
         exit 1
     fi
     
-    # Print info
-    echo "BENCH_ZKVM: $BENCH_ZKVM"
-    echo "BENCH_NAME: $BENCH_NAME"
-    echo "BENCH_ARG: $BENCH_ARG"
-    echo "VERIFIER_ITERATIONS: $VERIFIER_ITERATIONS"
-    echo "CSV_FILE: $CSV_FILE"
-    echo "BENCH_DIR: $BENCH_DIR"
-    echo "BENCH_BIN: $BENCH_BIN"
-    echo "COMMAND: $COMMAND"
-    
-    # Run the benchmark
-    echo "Running benchmark..."
-    eval "$COMMAND"
-    
-    # Extract peak memory
-    if [ -f "$BENCH_OUT" ]; then
-        PEAK_MEMORY_BYTES=$(grep "PEAK" "$BENCH_OUT" | awk '{print $2}')
-        echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
-    else
-        echo "Error: Benchmark output file not found at $BENCH_OUT"
-        exit 1
-    fi
-    
-    # Convert bytes to GB
-    PEAK_MEMORY_GB=$(echo "scale=2; $PEAK_MEMORY_BYTES / (1024 * 1024 * 1024)" | bc)
-    echo "Extracted peak memory: $PEAK_MEMORY_GB GB"
+    PEAK_MEMORY_BYTES=$(grep "PEAK" "$MEMORY_FILE" | awk '{print $2}')
+    echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
     
     # Update the CSV file
     if [ ! -f "$CSV_FILE" ]; then
@@ -102,7 +56,7 @@ run-bench zkvm benchmark arg verifier_iterations="1":
         exit 1
     fi
     
-    awk -v peak_memory="$PEAK_MEMORY_GB" -v row_id="$BENCH_ARG" -F, '
+    awk -v peak_memory="$PEAK_MEMORY_BYTES" -v row_id="{{arg}}" -F, '
     BEGIN { OFS = FS } 
     {
         if ($1 == row_id) {
@@ -111,16 +65,106 @@ run-bench zkvm benchmark arg verifier_iterations="1":
         print
     }' "$CSV_FILE" > tmp_csv_update.csv && mv tmp_csv_update.csv "$CSV_FILE"
     
-    echo "Updated $CSV_FILE with peak memory $PEAK_MEMORY_GB GB for row $BENCH_ARG."
+    echo "Updated $CSV_FILE with peak memory $PEAK_MEMORY_BYTES bytes for row {{arg}}."
+
+# Run risczero benchmark with memory monitoring
+run-bench-risczero benchmark arg verifier_iterations="1":
+    just run-with-memory "risczero" "{{benchmark}}" "{{arg}}" \
+        "cd risczero/{{benchmark}} && \
+         ../../utils/target/release/utils \
+         --bench-name risczero-{{benchmark}} \
+         --bin target/release/host \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}}"
+
+# Run sp1 benchmark with memory monitoring
+run-bench-sp1 benchmark arg verifier_iterations="1":
+    just run-with-memory "sp1" "{{benchmark}}" "{{arg}}" \
+        "cd sp1/{{benchmark}} && \
+         ../../utils/target/release/utils \
+         --bench-name sp1-{{benchmark}} \
+         --bin ../target/release/sp1-script \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}} \
+         -- --program {{benchmark}}"
+
+# Run jolt benchmark with memory monitoring
+run-bench-jolt benchmark arg verifier_iterations="1":
+    just run-with-memory "jolt" "{{benchmark}}" "{{arg}}" \
+        "cd jolt && \
+         ../utils/target/release/utils \
+         --bench-name jolt-{{benchmark}} \
+         --bin target/release/jolt-benchmarks \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}} \
+         -- --program {{benchmark}}"
+
+# Run stwo benchmark with memory monitoring
+run-bench-stwo benchmark arg verifier_iterations="1":
+    just run-with-memory "stwo" "{{benchmark}}" "{{arg}}" \
+        "cd stwo && \
+         ../utils/target/release/utils \
+         --bench-name stwo-{{benchmark}} \
+         --bin target/release/stwo-script \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}} \
+         -- --program {{benchmark}}"
+
+# Run stone benchmark with memory monitoring
+run-bench-stone benchmark arg verifier_iterations="1":
+    just run-with-memory "stone" "{{benchmark}}" "{{arg}}" \
+        "cd stone/{{benchmark}} && \
+         ../../utils/target/release/utils \
+         --bench-name stone-{{benchmark}} \
+         --bin target/release/stone \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}}" \
+        "SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT \
+         SHARP_KEY_PATH=$SHARP_KEY_PATH \
+         SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD"
+
+# Run openvm benchmark with memory monitoring
+run-bench-openvm benchmark arg verifier_iterations="1":
+    just run-with-memory "openvm" "{{benchmark}}" "{{arg}}" \
+        "cd openvm && \
+         ../utils/target/release/utils \
+         --bench-name openvm-{{benchmark}} \
+         --bin target/release/openvm-benchmarks \
+         --bench-arg {{arg}} \
+         --verifier-iterations {{verifier_iterations}} \
+         -- --program {{benchmark}}"
 
 # Bench local
 bench-local: build-utils build-memuse machine-info
-    just bench-stwo      "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
-    just bench-jolt      "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
-    just bench-sp1       "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
-    just bench-risczero  "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
-    just bench-openvm    "{{FIB_ARG_LOCAL}}" "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+    just bench-stwo \
+		"{{FIB_ARG_LOCAL}}" \
+		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
+		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
+    just bench-jolt \
+		"{{FIB_ARG_LOCAL}}" \
+		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
+		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+
+    just bench-sp1 \
+		"{{FIB_ARG_LOCAL}}" \
+		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
+		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+
+    just bench-risczero \
+		"{{FIB_ARG_LOCAL}}" \
+		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
+		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+
+    just bench-openvm \
+		"{{FIB_ARG_LOCAL}}" \
+		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
+		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
 #####
 # jolt
@@ -131,7 +175,8 @@ build-jolt: build-utils
     cd jolt && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # bench-all takes arguments for all benchmarks
-bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-jolt
+bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-jolt
     just bench-jolt-fib "{{fib_args}}"
     just bench-jolt-sha2 "{{sha2_args}}"
     just bench-jolt-sha2-chain "{{sha2_chain_args}}"
@@ -141,25 +186,31 @@ bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_a
     just bench-jolt-ec "{{ec_args}}"
 
 bench-jolt-fib fib_args verifier_iterations="1":
-    -for arg in {{fib_args}}; do just run-bench "jolt" "fib" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{fib_args}}; do just run-bench-jolt "fib" "$arg" "{{verifier_iterations}}"; done
 
 bench-jolt-sha2 sha_args verifier_iterations="1":
-    -for arg in {{sha_args}}; do just run-bench "jolt" "sha2" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{sha_args}}; do just run-bench-jolt "sha2" "$arg" "{{verifier_iterations}}"; done
 
 bench-jolt-sha2-chain sha_chain_args verifier_iterations="1":
-    -for arg in {{sha_chain_args}}; do just run-bench "jolt" "sha2-chain" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-jolt "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
 bench-jolt-sha3 sha_args verifier_iterations="1":
-    -for arg in {{sha_args}}; do just run-bench "jolt" "sha3" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{sha_args}}; do just run-bench-jolt "sha3" "$arg" "{{verifier_iterations}}"; done
 
 bench-jolt-sha3-chain sha_chain_args verifier_iterations="1":
-    -for arg in {{sha_chain_args}}; do just run-bench "jolt" "sha3-chain" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-jolt "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
 bench-jolt-mat-mul matmul_args verifier_iterations="1":
-    -for arg in {{matmul_args}}; do just run-bench "jolt" "mat-mul" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{matmul_args}}; do \
+        just run-bench-jolt "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
 bench-jolt-ec ec_args verifier_iterations="1":
-    -for arg in {{ec_args}}; do just run-bench "jolt" "ec" "$arg" "{{verifier_iterations}}"; done
+    -for arg in {{ec_args}}; do just run-bench-jolt "ec" "$arg" "{{verifier_iterations}}"; done
 
 
 #####
@@ -181,7 +232,8 @@ build-sp1: build-utils
 	cd sp1/ec-precompile && cargo prove build
 	cd sp1 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-sp1
+bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-sp1
     just bench-sp1-fib "{{fib_args}}"
     just bench-sp1-sha2 "{{sha2_args}}"
     just bench-sp1-sha2-chain "{{sha2_chain_args}}"
@@ -195,41 +247,57 @@ bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_ar
     just bench-sp1-ec "{{ec_args}}"
     # just bench-sp1-ec-precompile "{{ec_args}}"
 
-bench-sp1-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "sp1" "fib" "$arg"; done
+bench-sp1-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do just run-bench-sp1 "fib" "$arg" "{{verifier_iterations}}"; done
 
-bench-sp1-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "sp1" "sha2" "$arg"; done
+bench-sp1-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-sp1 "sha2" "$arg" "{{verifier_iterations}}"; done
 
-bench-sp1-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "sp1" "sha2-chain" "$arg"; done
+bench-sp1-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-sp1 "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-sha2-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "sp1" "sha2-precompile" "$arg"; done
+bench-sp1-sha2-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-sp1 "sha2-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-sha2-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "sp1" "sha2-chain-precompile" "$arg"; done
+bench-sp1-sha2-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-sp1 "sha2-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-sha3-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "sp1" "sha3-precompile" "$arg"; done
+bench-sp1-sha3-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-sp1 "sha3-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-sha3-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "sp1" "sha3-chain-precompile" "$arg"; done
+bench-sp1-sha3-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-sp1 "sha3-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "sp1" "sha3" "$arg"; done
+bench-sp1-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-sp1 "sha3" "$arg" "{{verifier_iterations}}"; done
 
-bench-sp1-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "sp1" "sha3-chain" "$arg"; done
+bench-sp1-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-sp1 "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "sp1" "mat-mul" "$arg"; done
+bench-sp1-mat-mul matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do \
+        just run-bench-sp1 "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-sp1-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "sp1" "ec" "$arg"; done
+bench-sp1-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-sp1 "ec" "$arg" "{{verifier_iterations}}"; done
 
-bench-sp1-ec-precompile ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "sp1" "ec-precompile" "$arg"; done
+bench-sp1-ec-precompile ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do \
+        just run-bench-sp1 "ec-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
 
 #####
@@ -239,18 +307,24 @@ bench-sp1-ec-precompile ec_args:
 build-risczero: build-utils
     cd risczero/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2-precompile && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3-precompile && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2-chain-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha2-chain-precompile && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3-chain-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risczero/sha3-chain-precompile && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risczero/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/ec-precompile && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
+    cd risczero/ec-precompile && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
     cd risczero/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-risczero
+bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-risczero
     just bench-risczero-fib "{{fib_args}}"
     just bench-risczero-sha2 "{{sha2_args}}"
     just bench-risczero-sha2-chain "{{sha2_chain_args}}"
@@ -264,41 +338,63 @@ bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matm
     just bench-risczero-ec "{{ec_args}}"
     just bench-risczero-ec-precompile "{{ec_args}}"
 
-bench-risczero-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "risczero" "fib" "$arg"; done
+bench-risczero-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do \
+        just run-bench-risczero "fib" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "risczero" "mat-mul" "$arg"; done
+bench-risczero-mat-mul matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do \
+        just run-bench-risczero "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "risczero" "sha2" "$arg"; done
+bench-risczero-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-risczero "sha2" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha2-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "risczero" "sha2-precompile" "$arg"; done
+bench-risczero-sha2-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-risczero "sha2-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "risczero" "sha2-chain" "$arg"; done
+bench-risczero-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-risczero "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha2-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "risczero" "sha2-chain-precompile" "$arg"; done
+bench-risczero-sha2-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-risczero "sha2-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "risczero" "sha3" "$arg"; done
+bench-risczero-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-risczero "sha3" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha3-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "risczero" "sha3-precompile" "$arg"; done
+bench-risczero-sha3-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-risczero "sha3-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "risczero" "sha3-chain" "$arg"; done
+bench-risczero-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-risczero "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-sha3-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "risczero" "sha3-chain-precompile" "$arg"; done
+bench-risczero-sha3-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-risczero "sha3-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-risczero-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "risczero" "ec" "$arg"; done
+bench-risczero-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-risczero "ec" "$arg" "{{verifier_iterations}}"; done
 
-bench-risczero-ec-precompile ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "risczero" "ec-precompile" "$arg"; done
+bench-risczero-ec-precompile ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do \
+        just run-bench-risczero "ec-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
 #####
 # Stone
@@ -310,13 +406,15 @@ build-stone: build-utils
     cd stone/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha3-builtin && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd stone/sha3-chain-builtin && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd stone/sha3-chain-builtin && \
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd stone/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-stone
+bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-stone
     just bench-stone-fib "{{fib_args}}"
     just bench-stone-sha3 "{{sha3_args}}"
     just bench-stone-sha3-chain "{{sha3_chain_args}}"
@@ -327,32 +425,42 @@ bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_
     just bench-stone-sha2-chain "{{sha2_chain_args}}"
     just bench-stone-ec "{{ec_args}}"
 
-bench-stone-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "stone" "fib" "$arg"; done
+bench-stone-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do just run-bench-stone "fib" "$arg" "{{verifier_iterations}}"; done
 
-bench-stone-mat matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "stone" "mat-mul" "$arg"; done
+bench-stone-mat matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do \
+        just run-bench-stone "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stone-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "stone" "sha3" "$arg"; done
+bench-stone-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-stone "sha3" "$arg" "{{verifier_iterations}}"; done
 
-bench-stone-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "stone" "sha3-chain" "$arg"; done
+bench-stone-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-stone "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stone-sha3-builtin sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "stone" "sha3-builtin" "$arg"; done
+bench-stone-sha3-builtin sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-stone "sha3-builtin" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stone-sha3-chain-builtin sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "stone" "sha3-chain-builtin" "$arg"; done
+bench-stone-sha3-chain-builtin sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-stone "sha3-chain-builtin" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stone-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "stone" "sha2" "$arg"; done
+bench-stone-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-stone "sha2" "$arg" "{{verifier_iterations}}"; done
 
-bench-stone-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "stone" "sha2-chain" "$arg"; done
+bench-stone-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-stone "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stone-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "stone" "ec" "$arg"; done
+bench-stone-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-stone "ec" "$arg" "{{verifier_iterations}}"; done
 
 
 #####
@@ -362,7 +470,8 @@ bench-stone-ec ec_args:
 build-stwo: build-utils
     cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-stwo
+bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-stwo
     just bench-stwo-fib "{{fib_args}}"
     just bench-stwo-sha2 "{{sha2_args}}"
     just bench-stwo-sha2-chain "{{sha2_chain_args}}"
@@ -371,26 +480,32 @@ bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_a
     just bench-stwo-mat-mul "{{matmul_args}}"
     just bench-stwo-ec "{{ec_args}}"
 
-bench-stwo-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "stwo" "fib" "$arg"; done
+bench-stwo-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do just run-bench-stwo "fib" "$arg" "{{verifier_iterations}}"; done
 
-bench-stwo-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "stwo" "sha2" "$arg"; done
+bench-stwo-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-stwo "sha2" "$arg" "{{verifier_iterations}}"; done
 
-bench-stwo-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "stwo" "sha2-chain" "$arg"; done
+bench-stwo-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-stwo "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stwo-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "stwo" "sha3" "$arg"; done
+bench-stwo-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do just run-bench-stwo "sha3" "$arg" "{{verifier_iterations}}"; done
 
-bench-stwo-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "stwo" "sha3-chain" "$arg"; done
+bench-stwo-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-stwo "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stwo-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "stwo" "mat-mul" "$arg"; done
+bench-stwo-mat-mul matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do \
+        just run-bench-stwo "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-stwo-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "stwo" "ec" "$arg"; done
+bench-stwo-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-stwo "ec" "$arg" "{{verifier_iterations}}"; done
 
 
 #####
@@ -401,7 +516,8 @@ build-openvm: build-utils
     cd openvm && rustup install
     cd openvm && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: build-openvm
+bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-openvm
     just bench-openvm-fib "{{fib_args}}"
     just bench-openvm-sha2 "{{sha2_args}}"
     just bench-openvm-sha2-chain "{{sha2_chain_args}}"
@@ -415,38 +531,58 @@ bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul
     just bench-openvm-ec "{{ec_args}}"
     just bench-openvm-ec-precompile "{{ec_args}}"
 
-bench-openvm-fib fib_args:
-    -for arg in {{fib_args}}; do ./scripts/bench.sh "openvm" "fib" "$arg"; done
+bench-openvm-fib fib_args verifier_iterations="1":
+    -for arg in {{fib_args}}; do just run-bench-openvm "fib" "$arg" "{{verifier_iterations}}"; done
 
-bench-openvm-sha2 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "openvm" "sha2" "$arg"; done
+bench-openvm-sha2 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-openvm "sha2" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha2-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "openvm" "sha2-chain" "$arg"; done
+bench-openvm-sha2-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-openvm "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha3 sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "openvm" "sha3" "$arg"; done
+bench-openvm-sha3 sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-openvm "sha3" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha3-chain sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "openvm" "sha3-chain" "$arg"; done
+bench-openvm-sha3-chain sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-openvm "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-mat-mul matmul_args:
-    -for arg in {{matmul_args}}; do ./scripts/bench.sh "openvm" "mat-mul" "$arg"; done
+bench-openvm-mat-mul matmul_args verifier_iterations="1":
+    -for arg in {{matmul_args}}; do \
+        just run-bench-openvm "mat-mul" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha2-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "openvm" "sha2-precompile" "$arg"; done
+bench-openvm-sha2-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-openvm "sha2-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha2-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "openvm" "sha2-chain-precompile" "$arg"; done
+bench-openvm-sha2-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-openvm "sha2-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha3-precompile sha_args:
-    -for arg in {{sha_args}}; do ./scripts/bench.sh "openvm" "sha3-precompile" "$arg"; done
+bench-openvm-sha3-precompile sha_args verifier_iterations="1":
+    -for arg in {{sha_args}}; do \
+        just run-bench-openvm "sha3-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-sha3-chain-precompile sha_chain_args:
-    -for arg in {{sha_chain_args}}; do ./scripts/bench.sh "openvm" "sha3-chain-precompile" "$arg"; done
+bench-openvm-sha3-chain-precompile sha_chain_args verifier_iterations="1":
+    -for arg in {{sha_chain_args}}; do \
+        just run-bench-openvm "sha3-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
 
-bench-openvm-ec ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "openvm" "ec" "$arg"; done
+bench-openvm-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-openvm "ec" "$arg" "{{verifier_iterations}}"; done
 
-bench-openvm-ec-precompile ec_args:
-    -for arg in {{ec_args}}; do ./scripts/bench.sh "openvm" "ec-precompile" "$arg"; done
+bench-openvm-ec-precompile ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do \
+        just run-bench-openvm "ec-precompile" "$arg" "{{verifier_iterations}}"; \
+    done

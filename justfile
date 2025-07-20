@@ -137,34 +137,34 @@ run-bench-openvm benchmark arg verifier_iterations="1":
 # Bench local
 bench-local: build-utils build-memuse machine-info
     just bench-stwo \
-		"{{FIB_ARG_LOCAL}}" \
-		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{FIB_ARG_LOCAL}}" \
+        "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
     just bench-jolt \
-		"{{FIB_ARG_LOCAL}}" \
-		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{FIB_ARG_LOCAL}}" \
+        "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
     just bench-sp1 \
-		"{{FIB_ARG_LOCAL}}" \
-		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{FIB_ARG_LOCAL}}" \
+        "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
     just bench-risczero \
-		"{{FIB_ARG_LOCAL}}" \
-		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{FIB_ARG_LOCAL}}" \
+        "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
     just bench-openvm \
-		"{{FIB_ARG_LOCAL}}" \
-		"{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
+        "{{FIB_ARG_LOCAL}}" \
+        "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-		"{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
 #####
 # jolt

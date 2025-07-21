@@ -389,9 +389,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: merged-benchmark-results
-          path: |
-            merged-results/
-            benchmark-results.zip
+          path: merged-results/*
 
       - name: Create Release From Results
         if: startsWith(github.ref, 'refs/tags/bench-')

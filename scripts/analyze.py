@@ -45,7 +45,7 @@ def combine_benchmark(bench_tuple, column_name):
 
     if bench_name == "ec":
         file_paths.pop("sp1-precompile", None)
-    
+
     combined_df = None
 
     for name, path in file_paths.items():
@@ -88,7 +88,7 @@ def plot_benchmark(df, title, y_label, bench_tuple, column_name):
             marker, color = ('x', 'gray')
 
         non_zero = df[col] != 0
-        plt.plot(df["n"][non_zero], df[col][non_zero], 
+        plt.plot(df["n"][non_zero], df[col][non_zero],
                     marker=marker, color=color, label=col, linestyle='-')
 
     plt.title(title)
@@ -151,7 +151,7 @@ def get_tables(bench_tuple):
         df_processed = df_original.copy()
         for col in df_processed.columns:
             df_processed[col] = df_processed[col].replace({"nan": "*", "NaN": "*", "": "*"})
-        
+
         # Convert DataFrame to table format without transposing
         table_data = df_processed.values.tolist()
         headers = df_processed.columns.tolist()
@@ -185,10 +185,9 @@ with open(commit_file, "r") as file1:
     commit_hash = file1.readline().strip()
 
 # Timestamp Info
-time_file = "./report_info/time_stamp.txt"
+time_file = "./report_info/timestamp.txt"
 with open(time_file, "r") as file1:
     time = file1.readline().strip()
-
 
 # OS Info
 os_version_file = "./report_info/os_version.txt"

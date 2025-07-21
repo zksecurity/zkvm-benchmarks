@@ -41,21 +41,6 @@ impl BenchmarkResult {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct OldRecord {
-    pub n: String,
-    #[serde(rename = "prover time(ms)")]
-    pub time_ms: u64,
-    #[serde(rename = "proof size(bytes)")]
-    pub proof_size: u64,
-    #[serde(rename = "verifier time(ms)")]
-    pub verifier_time_ms: u64,
-    #[serde(rename = "cycle count")]
-    pub cycle_count: u64,
-    #[serde(rename = "peak memory")]
-    pub memory: String,
-}
-
 
 pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, usize), inputs: &[T], file: &str, input_name: &str) {
     let mut results = Vec::new();
@@ -88,12 +73,10 @@ pub struct Record {
     pub proof_size: u64,
     #[serde(rename = "verifier time(ms)")]
     pub verifier_time_ms: u64,
-    #[serde(rename = "verifier times(ms)")]
-    pub verifier_times_ms: String,
     #[serde(rename = "cycle count")]
     pub cycle_count: u64,
     #[serde(rename = "peak memory")]
-    pub memory: String,
+    pub memory: u64,
 }
 
 pub fn update_or_insert_record(
@@ -103,7 +86,7 @@ pub fn update_or_insert_record(
     proof_size: Option<u64>,
     verifier_durations: Option<Vec<u64>>,
     cycle_count: Option<u64>,
-    memory: Option<String>,
+    memory: Option<u64>,
 ) -> Result<(), Box<dyn Error>> {
     let file_exists = fs::metadata(file_path).is_ok();
     let mut records = Vec::new();
@@ -121,20 +104,8 @@ pub fn update_or_insert_record(
         }
         
         for record in raw_records {
-            // Try new format first
             if let Ok(new_record) = record.deserialize::<Record>(None) {
                 records.push(new_record);
-            } else if let Ok(old_record) = record.deserialize::<OldRecord>(None) {
-                // Convert old format to new format
-                records.push(Record {
-                    n: old_record.n,
-                    time_ms: old_record.time_ms,
-                    proof_size: old_record.proof_size,
-                    verifier_time_ms: old_record.verifier_time_ms,
-                    verifier_times_ms: old_record.verifier_time_ms.to_string(),
-                    cycle_count: old_record.cycle_count,
-                    memory: old_record.memory,
-                });
             }
         }
     }
@@ -150,20 +121,15 @@ pub fn update_or_insert_record(
                 record.proof_size = proof_size;
             }
             if let Some(ref verifier_durations) = verifier_durations {
-                // Calculate average for backward compatibility
+                // Calculate average verifier time
                 let avg_verifier_time = verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
                 record.verifier_time_ms = avg_verifier_time;
-                // Store all times as comma-separated string
-                record.verifier_times_ms = verifier_durations.iter()
-                    .map(|t| t.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
             }
             if let Some(cycle_count) = cycle_count {
                 record.cycle_count = cycle_count;
             }
-            if let Some(ref memory_str) = memory {
-                record.memory = memory_str.clone();
+            if let Some(memory_val) = memory {
+                record.memory = memory_val;
             }
             updated = true;
             break;
@@ -175,17 +141,12 @@ pub fn update_or_insert_record(
         let duration = duration.unwrap_or(0);
         let proof_size = proof_size.unwrap_or(0);
         let cycle_count = cycle_count.unwrap_or(0);
-        let memory = memory.unwrap_or(0.to_string());
+        let memory = memory.unwrap_or(0);
         
-        let (verifier_time_ms, verifier_times_ms) = if let Some(ref verifier_durations) = verifier_durations {
-            let avg_verifier_time = verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
-            let times_str = verifier_durations.iter()
-                .map(|t| t.to_string())
-                .collect::<Vec<String>>()
-                .join(",");
-            (avg_verifier_time, times_str)
+        let verifier_time_ms = if let Some(ref verifier_durations) = verifier_durations {
+            verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64
         } else {
-            (0, "0".to_string())
+            0
         };
         
         records.push(Record {
@@ -193,7 +154,6 @@ pub fn update_or_insert_record(
             time_ms: duration,
             proof_size,
             verifier_time_ms,
-            verifier_times_ms,
             cycle_count,
             memory,
         });

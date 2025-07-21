@@ -97,7 +97,7 @@ jobs:
           # ccx13: dedicated CPU,  2 cores,   8 GB RAM
           # ccx53: dedicated CPU, 32 cores, 128 GB RAM
           # ccx63: dedicated CPU, 48 cores, 192 GB RAM (used for tagged commits)
-          server_type: ${{ startsWith(github.ref, 'refs/tags/bench-') && 'ccx63' || inputs.machine_type || 'cpx41' }}
+          server_type: ${{ startsWith(github.ref, 'refs/tags/bench-') && 'ccx63' || inputs.machine_type || 'cx42' }}
           location: fsn1
           ssh_key: 27148616
           image: ubuntu-24.04

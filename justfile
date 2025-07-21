@@ -29,110 +29,86 @@ build-utils:
 build-memuse:
     gcc ./scripts/memuse.c -o memuse
 
-# Run command with memory monitoring and update CSV
-run-with-memory zkvm benchmark arg command env_vars="":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    source "$HOME/bench-venv/bin/activate"
-    mkdir -p memory_outputs
-    
-    # Run benchmark with memory monitoring
-    MEMORY_FILE="memory_outputs/{{zkvm}}_{{benchmark}}_{{arg}}.txt"
-    sudo {{env_vars}} HOME=$HOME PATH=$PATH ./memuse "$MEMORY_FILE" '{{command}}'
-    
-    # Extract peak memory and update CSV
-    CSV_FILE="benchmark_outputs/{{zkvm}}-{{benchmark}}.csv"
-    if [ ! -f "$MEMORY_FILE" ]; then
-        echo "Error: Memory output file not found at $MEMORY_FILE"
-        exit 1
-    fi
-    
-    PEAK_MEMORY_BYTES=$(grep "PEAK" "$MEMORY_FILE" | awk '{print $2}')
-    echo "PEAK_MEMORY_BYTES: $PEAK_MEMORY_BYTES"
-    
-    # Update the CSV file
-    if [ ! -f "$CSV_FILE" ]; then
-        echo "Error: CSV file $CSV_FILE not found."
-        exit 1
-    fi
-    
-    awk -v peak_memory="$PEAK_MEMORY_BYTES" -v row_id="{{arg}}" -F, '
-    BEGIN { OFS = FS } 
-    {
-        if ($1 == row_id) {
-            $6 = peak_memory;
-        }
-        print
-    }' "$CSV_FILE" > tmp_csv_update.csv && mv tmp_csv_update.csv "$CSV_FILE"
-    
-    echo "Updated $CSV_FILE with peak memory $PEAK_MEMORY_BYTES bytes for row {{arg}}."
-
 # Run risczero benchmark with memory monitoring
 run-bench-risczero benchmark arg verifier_iterations="1":
-    just run-with-memory "risczero" "{{benchmark}}" "{{arg}}" \
-        "cd risczero/{{benchmark}} && \
-         ../../utils/target/release/utils \
-         --bench-name risczero-{{benchmark}} \
-         --bin target/release/host \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd risczero/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
+        ../../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name risczero-{{benchmark}} \
+        --bin target/release/host \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}}
 
 # Run sp1 benchmark with memory monitoring
 run-bench-sp1 benchmark arg verifier_iterations="1":
-    just run-with-memory "sp1" "{{benchmark}}" "{{arg}}" \
-        "cd sp1/{{benchmark}} && \
-         ../../utils/target/release/utils \
-         --bench-name sp1-{{benchmark}} \
-         --bin ../target/release/sp1-script \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}} \
-         -- --program {{benchmark}}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd sp1/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
+        ../../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name sp1-{{benchmark}} \
+        --bin ../target/release/sp1-script \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}} \
+        -- --program {{benchmark}}
 
 # Run jolt benchmark with memory monitoring
 run-bench-jolt benchmark arg verifier_iterations="1":
-    just run-with-memory "jolt" "{{benchmark}}" "{{arg}}" \
-        "cd jolt && \
-         ../utils/target/release/utils \
-         --bench-name jolt-{{benchmark}} \
-         --bin target/release/jolt-benchmarks \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}} \
-         -- --program {{benchmark}}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd jolt && sudo HOME=$HOME PATH=$PATH \
+        ../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name jolt-{{benchmark}} \
+        --bin target/release/jolt-benchmarks \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}} \
+        -- --program {{benchmark}}
 
 # Run stwo benchmark with memory monitoring
 run-bench-stwo benchmark arg verifier_iterations="1":
-    just run-with-memory "stwo" "{{benchmark}}" "{{arg}}" \
-        "cd stwo && \
-         ../utils/target/release/utils \
-         --bench-name stwo-{{benchmark}} \
-         --bin target/release/stwo-script \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}} \
-         -- --program {{benchmark}}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd stwo && sudo HOME=$HOME PATH=$PATH \
+        ../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name stwo-{{benchmark}} \
+        --bin target/release/stwo-script \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}} \
+        -- --program {{benchmark}}
 
 # Run stone benchmark with memory monitoring
 run-bench-stone benchmark arg verifier_iterations="1":
-    just run-with-memory "stone" "{{benchmark}}" "{{arg}}" \
-        "cd stone/{{benchmark}} && \
-         ../../utils/target/release/utils \
-         --bench-name stone-{{benchmark}} \
-         --bin target/release/stone \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}}" \
-        "SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT \
-         SHARP_KEY_PATH=$SHARP_KEY_PATH \
-         SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    source "$HOME/bench-venv/bin/activate"
+    cd stone/{{benchmark}} && sudo \
+        SHARP_CLIENT_CERT=$SHARP_CLIENT_CERT \
+        SHARP_KEY_PATH=$SHARP_KEY_PATH \
+        SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD \
+        HOME=$HOME PATH=$PATH \
+        ../../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name stone-{{benchmark}} \
+        --bin target/release/stone \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}}
 
 # Run openvm benchmark with memory monitoring
 run-bench-openvm benchmark arg verifier_iterations="1":
-    just run-with-memory "openvm" "{{benchmark}}" "{{arg}}" \
-        "cd openvm && \
-         ../utils/target/release/utils \
-         --bench-name openvm-{{benchmark}} \
-         --bin target/release/openvm-benchmarks \
-         --bench-arg {{arg}} \
-         --verifier-iterations {{verifier_iterations}} \
-         -- --program {{benchmark}}"
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd openvm && sudo HOME=$HOME PATH=$PATH \
+        ../utils/target/release/utils \
+        --enable-memory-monitoring \
+        --bench-name openvm-{{benchmark}} \
+        --bin target/release/openvm-benchmarks \
+        --bench-arg {{arg}} \
+        --verifier-iterations {{verifier_iterations}} \
+        -- --program {{benchmark}}
 
 # Bench local
 bench-local: build-utils build-memuse machine-info

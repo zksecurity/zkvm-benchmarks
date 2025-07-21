@@ -36,6 +36,8 @@ pub struct BenchmarkResult {
     )]
     pub verifier_durations: Vec<Duration>,
     pub cycle_count: usize,
+    #[serde(rename = "peak_memory_bytes", skip_serializing_if = "Option::is_none")]
+    pub peak_memory: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

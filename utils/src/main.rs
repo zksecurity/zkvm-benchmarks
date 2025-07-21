@@ -27,6 +27,10 @@ struct Cli {
     #[arg(long, default_value = "1")]
     verifier_iterations: u32,
 
+    /// Enable memory monitoring (requires running as root with memuse)
+    #[arg(long)]
+    enable_memory_monitoring: bool,
+
     /// Arguments to pass to the benchmark binary
     #[arg(trailing_var_arg = true)]
     args: Vec<String>,
@@ -42,8 +46,32 @@ fn main() {
     let results_dir = root_folder.join("benchmark_results");
     fs::create_dir_all(&results_dir).expect("Failed to create benchmark_results directory");
 
-    // Run the benchmark
-    Command::new(cli.bin.clone())
+    let memory_file_path = if cli.enable_memory_monitoring {
+        let memory_outputs_dir = root_folder.join("memory_outputs");
+        fs::create_dir_all(&memory_outputs_dir).expect("Failed to create memory_outputs directory");
+        Some(memory_outputs_dir.join(format!("{}_memory.txt", name.replace("-", "_"))))
+    } else {
+        None
+    };
+
+    // Run the benchmark (with or without memory monitoring)
+    let benchmark_cmd = format!("{} --n {} --verifier-iterations {} {}", 
+                               cli.bin, bench_arg, cli.verifier_iterations, cli.args.join(" "));
+    
+    if let Some(ref memory_path) = memory_file_path {
+        // Run with memuse for memory monitoring
+        let memuse_path = root_folder.join("memuse");
+        Command::new("sudo")
+            .arg(&memuse_path)
+            .arg(memory_path)
+            .arg("sh")
+            .arg("-c")
+            .arg(&benchmark_cmd)
+            .status()
+            .expect("Failed to run benchmark with memory monitoring");
+    } else {
+        // Run benchmark directly
+        Command::new(cli.bin.clone())
             .arg("--n")
             .arg(&bench_arg.to_string())
             .arg("--verifier-iterations")
@@ -51,12 +79,32 @@ fn main() {
             .args(cli.args)
             .status()
             .expect("Failed to run the benchmark");
+    }
 
     // Read the temporary results.json file
     let file_content =
         std::fs::read_to_string("results.json").expect("Failed to read the JSON file");
-    let result: BenchmarkResult =
+    let mut result: BenchmarkResult =
         serde_json::from_str(&file_content).expect("Failed to parse JSON");
+
+    // Read memory data if monitoring was enabled
+    if let Some(memory_path) = memory_file_path {
+        if memory_path.exists() {
+            let memory_content = std::fs::read_to_string(&memory_path)
+                .expect(&format!("Failed to read memory file: {}", memory_path.display()));
+            
+            // Extract peak memory from memory file (format: "PEAK <bytes>")
+            for line in memory_content.lines() {
+                if line.starts_with("PEAK ") {
+                    if let Ok(peak_memory) = line.split_whitespace().nth(1).unwrap_or("0").parse::<u64>() {
+                        result.peak_memory = Some(peak_memory);
+                        println!("Read peak memory: {} bytes", peak_memory);
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
     // Parse benchmark ID from benchmark name
     let id = BenchmarkId::parse(&name).expect("Failed to parse benchmark ID from name");

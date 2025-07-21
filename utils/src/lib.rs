@@ -1,7 +1,18 @@
-use std::{fmt::Display, fs::File, io::Write, time::Duration};
 use csv::{ReaderBuilder, WriterBuilder};
-use std::{fs, error::Error};
 use serde::{Deserialize, Serialize};
+use std::{error::Error, fs};
+use std::{fmt::Display, fs::File, io::Write, time::Duration};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum VM {
+    Jolt,
+    SP1,
+    RiscZero,
+    Stone,
+    Stwo,
+    OpenVM,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkConfig {
@@ -12,22 +23,47 @@ pub struct BenchmarkConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkResult {
+    #[serde(rename = "proof_size_bytes")]
     pub proof_size: usize,
-    #[serde(serialize_with = "serialize_duration_as_millis", rename = "duration")]
-    pub prover_duration: Duration,
-    #[serde(serialize_with = "serialize_durations_as_millis")]
+    #[serde(
+        serialize_with = "serialize_durations_as_millis",
+        rename = "prover_durations_ms"
+    )]
+    pub prover_durations: Vec<Duration>,
+    #[serde(
+        serialize_with = "serialize_durations_as_millis",
+        rename = "verifier_durations_ms"
+    )]
     pub verifier_durations: Vec<Duration>,
     pub cycle_count: usize,
 }
 
-fn serialize_duration_as_millis<S>(duration: &Duration, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    serializer.serialize_u64(duration.as_millis() as u64)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkId {
+    pub vm: VM,
+    pub program: String,
 }
 
-fn serialize_durations_as_millis<S>(durations: &Vec<Duration>, serializer: S) -> Result<S::Ok, S::Error>
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkMetadata {
+    #[serde(flatten)]
+    pub id: BenchmarkId,
+    pub benchmark_name: String,
+    pub config: BenchmarkConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkResultWithMetadata {
+    #[serde(flatten)]
+    pub metadata: BenchmarkMetadata,
+    #[serde(flatten)]
+    pub result: BenchmarkResult,
+}
+
+fn serialize_durations_as_millis<S>(
+    durations: &Vec<Duration>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -37,12 +73,46 @@ where
 
 impl BenchmarkResult {
     pub fn to_json(&self) -> String {
-        serde_json::to_string(self).unwrap()
+        serde_json::to_string_pretty(self).unwrap()
     }
 }
 
+impl VM {
+    pub fn parse(vm_name: &str) -> Result<VM, String> {
+        match vm_name {
+            "jolt" => Ok(VM::Jolt),
+            "sp1" => Ok(VM::SP1),
+            "risczero" => Ok(VM::RiscZero),
+            "stone" => Ok(VM::Stone),
+            "stwo" => Ok(VM::Stwo),
+            "openvm" => Ok(VM::OpenVM),
+            _ => Err(format!("Unknown VM: {}", vm_name)),
+        }
+    }
+}
 
-pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, usize), inputs: &[T], file: &str, input_name: &str) {
+impl BenchmarkId {
+    pub fn parse(benchmark_name: &str) -> Result<BenchmarkId, String> {
+        let parts: Vec<&str> = benchmark_name.splitn(2, '-').collect();
+        if parts.len() != 2 {
+            return Err(format!(
+                "Invalid benchmark name format: {}. Expected format: vm-program",
+                benchmark_name
+            ));
+        }
+        Ok(BenchmarkId {
+            vm: VM::parse(parts[0])?,
+            program: parts[1].to_string(),
+        })
+    }
+}
+
+pub fn benchmark<T: Display + Clone>(
+    func: fn(T) -> (Duration, usize),
+    inputs: &[T],
+    file: &str,
+    input_name: &str,
+) {
     let mut results = Vec::new();
     for input in inputs {
         let (duration, size) = func(input.clone());
@@ -52,12 +122,22 @@ pub fn benchmark<T: Display + Clone>(func: fn(T) -> (Duration, usize), inputs: &
     write_csv(file, input_name, inputs, &results);
 }
 
-pub fn write_csv<T: Display>(file: &str, input_name: &str, inputs: &[T], results: &[(Duration, usize)]) {
+pub fn write_csv<T: Display>(
+    file: &str,
+    input_name: &str,
+    inputs: &[T],
+    results: &[(Duration, usize)],
+) {
     let mut file = File::create(file).unwrap();
-    file.write_all(format!("{},prover time (ms),proof size (bytes)\n", input_name).as_bytes()).unwrap();
-    inputs.iter().zip(results).for_each(|(input, (duration, size))| {
-        file.write_all(format!("{},{},{}\n", input, duration.as_millis(), size).as_bytes()).unwrap();
-    });
+    file.write_all(format!("{},prover time (ms),proof size (bytes)\n", input_name).as_bytes())
+        .unwrap();
+    inputs
+        .iter()
+        .zip(results)
+        .for_each(|(input, (duration, size))| {
+            file.write_all(format!("{},{},{}\n", input, duration.as_millis(), size).as_bytes())
+                .unwrap();
+        });
 }
 
 pub fn size<T: Serialize>(item: &T) -> usize {
@@ -96,13 +176,13 @@ pub fn update_or_insert_record(
         let mut rdr = ReaderBuilder::new()
             .has_headers(true)
             .from_path(file_path)?;
-        
+
         // Try to read as new format first, fall back to old format if needed
         let mut raw_records = Vec::new();
         for result in rdr.records() {
             raw_records.push(result?);
         }
-        
+
         for record in raw_records {
             if let Ok(new_record) = record.deserialize::<Record>(None) {
                 records.push(new_record);
@@ -122,7 +202,8 @@ pub fn update_or_insert_record(
             }
             if let Some(ref verifier_durations) = verifier_durations {
                 // Calculate average verifier time
-                let avg_verifier_time = verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
+                let avg_verifier_time =
+                    verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64;
                 record.verifier_time_ms = avg_verifier_time;
             }
             if let Some(cycle_count) = cycle_count {
@@ -142,13 +223,13 @@ pub fn update_or_insert_record(
         let proof_size = proof_size.unwrap_or(0);
         let cycle_count = cycle_count.unwrap_or(0);
         let memory = memory.unwrap_or(0);
-        
+
         let verifier_time_ms = if let Some(ref verifier_durations) = verifier_durations {
             verifier_durations.iter().sum::<u64>() / verifier_durations.len() as u64
         } else {
             0
         };
-        
+
         records.push(Record {
             n: bench_arg.to_string(),
             time_ms: duration,
@@ -170,4 +251,3 @@ pub fn update_or_insert_record(
 
     Ok(())
 }
-

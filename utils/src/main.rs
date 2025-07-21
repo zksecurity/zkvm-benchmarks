@@ -4,7 +4,7 @@ use std::{
     process::Command,
 };
 
-use utils::update_or_insert_record;
+use utils::{BenchmarkResult, BenchmarkResultWithMetadata, BenchmarkMetadata, BenchmarkConfig, BenchmarkId};
 
 /// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
@@ -17,7 +17,7 @@ struct Cli {
 
     /// The benchmark argument to pass to the binary
     #[arg(long)]
-    bench_arg: String,
+    bench_arg: u32,
 
     /// Name of the benchmark
     #[arg(long)]
@@ -36,54 +36,58 @@ fn main() {
     let cli = Cli::parse();
     let name = cli.bench_name;
     let root_folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
-    let file = format!("{}/benchmark_outputs/{}.csv", root_folder.display(), name);
     let bench_arg = cli.bench_arg;
 
+    // Create benchmark_results directory if it doesn't exist
+    let results_dir = root_folder.join("benchmark_results");
+    fs::create_dir_all(&results_dir).expect("Failed to create benchmark_results directory");
+
+    // Run the benchmark
     Command::new(cli.bin.clone())
             .arg("--n")
-            .arg(&bench_arg)
+            .arg(&bench_arg.to_string())
             .arg("--verifier-iterations")
             .arg(&cli.verifier_iterations.to_string())
             .args(cli.args)
             .status()
             .expect("Failed to run the benchmark");
 
-    // read the proof size from the output file
+    // Read the temporary results.json file
     let file_content =
         std::fs::read_to_string("results.json").expect("Failed to read the JSON file");
-    // read the proof_size
-    let json: serde_json::Value =
+    let result: BenchmarkResult =
         serde_json::from_str(&file_content).expect("Failed to parse JSON");
-    let proof_size = json
-        .get("proof_size")
-        .expect("Failed to get proof size")
-        .as_u64()
-        .expect("Failed to convert proof size to u64");
 
-    let duration = json
-        .get("duration")
-        .expect("Failed to get prover time")
-        .as_u64()
-        .expect("Failed to convert duration to u64");
+    // Parse benchmark ID from benchmark name
+    let id = BenchmarkId::parse(&name).expect("Failed to parse benchmark ID from name");
 
-    let verifier_durations = json
-        .get("verifier_durations")
-        .expect("Failed to get verifier times")
-        .as_array()
-        .expect("Failed to convert verifier durations to array")
-        .iter()
-        .map(|v| v.as_u64().expect("Failed to convert verifier duration to u64"))
-        .collect::<Vec<u64>>();
+    // Create result with metadata
+    let config = BenchmarkConfig {
+        n: bench_arg,
+        program: id.program.clone(),
+        verifier_iterations: cli.verifier_iterations,
+    };
+    
+    let metadata = BenchmarkMetadata {
+        id,
+        benchmark_name: name.clone(),
+        config,
+    };
+    
+    let result_with_metadata = BenchmarkResultWithMetadata {
+        metadata,
+        result,
+    };
 
-    let cycle_count = json
-        .get("cycle_count")
-        .expect("Failed to get cycle count")
-        .as_u64()
-        .expect("Failed to convert duration to u64");
+    // Save JSON to permanent location
+    let json_filename = format!("{}-n{}.json", name, bench_arg);
+    let json_path = results_dir.join(json_filename);
+    
+    let pretty_json = serde_json::to_string_pretty(&result_with_metadata).expect("Failed to serialize JSON");
+    fs::write(&json_path, pretty_json).expect("Failed to write JSON file");
+    
+    println!("Results saved to: {}", json_path.display());
 
-    update_or_insert_record(&file, &bench_arg, Some(duration), Some(proof_size), Some(verifier_durations), Some(cycle_count), None)
-        .expect("Failed to update or insert record");
-
-    // remove json file
-    fs::remove_file("results.json").expect("Failed to remove the JSON file");
+    // Remove temporary json file
+    fs::remove_file("results.json").expect("Failed to remove the temporary JSON file");
 }

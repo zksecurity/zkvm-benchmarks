@@ -63,7 +63,7 @@ fn bench_sha2_chain(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration,
+        prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count,
     }

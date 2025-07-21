@@ -85,7 +85,7 @@ fn benchmark_sha2_chain(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration,
+        prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -133,7 +133,7 @@ fn benchmark_sha3_chain(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -194,7 +194,7 @@ fn benchmark_sha3(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -255,7 +255,7 @@ fn benchmark_sha2(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -313,7 +313,7 @@ fn benchmark_fib(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -371,7 +371,7 @@ fn benchmark_ecadd(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }
@@ -429,7 +429,7 @@ fn benchmark_mat_mul(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration: end.duration_since(start),
+        prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
     }

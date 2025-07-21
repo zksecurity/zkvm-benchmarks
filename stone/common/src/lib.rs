@@ -198,7 +198,7 @@ pub fn bench(config: BenchmarkConfig, program_path: &str, program_input: &str, p
 
     BenchmarkResult {
         proof_size: proof_bytes,
-        prover_duration: duration,
+        prover_durations: vec![duration],
         verifier_durations,
         cycle_count: cycle_count as usize,
     }

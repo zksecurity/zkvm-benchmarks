@@ -56,7 +56,7 @@ fn bench_sha3(config: &BenchmarkConfig) -> BenchmarkResult {
 
     BenchmarkResult {
         proof_size,
-        prover_duration,
+        prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count,
     }

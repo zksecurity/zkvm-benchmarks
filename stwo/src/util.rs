@@ -110,7 +110,7 @@ pub fn prove_and_verify(
 
     BenchmarkResult {
         proof_size,
-        prover_duration: prover_end.duration_since(prover_start),
+        prover_durations: vec![prover_end.duration_since(prover_start)],
         verifier_durations,
         cycle_count,
     }

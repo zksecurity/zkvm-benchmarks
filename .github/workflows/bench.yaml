@@ -47,6 +47,11 @@ on:
         required: false
         default: "256 512"
         type: string
+      machine_type:
+        description: "Hetzner Cloud server type (e.g. cpx41, ccx63)"
+        required: false
+        default: "cpx41"
+        type: string
   push:
     paths-ignore:
       - "**.md"
@@ -88,10 +93,11 @@ jobs:
           mode: create
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          # cpx41: shared CPU,   4 cores,  16 GB RAM (default for non-tagged)
           # ccx13: dedicated CPU,  2 cores,   8 GB RAM
           # ccx53: dedicated CPU, 32 cores, 128 GB RAM
-          # ccx63: dedicated CPU, 48 cores, 192 GB RAM
-          server_type: ccx63
+          # ccx63: dedicated CPU, 48 cores, 192 GB RAM (used for tagged commits)
+          server_type: ${{ startsWith(github.ref, 'refs/tags/bench-') && 'ccx63' || inputs.machine_type || 'cpx41' }}
           location: sin
           ssh_key: 27148616
           image: ubuntu-24.04

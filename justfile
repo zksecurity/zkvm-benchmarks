@@ -25,9 +25,6 @@ machine-info:
 build-utils:
     cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-# Build memuse program
-build-memuse:
-    gcc ./scripts/memuse.c -o memuse
 
 # Run risczero benchmark with memory monitoring
 run-bench-risczero benchmark arg verifier_iterations="1":
@@ -111,7 +108,7 @@ run-bench-openvm benchmark arg verifier_iterations="1":
         -- --program {{benchmark}}
 
 # Bench local
-bench-local: build-utils build-memuse machine-info
+bench-local: build-utils machine-info
     just bench-stwo \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \

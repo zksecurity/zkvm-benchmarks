@@ -1,12 +1,11 @@
-use nix::sys::wait::{waitpid, WaitStatus};
-use nix::unistd::{fork, ForkResult};
-use rand::Rng;
-use std::fs;
-use std::io;
-use std::os::unix::process::ExitStatusExt;
 use std::path::PathBuf;
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::{fs, io};
+
+use nix::sys::wait::{waitpid, WaitStatus};
+use nix::unistd::{fork, ForkResult};
+use rand::Rng;
 
 pub struct MemoryMonitor {
     cgroup_path: Option<PathBuf>,
@@ -17,10 +16,12 @@ impl MemoryMonitor {
         Self { cgroup_path: None }
     }
 
-    /// Run a command with memory monitoring and return the peak memory usage in bytes
-    pub fn run_with_memory_tracking<F>(&mut self, command_fn: F) -> io::Result<u64>
+    /// Run a command with memory monitoring and return the peak memory usage in bytes and exit
+    /// status
+    pub fn run_with_memory_tracking<F, T>(&mut self, command_fn: F) -> io::Result<(u64, T)>
     where
-        F: FnOnce() -> io::Result<()> + Send + 'static,
+        F: FnOnce() -> io::Result<T> + Send + 'static,
+        T: Send + 'static,
     {
         // Check if we're running as root
         if !nix::unistd::geteuid().is_root() {
@@ -29,13 +30,14 @@ impl MemoryMonitor {
                 "Memory tracking requires root privileges to manage cgroups",
             ));
         }
-        
+
         self.run_with_cgroup(command_fn)
     }
 
-    fn run_with_cgroup<F>(&mut self, command_fn: F) -> io::Result<u64>
+    fn run_with_cgroup<F, T>(&mut self, command_fn: F) -> io::Result<(u64, T)>
     where
-        F: FnOnce() -> io::Result<()> + Send + 'static,
+        F: FnOnce() -> io::Result<T> + Send + 'static,
+        T: Send + 'static,
     {
         // Create a unique cgroup name
         let timestamp = SystemTime::now()
@@ -78,26 +80,54 @@ impl MemoryMonitor {
         let pid = nix::unistd::getpid();
         fs::write(&procs_path, pid.to_string())?;
 
+        // Store result in a shared location that both parent and child can access
+        use std::sync::{Arc, Mutex};
+        let result_holder: Arc<Mutex<Option<T>>> = Arc::new(Mutex::new(None));
+        let result_holder_clone = Arc::clone(&result_holder);
+
         // Fork and execute the command
         match unsafe { fork() } {
             Ok(ForkResult::Child) => {
                 // In child process - execute the command
-                std::process::exit(match command_fn() {
-                    Ok(()) => 0,
+                let exit_code = match command_fn() {
+                    Ok(result) => {
+                        // Store the result before exiting
+                        if let Ok(mut holder) = result_holder_clone.lock() {
+                            *holder = Some(result);
+                        }
+                        0
+                    }
                     Err(_) => 1,
-                });
+                };
+                std::process::exit(exit_code);
             }
             Ok(ForkResult::Parent { child }) => {
                 // In parent process - wait for child and get peak memory
                 match waitpid(child, None) {
-                    Ok(WaitStatus::Exited(_, _)) | Ok(WaitStatus::Signaled(_, _, _)) => {
+                    Ok(WaitStatus::Exited(..)) | Ok(WaitStatus::Signaled(..)) => {
                         // Child finished, read peak memory
-                        self.get_peak_memory()
+                        let peak_memory = self.get_peak_memory()?;
+
+                        // Get the result from the shared holder
+                        let result = result_holder
+                            .lock()
+                            .map_err(|_| {
+                                io::Error::new(
+                                    io::ErrorKind::Other,
+                                    "Failed to get result from child",
+                                )
+                            })?
+                            .take()
+                            .ok_or_else(|| {
+                                io::Error::new(
+                                    io::ErrorKind::Other,
+                                    "Child process did not store result",
+                                )
+                            })?;
+
+                        Ok((peak_memory, result))
                     }
-                    _ => Err(io::Error::new(
-                        io::ErrorKind::Other,
-                        "Child process failed",
-                    )),
+                    _ => Err(io::Error::new(io::ErrorKind::Other, "Child process failed")),
                 }
             }
             Err(e) => Err(io::Error::new(
@@ -141,22 +171,11 @@ pub fn run_command_with_memory_tracking(
     let mut monitor = MemoryMonitor::new();
     let program = program.to_string();
     let args = args.to_vec();
-    
-    let peak_memory = monitor.run_with_memory_tracking(move || {
-        let status = Command::new(&program)
-            .args(&args)
-            .status()?;
-        if !status.success() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Command failed with exit code: {:?}", status.code()),
-            ));
-        }
-        Ok(())
+
+    let (peak_memory, exit_status) = monitor.run_with_memory_tracking(move || {
+        let status = Command::new(&program).args(&args).status()?;
+        Ok(status)
     })?;
 
-    // Since we don't have a way to pass the exit status out of the closure,
-    // we'll assume success if we get here (the closure would have failed otherwise)
-    let success_status = std::process::ExitStatus::from_raw(0);
-    Ok((success_status, peak_memory))
+    Ok((exit_status, peak_memory))
 }

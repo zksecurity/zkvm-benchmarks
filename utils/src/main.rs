@@ -5,6 +5,7 @@ use clap::{arg, Parser};
 use utils::memory::run_command_with_memory_tracking;
 use utils::{
     BenchmarkConfig, BenchmarkConfigAndResult, BenchmarkId, BenchmarkName, BenchmarkResult,
+    BenchmarkStatus,
 };
 
 /// A tool to build and optionally benchmark a cargo project
@@ -68,76 +69,93 @@ fn main() {
     benchmark_args.extend(cli.args);
 
     // Run the benchmark (with or without memory monitoring)
-    let peak_memory = if cli.enable_memory_monitoring {
-        let (status, memory) = run_command_with_memory_tracking(&cli.bin, &benchmark_args)
-            .expect("Failed to run benchmark with memory monitoring");
-
-        if !status.success() {
-            eprintln!("Benchmark failed with exit code: {:?}", status.code());
-            std::process::exit(1);
+    let benchmark_result = if cli.enable_memory_monitoring {
+        match run_command_with_memory_tracking(&cli.bin, &benchmark_args) {
+            Ok((status, memory)) => {
+                if status.success() {
+                    Ok(Some(memory))
+                } else {
+                    Err(status.code().unwrap_or(-1))
+                }
+            }
+            Err(_e) => Err(-1000),
         }
-
-        Some(memory)
     } else {
         // Run benchmark directly without memory monitoring
-        let status = Command::new(&cli.bin)
-            .args(&benchmark_args)
-            .status()
-            .expect("Failed to run the benchmark");
-
-        if !status.success() {
-            eprintln!("Benchmark failed with exit code: {:?}", status.code());
-            std::process::exit(1);
+        match Command::new(&cli.bin).args(&benchmark_args).output() {
+            Ok(output) => {
+                if output.status.success() {
+                    Ok(None)
+                } else {
+                    Err(output.status.code().unwrap_or(-1))
+                }
+            }
+            Err(_e) => Err(-1000),
         }
-
-        None
     };
 
-    // Read the temporary results.json file
-    let file_content =
-        std::fs::read_to_string("results.json").expect("Failed to read the JSON file");
-    let mut result: BenchmarkResult =
-        serde_json::from_str(&file_content).expect("Failed to parse JSON");
+    // Handle benchmark result (success or failure)
+    let result = match benchmark_result {
+        Ok(peak_memory) => {
+            // Benchmark succeeded, read the temporary results.json file
+            let file_contents = std::fs::read_to_string("results.json").unwrap();
+            let mut benchmark_result =
+                serde_json::from_str::<BenchmarkResult>(&file_contents).unwrap();
 
-    // Set peak memory if monitoring was enabled
-    if let Some(memory) = peak_memory {
-        result.peak_memory = Some(memory);
-    }
+            // Set peak memory if monitoring was enabled
+            if let Some(memory) = peak_memory {
+                benchmark_result.peak_memory = Some(memory);
+            }
 
-    // print an overview for debugging
-    {
-        let prover_times: String = result
-            .prover_durations
-            .iter()
-            .map(|d| d.as_millis().to_string())
-            .collect::<Vec<String>>()
-            .join(", ");
+            // print an overview for debugging
+            {
+                let prover_times: String = benchmark_result
+                    .prover_durations
+                    .iter()
+                    .map(|d| d.as_millis().to_string())
+                    .collect::<Vec<String>>()
+                    .join(", ");
 
-        let verifier_times: String = result
-            .verifier_durations
-            .iter()
-            .map(|d| d.as_millis().to_string())
-            .collect::<Vec<String>>()
-            .join(", ");
+                let verifier_times: String = benchmark_result
+                    .verifier_durations
+                    .iter()
+                    .map(|d| d.as_millis().to_string())
+                    .collect::<Vec<String>>()
+                    .join(", ");
 
-        let peak_mem = result.peak_memory.unwrap_or(0);
+                let peak_mem = benchmark_result.peak_memory.unwrap_or(0);
 
-        println!("Results of {}", ident);
-        println!("  Proof Size    : {} bytes", result.proof_size);
-        println!("  Peak Memory   : {} bytes", peak_mem);
-        println!("  Cycles Count  : {}", result.cycle_count);
-        println!("  Prover Time   : {} seconds", prover_times);
-        println!("  Verifier Time : {} seconds", verifier_times);
-    }
+                println!("Results of {}", ident);
+                println!("  Proof Size    : {} bytes", benchmark_result.proof_size);
+                println!("  Peak Memory   : {} bytes", peak_mem);
+                println!("  Cycles Count  : {}", benchmark_result.cycle_count);
+                println!("  Prover Time   : {} seconds", prover_times);
+                println!("  Verifier Time : {} seconds", verifier_times);
+            }
 
-    // Create result with metadata
-    let result = BenchmarkConfigAndResult {
-        config: BenchmarkConfig {
-            n: bench_arg,
-            program: name.program.clone(),
-            verifier_iterations: cli.verifier_iterations,
-        },
-        result,
+            // return successful benchmark result
+            BenchmarkConfigAndResult {
+                config: BenchmarkConfig {
+                    n: bench_arg,
+                    program: name.program.clone(),
+                    verifier_iterations: cli.verifier_iterations,
+                },
+                result: BenchmarkStatus::Success(benchmark_result),
+            }
+        }
+        Err(status_code) => {
+            eprintln!("Benchmark failed with exit code: {}", status_code);
+            BenchmarkConfigAndResult {
+                config: BenchmarkConfig {
+                    n: bench_arg,
+                    program: name.program.clone(),
+                    verifier_iterations: cli.verifier_iterations,
+                },
+                result: BenchmarkStatus::Failure {
+                    status: status_code,
+                },
+            }
+        }
     };
 
     // Save JSON to permanent location
@@ -146,6 +164,6 @@ fn main() {
     fs::write(&json_path, result.to_json()).unwrap();
     println!("Results saved to: {}", json_path.display());
 
-    // Remove temporary json file
-    fs::remove_file("results.json").expect("Failed to remove the temporary JSON file");
+    // Remove temporary json file if it exists
+    let _ = fs::remove_file("results.json");
 }

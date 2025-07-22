@@ -82,11 +82,18 @@ impl std::fmt::Display for BenchmarkId {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum BenchmarkStatus {
+    Success(BenchmarkResult),
+    Failure { status: i32 },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkConfigAndResult {
     // input to the benchmark run
     pub config: BenchmarkConfig,
     // output of the benchmark run
-    pub result: BenchmarkResult,
+    pub result: BenchmarkStatus,
 }
 
 impl BenchmarkConfigAndResult {

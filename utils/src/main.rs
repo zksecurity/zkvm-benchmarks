@@ -1,9 +1,10 @@
-use clap::{arg, Parser};
-use std::{fs, process::Command};
+use std::fs;
+use std::process::Command;
 
+use clap::{arg, Parser};
 use utils::memory::run_command_with_memory_tracking;
 use utils::{
-    BenchmarkConfig, BenchmarkId, BenchmarkMetadata, BenchmarkResult, BenchmarkResultWithMetadata,
+    BenchmarkConfig, BenchmarkConfigAndResult, BenchmarkId, BenchmarkName, BenchmarkResult,
 };
 
 /// A tool to build and optionally benchmark a cargo project
@@ -38,11 +39,20 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
-    let name = cli.bench_name;
     let root_folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap();
     let bench_arg = cli.bench_arg;
+
+    // Parse benchmark ID from benchmark name
+    let name =
+        BenchmarkName::parse(&cli.bench_name).expect("Failed to parse benchmark ID from name");
+
+    // Identifier is (vm, program, n)
+    let ident = BenchmarkId {
+        name: name.clone(),
+        n: bench_arg,
+    };
 
     // Create benchmark_results directory if it doesn't exist
     let results_dir = root_folder.join("benchmark_results");
@@ -92,35 +102,48 @@ fn main() {
     // Set peak memory if monitoring was enabled
     if let Some(memory) = peak_memory {
         result.peak_memory = Some(memory);
-        println!("Peak memory: {} bytes", memory);
     }
 
-    // Parse benchmark ID from benchmark name
-    let id = BenchmarkId::parse(&name).expect("Failed to parse benchmark ID from name");
+    // print an overview for debugging
+    {
+        let prover_times: String = result
+            .prover_durations
+            .iter()
+            .map(|d| d.as_millis().to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+
+        let verifier_times: String = result
+            .verifier_durations
+            .iter()
+            .map(|d| d.as_millis().to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+
+        let peak_mem = result.peak_memory.unwrap_or(0);
+
+        println!("Results of {}", ident);
+        println!("  Proof Size    : {} bytes", result.proof_size);
+        println!("  Peak Memory   : {} bytes", peak_mem);
+        println!("  Cycles Count  : {}", result.cycle_count);
+        println!("  Prover Time   : {} seconds", prover_times);
+        println!("  Verifier Time : {} seconds", verifier_times);
+    }
 
     // Create result with metadata
-    let config = BenchmarkConfig {
-        n: bench_arg,
-        program: id.program.clone(),
-        verifier_iterations: cli.verifier_iterations,
+    let result = BenchmarkConfigAndResult {
+        config: BenchmarkConfig {
+            n: bench_arg,
+            program: name.program.clone(),
+            verifier_iterations: cli.verifier_iterations,
+        },
+        result,
     };
-
-    let metadata = BenchmarkMetadata {
-        id,
-        benchmark_name: name.clone(),
-        config,
-    };
-
-    let result_with_metadata = BenchmarkResultWithMetadata { metadata, result };
 
     // Save JSON to permanent location
-    let json_filename = format!("{}-n{}.json", name, bench_arg);
+    let json_filename = format!("{}.json", ident);
     let json_path = results_dir.join(json_filename);
-
-    let pretty_json =
-        serde_json::to_string_pretty(&result_with_metadata).expect("Failed to serialize JSON");
-    fs::write(&json_path, pretty_json).expect("Failed to write JSON file");
-
+    fs::write(&json_path, result.to_json()).unwrap();
     println!("Results saved to: {}", json_path.display());
 
     // Remove temporary json file

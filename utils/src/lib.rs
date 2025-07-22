@@ -21,7 +21,7 @@ pub struct BenchmarkConfig {
     pub verifier_iterations: u32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct BenchmarkResult {
     #[serde(rename = "proof_size_bytes")]
     pub proof_size: usize,

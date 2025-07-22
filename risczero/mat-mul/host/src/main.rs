@@ -64,5 +64,6 @@ fn bench_mat_mul(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count,
+        ..Default::default()
     }
 }

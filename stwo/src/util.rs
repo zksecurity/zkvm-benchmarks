@@ -113,6 +113,7 @@ pub fn prove_and_verify(
         prover_durations: vec![prover_end.duration_since(prover_start)],
         verifier_durations,
         cycle_count,
+        ..Default::default()
     }
 }
 

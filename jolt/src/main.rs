@@ -1,4 +1,4 @@
-use std::{io::Write, time::Instant, usize};
+use std::{time::Instant, usize};
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate};
 use jolt::{JoltHyperKZGProof, Serializable};
@@ -88,6 +88,7 @@ fn benchmark_sha2_chain(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -136,6 +137,7 @@ fn benchmark_sha3_chain(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -197,6 +199,7 @@ fn benchmark_sha3(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -258,6 +261,7 @@ fn benchmark_sha2(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -316,6 +320,7 @@ fn benchmark_fib(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -374,6 +379,7 @@ fn benchmark_ecadd(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }
 
@@ -432,5 +438,6 @@ fn benchmark_mat_mul(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![end.duration_since(start)],
         verifier_durations,
         cycle_count: trace_len,
+        ..Default::default()
     }
 }

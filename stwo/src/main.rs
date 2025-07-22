@@ -1,5 +1,4 @@
 use clap::Parser;
-use std::io::Write;
 use std::fs;
 use utils::{BenchmarkConfig, BenchmarkResult};
 

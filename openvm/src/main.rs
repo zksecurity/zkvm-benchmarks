@@ -1,6 +1,6 @@
 use clap::Parser;
 use std::sync::Arc;
-use std::{io::Write, time::Instant, usize};
+use std::{time::Instant, usize};
 use utils::{size, BenchmarkConfig, BenchmarkResult};
 
 use openvm_algebra_circuit::ModularExtension;
@@ -132,6 +132,7 @@ fn prove_and_verify(
         prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count,
+        ..Default::default()
     }
 }
 

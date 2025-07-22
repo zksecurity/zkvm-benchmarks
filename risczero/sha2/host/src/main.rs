@@ -59,5 +59,6 @@ fn bench_sha2(config: &BenchmarkConfig) -> BenchmarkResult {
         prover_durations: vec![prover_duration],
         verifier_durations,
         cycle_count,
+        ..Default::default()
     }
 }

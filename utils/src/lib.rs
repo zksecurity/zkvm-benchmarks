@@ -84,7 +84,7 @@ impl VM {
         match vm_name {
             "jolt" => Ok(VM::Jolt),
             "sp1" => Ok(VM::SP1),
-            "risczero" => Ok(VM::RiscZero),
+            "risc0" => Ok(VM::Risc0),
             "stone" => Ok(VM::Stone),
             "stwo" => Ok(VM::Stwo),
             "openvm" => Ok(VM::OpenVM),

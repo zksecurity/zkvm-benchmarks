@@ -8,7 +8,7 @@ pub mod memory;
 pub enum VM {
     Jolt,
     SP1,
-    RiscZero,
+    Risc0,
     Stone,
     Stwo,
     OpenVM,

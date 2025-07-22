@@ -26,14 +26,14 @@ build-utils:
     cd utils && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 
-# Run risczero benchmark with memory monitoring
-run-bench-risczero benchmark arg verifier_iterations="1":
+# Run risc0 benchmark with memory monitoring
+run-bench-risc0 benchmark arg verifier_iterations="1":
     #!/usr/bin/env bash
     set -euo pipefail
-    cd risczero/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
+    cd risc0/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
         ../../utils/target/release/utils \
         --enable-memory-monitoring \
-        --bench-name risczero-{{benchmark}} \
+        --bench-name risc0-{{benchmark}} \
         --bin target/release/host \
         --bench-arg {{arg}} \
         --verifier-iterations {{verifier_iterations}}
@@ -127,7 +127,7 @@ bench-local: build-utils machine-info
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
         "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
 
-    just bench-risczero \
+    just bench-risc0 \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
@@ -274,99 +274,99 @@ bench-sp1-ec-precompile ec_args verifier_iterations="1":
 
 
 #####
-# risczero
+# risc0
 #####
 
-build-risczero: build-utils
-    cd risczero/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2-precompile && \
+build-risc0: build-utils
+    cd risc0/fib && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/sha2 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/sha2-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3-precompile && \
+    cd risc0/sha3 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/sha3-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha2-chain-precompile && \
+    cd risc0/sha2-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/sha2-chain-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/sha3-chain-precompile && \
+    cd risc0/sha3-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/sha3-chain-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
-    cd risczero/ec-precompile && \
+    cd risc0/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/ec-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
-    cd risczero/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-risczero fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
-    build-risczero
-    just bench-risczero-fib "{{fib_args}}"
-    just bench-risczero-sha2 "{{sha2_args}}"
-    just bench-risczero-sha2-chain "{{sha2_chain_args}}"
-    just bench-risczero-sha2-precompile "{{sha2_args}}"
-    just bench-risczero-sha2-chain-precompile "{{sha2_chain_args}}"
-    just bench-risczero-sha3 "{{sha3_args}}"
-    just bench-risczero-sha3-precompile "{{sha3_args}}"
-    just bench-risczero-sha3-chain "{{sha3_chain_args}}"
-    just bench-risczero-sha3-chain-precompile "{{sha3_chain_args}}"
-    just bench-risczero-mat-mul "{{matmul_args}}"
-    just bench-risczero-ec "{{ec_args}}"
-    just bench-risczero-ec-precompile "{{ec_args}}"
+bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+    build-risc0
+    just bench-risc0-fib "{{fib_args}}"
+    just bench-risc0-sha2 "{{sha2_args}}"
+    just bench-risc0-sha2-chain "{{sha2_chain_args}}"
+    just bench-risc0-sha2-precompile "{{sha2_args}}"
+    just bench-risc0-sha2-chain-precompile "{{sha2_chain_args}}"
+    just bench-risc0-sha3 "{{sha3_args}}"
+    just bench-risc0-sha3-precompile "{{sha3_args}}"
+    just bench-risc0-sha3-chain "{{sha3_chain_args}}"
+    just bench-risc0-sha3-chain-precompile "{{sha3_chain_args}}"
+    just bench-risc0-mat-mul "{{matmul_args}}"
+    just bench-risc0-ec "{{ec_args}}"
+    just bench-risc0-ec-precompile "{{ec_args}}"
 
-bench-risczero-fib fib_args verifier_iterations="1":
+bench-risc0-fib fib_args verifier_iterations="1":
     -for arg in {{fib_args}}; do \
-        just run-bench-risczero "fib" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "fib" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-mat-mul matmul_args verifier_iterations="1":
+bench-risc0-mat-mul matmul_args verifier_iterations="1":
     -for arg in {{matmul_args}}; do \
-        just run-bench-risczero "mat-mul" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "mat-mul" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha2 sha_args verifier_iterations="1":
+bench-risc0-sha2 sha_args verifier_iterations="1":
     -for arg in {{sha_args}}; do \
-        just run-bench-risczero "sha2" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha2" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha2-precompile sha_args verifier_iterations="1":
+bench-risc0-sha2-precompile sha_args verifier_iterations="1":
     -for arg in {{sha_args}}; do \
-        just run-bench-risczero "sha2-precompile" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha2-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha2-chain sha_chain_args verifier_iterations="1":
+bench-risc0-sha2-chain sha_chain_args verifier_iterations="1":
     -for arg in {{sha_chain_args}}; do \
-        just run-bench-risczero "sha2-chain" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha2-chain" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha2-chain-precompile sha_chain_args verifier_iterations="1":
+bench-risc0-sha2-chain-precompile sha_chain_args verifier_iterations="1":
     -for arg in {{sha_chain_args}}; do \
-        just run-bench-risczero "sha2-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha2-chain-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha3 sha_args verifier_iterations="1":
+bench-risc0-sha3 sha_args verifier_iterations="1":
     -for arg in {{sha_args}}; do \
-        just run-bench-risczero "sha3" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha3" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha3-precompile sha_args verifier_iterations="1":
+bench-risc0-sha3-precompile sha_args verifier_iterations="1":
     -for arg in {{sha_args}}; do \
-        just run-bench-risczero "sha3-precompile" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha3-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha3-chain sha_chain_args verifier_iterations="1":
+bench-risc0-sha3-chain sha_chain_args verifier_iterations="1":
     -for arg in {{sha_chain_args}}; do \
-        just run-bench-risczero "sha3-chain" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha3-chain" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-sha3-chain-precompile sha_chain_args verifier_iterations="1":
+bench-risc0-sha3-chain-precompile sha_chain_args verifier_iterations="1":
     -for arg in {{sha_chain_args}}; do \
-        just run-bench-risczero "sha3-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "sha3-chain-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
-bench-risczero-ec ec_args verifier_iterations="1":
-    -for arg in {{ec_args}}; do just run-bench-risczero "ec" "$arg" "{{verifier_iterations}}"; done
+bench-risc0-ec ec_args verifier_iterations="1":
+    -for arg in {{ec_args}}; do just run-bench-risc0 "ec" "$arg" "{{verifier_iterations}}"; done
 
-bench-risczero-ec-precompile ec_args verifier_iterations="1":
+bench-risc0-ec-precompile ec_args verifier_iterations="1":
     -for arg in {{ec_args}}; do \
-        just run-bench-risczero "ec-precompile" "$arg" "{{verifier_iterations}}"; \
+        just run-bench-risc0 "ec-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
 #####

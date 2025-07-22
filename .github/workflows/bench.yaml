@@ -48,9 +48,9 @@ on:
         default: "256 512"
         type: string
       machine_type:
-        description: "Hetzner Cloud server type (e.g. cpx41, ccx63)"
+        description: "Hetzner Cloud server type (e.g. cx42, ccx63)"
         required: false
-        default: "cpx41"
+        default: "cx42"
         type: string
   push:
     paths-ignore:

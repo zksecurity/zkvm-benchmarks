@@ -60,10 +60,6 @@ permissions:
   contents: write
   actions: read
 
-# concurrency:
-#   group: ${{ github.workflow }}-bench-${{ github.ref }}
-#   cancel-in-progress: true
-
 concurrency:
   group: benchmark-runner
   cancel-in-progress: true
@@ -89,14 +85,10 @@ jobs:
         id: create-hcloud-runner
         uses: Cyclenerd/hcloud-github-runner@v1
         with:
-          name: gh-benchmark-runner # also ensures that we can have at most one runner
+          name: gh-benchmark-runner
           mode: create
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
-          # cpx41: shared CPU,   4 cores,  16 GB RAM (default for non-tagged)
-          # ccx13: dedicated CPU,  2 cores,   8 GB RAM
-          # ccx53: dedicated CPU, 32 cores, 128 GB RAM
-          # ccx63: dedicated CPU, 48 cores, 192 GB RAM (used for tagged commits)
           server_type: ${{ startsWith(github.ref, 'refs/tags/bench-') && 'ccx63' || inputs.machine_type || 'cx42' }}
           location: fsn1
           ssh_key: 27148616
@@ -104,7 +96,7 @@ jobs:
 
   setup:
     name: Setup Environment
-    timeout-minutes: 7200 # 5 days
+    timeout-minutes: 7200
     needs: create-runner
     runs-on: ${{ needs.create-runner.outputs.label }}
     env:
@@ -137,236 +129,92 @@ jobs:
           name: result-machine-info
           path: ./report_info
 
-  benchmark-openvm:
-    name: Benchmark OpenVM
+  benchmark:
+    name: Benchmark ${{ matrix.zkvm }}
     timeout-minutes: 7200
     needs:
       - create-runner
       - setup
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, 'openvm')) }}
+
     runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
+    strategy:
+      max-parallel: 1
+      matrix:
+        zkvm:
+          - openvm
+          - stwo
+          - risc0
+          - stone
+          - sp1
+          - jolt
     env:
       BENCH_USER: shodan
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, matrix.zkvm)) }}
 
-      - name: Run OpenVM benchmark
+      - name: Run ${{ matrix.zkvm }} benchmark
+        if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, matrix.zkvm)) }}
         run: |
-          sudo -u $BENCH_USER just bench-openvm \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
+          if [ "${{ matrix.zkvm }}" = "stone" ]; then
+            # Stone requires special certificate setup and environment variables
+            WORK_DIR=$(pwd)
+            echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
+            echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
+            chmod 644 user-cert.pem user-key.pem
+            sudo -u $BENCH_USER \
+              SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
+              SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
+              SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
+              just bench-stone \
+              "${{ env.FIB_ARG }}" \
+              "${{ env.SHA2_ARG }}" \
+              "${{ env.SHA2_CHAIN_ARG }}" \
+              "${{ env.SHA3_ARG }}" \
+              "${{ env.SHA3_CHAIN_ARG }}" \
+              "${{ env.MATMUL_ARG }}" \
+              "${{ env.EC_ARG }}"
+          else
+            # Standard benchmark command for all other zkVMs
+            sudo -u $BENCH_USER just bench-${{ matrix.zkvm }} \
+              "${{ env.FIB_ARG }}" \
+              "${{ env.SHA2_ARG }}" \
+              "${{ env.SHA2_CHAIN_ARG }}" \
+              "${{ env.SHA3_ARG }}" \
+              "${{ env.SHA3_CHAIN_ARG }}" \
+              "${{ env.MATMUL_ARG }}" \
+              "${{ env.EC_ARG }}"
+          fi
 
-      - name: Upload OpenVM results
+      - name: Upload ${{ matrix.zkvm }} results
+        if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, matrix.zkvm)) }}
         uses: actions/upload-artifact@v4
         with:
-          name: result-bench-openvm
-          path: ./benchmark_outputs
-
-  benchmark-stwo:
-    name: Benchmark Stwo
-    timeout-minutes: 7200
-    needs:
-      - create-runner
-      - setup
-      - benchmark-openvm
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') ||  contains(inputs.vm, 'stwo')) }}
-    runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
-    env:
-      BENCH_USER: shodan
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run Stwo benchmark
-        run: |
-          sudo -u $BENCH_USER just bench-stwo \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
-
-      - name: Upload Stwo results
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-bench-stwo
-          path: ./benchmark_outputs
-
-  benchmark-risc0:
-    name: Benchmark RISC0
-    timeout-minutes: 7200
-    needs:
-      - create-runner
-      - setup
-      - benchmark-stwo
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, 'risc0')) }}
-    runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
-    env:
-      BENCH_USER: shodan
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run RISC0 benchmark
-        run: |
-          sudo -u $BENCH_USER just bench-risczero \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
-
-      - name: Upload RISC0 results
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-bench-risc0
-          path: ./benchmark_outputs
-
-  benchmark-stone:
-    name: Benchmark Stone
-    timeout-minutes: 7200
-    needs:
-      - create-runner
-      - setup
-      - benchmark-risc0
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, 'stone')) }}
-    runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
-    env:
-      BENCH_USER: shodan
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run Stone benchmark
-        run: |
-          WORK_DIR=$(pwd)
-          echo "${{ secrets.SHARP_CLIENT_CERT }}" > user-cert.pem
-          echo "${{ secrets.SHARP_CLIENT_KEY }}" > user-key.pem
-          chmod 644 user-cert.pem user-key.pem
-          sudo -u $BENCH_USER \
-            SHARP_CLIENT_CERT="$WORK_DIR/user-cert.pem" \
-            SHARP_KEY_PATH="$WORK_DIR/user-key.pem" \
-            SHARP_KEY_PASSWD="${{ secrets.SHARP_CLIENT_KEY_PASSWORD }}" \
-            just bench-stone \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
-
-      - name: Upload Stone results
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-bench-stone
-          path: ./benchmark_outputs
-
-  benchmark-sp1:
-    name: Benchmark SP1
-    timeout-minutes: 7200
-    needs:
-      - create-runner
-      - setup
-      - benchmark-stone
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, 'sp1')) }}
-    runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
-    env:
-      BENCH_USER: shodan
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run SP1 benchmark
-        run: |
-          sudo -u $BENCH_USER just bench-sp1 \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
-
-      - name: Upload SP1 results
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-bench-sp1
-          path: ./benchmark_outputs
-
-  benchmark-jolt:
-    name: Benchmark Jolt
-    timeout-minutes: 7200
-    needs:
-      - create-runner
-      - setup
-      - benchmark-sp1
-    if: ${{ always() && (startsWith(github.ref, 'refs/tags/bench-') || contains(inputs.vm, 'jolt')) }}
-    runs-on: ${{ needs.create-runner.outputs.label }}
-    # concurrency:
-    #   group: benchmark-runner
-    #   cancel-in-progress: false
-    env:
-      BENCH_USER: shodan
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run Jolt benchmark
-        run: |
-          sudo -u $BENCH_USER just bench-jolt \
-            "${{ env.FIB_ARG }}" \
-            "${{ env.SHA2_ARG }}" \
-            "${{ env.SHA2_CHAIN_ARG }}" \
-            "${{ env.SHA3_ARG }}" \
-            "${{ env.SHA3_CHAIN_ARG }}" \
-            "${{ env.MATMUL_ARG }}" \
-            "${{ env.EC_ARG }}"
-
-      - name: Upload Jolt results
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-bench-jolt
+          name: result-bench-${{ matrix.zkvm }}
           path: ./benchmark_outputs
 
   merge-results:
     name: Merge Results
     needs:
       - setup
-      - benchmark-openvm
-      - benchmark-stwo
-      - benchmark-risc0
-      - benchmark-stone
-      - benchmark-sp1
-      - benchmark-jolt
+      - benchmark
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check benchmark status
+        run: |
+          echo "Setup job result: ${{ needs.setup.result }}"
+          echo "Benchmark job result: ${{ needs.benchmark.result }}"
+
+          if [ "${{ needs.benchmark.result }}" = "skipped" ]; then
+            echo "All benchmarks were skipped"
+          elif [ "${{ needs.benchmark.result }}" = "success" ]; then
+            echo "All requested benchmarks completed successfully"
+          else
+            echo "Some benchmarks may have failed or been skipped"
+          fi
+
       - name: Download all results
         uses: actions/download-artifact@v4
         continue-on-error: true
@@ -381,12 +229,14 @@ jobs:
           if [ -d "all-results" ]; then
             find all-results -type f -exec cp {} merged-results/ \; 2>/dev/null || true
           fi
+
           # Create zip file (even if empty)
           cd merged-results
           if [ "$(ls -A .)" ]; then
+            echo "Found $(ls | wc -l) result files"
             zip -r ../benchmark-results.zip .
           else
-            echo "No results found" > no-results.txt
+            echo "No results found - all benchmarks may have been skipped" > no-results.txt
             zip -r ../benchmark-results.zip no-results.txt
           fi
           cd ..

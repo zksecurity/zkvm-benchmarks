@@ -78,7 +78,10 @@ fn main() {
                     Err(status.code().unwrap_or(-1))
                 }
             }
-            Err(_e) => Err(-1000),
+            Err(err) => {
+                eprintln!("Failed to run benchmark: {}", err);
+                std::process::exit(1);
+            }
         }
     } else {
         // Run benchmark directly without memory monitoring
@@ -90,7 +93,10 @@ fn main() {
                     Err(output.status.code().unwrap_or(-1))
                 }
             }
-            Err(_e) => Err(-1000),
+            Err(err) => {
+                eprintln!("Failed to run benchmark: {}", err);
+                std::process::exit(1);
+            }
         }
     };
 

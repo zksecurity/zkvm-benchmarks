@@ -9,3 +9,4 @@ benchmark_outputs/*
 __pycache__/
 *.png
 memuse
+report

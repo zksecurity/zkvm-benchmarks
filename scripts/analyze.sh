@@ -4,7 +4,7 @@ set -e
 
 OS_TYPE=$(uname)
 
-VENV_PATH=".venv"
+VENV_PATH="$HOME/analyze-venv"
 echo "Creating virtual environment in $VENV_PATH..."
 python3 -m venv "$VENV_PATH"
 echo "Activating virtual environment..."
@@ -27,6 +27,14 @@ echo "Creating report..."
 rm -rf report
 mkdir -p report
 
-python analyze.py
+# Check if 'local' argument is provided
+if [[ "$1" == "local" ]]; then
+    echo "Running local analysis..."
+    python ./scripts/analyze_local.py
+else
+    echo "Running standard analysis..."
+    python ./scripts/analyze.py
+fi
+
 cp -r plots report/
 pandoc index.md -o report/index.html --standalone --metadata title="zkVM Benchmark Report"

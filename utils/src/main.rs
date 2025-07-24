@@ -91,7 +91,7 @@ fn main() {
                 .result
                 .prover_durations
                 .iter()
-                .map(|d| d.as_millis().to_string())
+                .map(|d| d.as_secs().to_string())
                 .collect::<Vec<String>>()
                 .join(", ");
 
@@ -103,12 +103,27 @@ fn main() {
                 .collect::<Vec<String>>()
                 .join(", ");
 
+            fn fmt(bytes: u64) -> String {
+                const KB: u64 = 1000;
+                const MB: u64 = KB * 1000;
+                const GB: u64 = MB * 1000;
+                if bytes >= GB {
+                    format!("{:.2} GB", bytes as f64 / GB as f64)
+                } else if bytes >= MB {
+                    format!("{:.2} MB", bytes as f64 / MB as f64)
+                } else if bytes >= KB {
+                    format!("{:.2} KB", bytes as f64 / KB as f64)
+                } else {
+                    format!("{} B", bytes)
+                }
+            }
+
             println!("Results of {}", ident);
-            println!("  Proof Size    : {} bytes", result.result.proof_size);
-            println!("  Peak Memory   : {} bytes", result.peak_memory);
+            println!("  Proof Size    : {}", fmt(result.result.proof_size as u64));
+            println!("  Peak Memory   : {}", fmt(result.peak_memory));
             println!("  Cycles Count  : {}", result.result.cycle_count);
-            println!("  Prover Time   : {} seconds", prover_times);
-            println!("  Verifier Time : {} seconds", verifier_times);
+            println!("  Prover Time   : {} sec", prover_times);
+            println!("  Verifier Time : {} ms", verifier_times);
         };
 
         // return successful benchmark result

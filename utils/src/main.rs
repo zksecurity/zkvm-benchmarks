@@ -1,11 +1,9 @@
 use std::fs;
-use std::process::Command;
 
 use clap::{arg, Parser};
-use utils::memory::run_command_with_memory_tracking;
 use utils::{
-    BenchmarkConfig, BenchmarkConfigAndResult, BenchmarkId, BenchmarkName, BenchmarkResult,
-    BenchmarkStatus,
+    memory, BenchmarkConfig, BenchmarkConfigAndResult, BenchmarkId, BenchmarkName, BenchmarkResult,
+    BenchmarkResultWithMemory, BenchmarkStatus,
 };
 
 /// A tool to build and optionally benchmark a cargo project
@@ -28,10 +26,6 @@ struct Cli {
     /// Number of verifier iterations to run (default: 1)
     #[arg(long, default_value = "1")]
     verifier_iterations: u32,
-
-    /// Enable memory monitoring (requires running as root)
-    #[arg(long)]
-    enable_memory_monitoring: bool,
 
     /// Arguments to pass to the benchmark binary
     #[arg(trailing_var_arg = true)]
@@ -68,99 +62,66 @@ fn main() {
     ];
     benchmark_args.extend(cli.args);
 
-    // Run the benchmark (with or without memory monitoring)
-    let benchmark_result = if cli.enable_memory_monitoring {
-        match run_command_with_memory_tracking(&cli.bin, &benchmark_args) {
-            Ok((status, memory)) => {
-                if status.success() {
-                    Ok(Some(memory))
-                } else {
-                    Err(status.code().unwrap_or(-1))
-                }
-            }
-            Err(err) => {
-                eprintln!("Failed to run benchmark: {}", err);
-                std::process::exit(1);
-            }
-        }
-    } else {
-        // Run benchmark directly without memory monitoring
-        match Command::new(&cli.bin).args(&benchmark_args).output() {
-            Ok(output) => {
-                if output.status.success() {
-                    Ok(None)
-                } else {
-                    Err(output.status.code().unwrap_or(-1))
-                }
-            }
-            Err(err) => {
-                eprintln!("Failed to run benchmark: {}", err);
-                std::process::exit(1);
-            }
-        }
+    // Run the benchmark binary in a seperate cgroup
+    let mem_usage = memory::MemoryMonitor::new()
+        .run_with_memory_tracking(&cli.bin, &benchmark_args)
+        .unwrap();
+
+    // handle benchmark result (success or failure)
+
+    let config = BenchmarkConfig {
+        n: bench_arg,
+        program: name.program.clone(),
+        verifier_iterations: cli.verifier_iterations,
     };
 
-    // Handle benchmark result (success or failure)
-    let result = match benchmark_result {
-        Ok(peak_memory) => {
-            // Benchmark succeeded, read the temporary results.json file
-            let file_contents = std::fs::read_to_string("results.json").unwrap();
-            let mut benchmark_result =
-                serde_json::from_str::<BenchmarkResult>(&file_contents).unwrap();
+    let result = if mem_usage.result.is_ok() {
+        // Benchmark succeeded, read the temporary results.json file
+        let file_contents = std::fs::read_to_string("results.json").unwrap();
 
-            // Set peak memory if monitoring was enabled
-            if let Some(memory) = peak_memory {
-                benchmark_result.peak_memory = Some(memory);
-            }
+        // Set peak memory
+        let result = BenchmarkResultWithMemory {
+            result: serde_json::from_str::<BenchmarkResult>(&file_contents).unwrap(),
+            peak_memory: mem_usage.memory,
+        };
 
-            // print an overview for debugging
-            {
-                let prover_times: String = benchmark_result
-                    .prover_durations
-                    .iter()
-                    .map(|d| d.as_millis().to_string())
-                    .collect::<Vec<String>>()
-                    .join(", ");
+        // print an overview for debugging
+        {
+            let prover_times: String = result
+                .result
+                .prover_durations
+                .iter()
+                .map(|d| d.as_millis().to_string())
+                .collect::<Vec<String>>()
+                .join(", ");
 
-                let verifier_times: String = benchmark_result
-                    .verifier_durations
-                    .iter()
-                    .map(|d| d.as_millis().to_string())
-                    .collect::<Vec<String>>()
-                    .join(", ");
+            let verifier_times: String = result
+                .result
+                .verifier_durations
+                .iter()
+                .map(|d| d.as_millis().to_string())
+                .collect::<Vec<String>>()
+                .join(", ");
 
-                let peak_mem = benchmark_result.peak_memory.unwrap_or(0);
+            println!("Results of {}", ident);
+            println!("  Proof Size    : {} bytes", result.result.proof_size);
+            println!("  Peak Memory   : {} bytes", result.peak_memory);
+            println!("  Cycles Count  : {}", result.result.cycle_count);
+            println!("  Prover Time   : {} seconds", prover_times);
+            println!("  Verifier Time : {} seconds", verifier_times);
+        };
 
-                println!("Results of {}", ident);
-                println!("  Proof Size    : {} bytes", benchmark_result.proof_size);
-                println!("  Peak Memory   : {} bytes", peak_mem);
-                println!("  Cycles Count  : {}", benchmark_result.cycle_count);
-                println!("  Prover Time   : {} seconds", prover_times);
-                println!("  Verifier Time : {} seconds", verifier_times);
-            }
-
-            // return successful benchmark result
-            BenchmarkConfigAndResult {
-                config: BenchmarkConfig {
-                    n: bench_arg,
-                    program: name.program.clone(),
-                    verifier_iterations: cli.verifier_iterations,
-                },
-                result: BenchmarkStatus::Success(benchmark_result),
-            }
+        // return successful benchmark result
+        BenchmarkConfigAndResult {
+            config,
+            result: BenchmarkStatus::Success(result),
         }
-        Err(status_code) => {
-            eprintln!("Benchmark failed with exit code: {}", status_code);
-            BenchmarkConfigAndResult {
-                config: BenchmarkConfig {
-                    n: bench_arg,
-                    program: name.program.clone(),
-                    verifier_iterations: cli.verifier_iterations,
-                },
-                result: BenchmarkStatus::Failure {
-                    status: status_code,
-                },
-            }
+    } else {
+        // print error message
+        eprintln!("Benchmark failed with: {:?}", mem_usage.result);
+        BenchmarkConfigAndResult {
+            config,
+            result: BenchmarkStatus::Failure(mem_usage.result),
         }
     };
 

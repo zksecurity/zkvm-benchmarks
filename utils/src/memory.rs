@@ -1,14 +1,35 @@
 use std::path::PathBuf;
-use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{fs, io};
 
 use nix::sys::wait::{waitpid, WaitStatus};
-use nix::unistd::{fork, ForkResult};
+use nix::unistd::{fork, ForkResult, Pid};
 use rand::Rng;
 
 pub struct MemoryMonitor {
     cgroup_path: Option<PathBuf>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, Copy, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum MemoryResult {
+    Exited(i32),
+    Signal(i32),
+}
+
+impl MemoryResult {
+    pub fn is_ok(self) -> bool {
+        match self {
+            MemoryResult::Exited(code) => code == 0,
+            MemoryResult::Signal(_) => false,
+        }
+    }
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct MemoryUsage {
+    pub memory: u64,
+    pub result: MemoryResult,
 }
 
 impl MemoryMonitor {
@@ -18,11 +39,11 @@ impl MemoryMonitor {
 
     /// Run a command with memory monitoring and return the peak memory usage in bytes and exit
     /// status
-    pub fn run_with_memory_tracking<F, T>(&mut self, command_fn: F) -> io::Result<(u64, T)>
-    where
-        F: FnOnce() -> io::Result<T> + Send + 'static,
-        T: Send + 'static,
-    {
+    pub fn run_with_memory_tracking(
+        &mut self,
+        program: &str,
+        args: &[String],
+    ) -> io::Result<MemoryUsage> {
         // Check if we're running as root
         if !nix::unistd::geteuid().is_root() {
             return Err(io::Error::new(
@@ -31,14 +52,12 @@ impl MemoryMonitor {
             ));
         }
 
-        self.run_with_cgroup(command_fn)
+        self.run_with_cgroup(program, args)
     }
 
-    fn run_with_cgroup<F, T>(&mut self, command_fn: F) -> io::Result<(u64, T)>
-    where
-        F: FnOnce() -> io::Result<T> + Send + 'static,
-        T: Send + 'static,
-    {
+    /// This method should terminate successfully,
+    /// regardless of how the child executes (including running out of memory)
+    fn run_with_cgroup(&mut self, program: &str, args: &[String]) -> io::Result<MemoryUsage> {
         // Create a unique cgroup name
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -77,55 +96,48 @@ impl MemoryMonitor {
 
         // Add current process to the cgroup so children inherit it
         let procs_path = cgroup_path.join("cgroup.procs");
-        let pid = nix::unistd::getpid();
+        let pid: Pid = nix::unistd::getpid();
         fs::write(&procs_path, pid.to_string())?;
 
-        // Store result in a shared location that both parent and child can access
-        use std::sync::{Arc, Mutex};
-        let result_holder: Arc<Mutex<Option<T>>> = Arc::new(Mutex::new(None));
-        let result_holder_clone = Arc::clone(&result_holder);
+        // special exit code used to detect
+        // failure in the child before execv
+        const EXEC_FAILURE_EXIT_CODE: i32 = 123;
 
         // Fork and execute the command
-        match unsafe { fork() } {
+        let result = match unsafe { fork() } {
             Ok(ForkResult::Child) => {
-                // In child process - execute the command
-                let exit_code = match command_fn() {
-                    Ok(result) => {
-                        // Store the result before exiting
-                        if let Ok(mut holder) = result_holder_clone.lock() {
-                            *holder = Some(result);
-                        }
-                        0
-                    }
-                    Err(_) => 1,
+                // In child process - become the program using exec
+                let program_cstring = match std::ffi::CString::new(program) {
+                    Ok(s) => s,
+                    Err(_) => std::process::exit(EXEC_FAILURE_EXIT_CODE),
                 };
-                std::process::exit(exit_code);
+                let mut args_cstring: Vec<std::ffi::CString> = vec![program_cstring.clone()];
+                for arg in args {
+                    match std::ffi::CString::new(arg.as_str()) {
+                        Ok(s) => args_cstring.push(s),
+                        Err(_) => std::process::exit(EXEC_FAILURE_EXIT_CODE),
+                    }
+                }
+                match nix::unistd::execv(&program_cstring, &args_cstring) {
+                    Err(_e) => std::process::exit(EXEC_FAILURE_EXIT_CODE),
+                    Ok(_) => unreachable!(), // execv never returns on success
+                }
             }
             Ok(ForkResult::Parent { child }) => {
                 // In parent process - wait for child and get peak memory
                 match waitpid(child, None) {
-                    Ok(WaitStatus::Exited(..)) | Ok(WaitStatus::Signaled(..)) => {
-                        // Child finished, read peak memory
-                        let peak_memory = self.get_peak_memory()?;
-
-                        // Get the result from the shared holder
-                        let result = result_holder
-                            .lock()
-                            .map_err(|_| {
-                                io::Error::new(
-                                    io::ErrorKind::Other,
-                                    "Failed to get result from child",
-                                )
-                            })?
-                            .take()
-                            .ok_or_else(|| {
-                                io::Error::new(
-                                    io::ErrorKind::Other,
-                                    "Child process did not store result",
-                                )
-                            })?;
-
-                        Ok((peak_memory, result))
+                    Ok(WaitStatus::Exited(_, status)) => {
+                        if status == EXEC_FAILURE_EXIT_CODE {
+                            Err(io::Error::new(
+                                io::ErrorKind::Other,
+                                format!("Failed to execute program: {}", program),
+                            ))
+                        } else {
+                            Ok(MemoryResult::Exited(status))
+                        }
+                    }
+                    Ok(WaitStatus::Signaled(_, signal, _core_dump)) => {
+                        Ok(MemoryResult::Signal(signal as i32))
                     }
                     _ => Err(io::Error::new(io::ErrorKind::Other, "Child process failed")),
                 }
@@ -134,7 +146,11 @@ impl MemoryMonitor {
                 io::ErrorKind::Other,
                 format!("Fork failed: {}", e),
             )),
-        }
+        }?;
+
+        // Child finished, read peak memory
+        let memory = self.get_peak_memory()?;
+        Ok(MemoryUsage { memory, result })
     }
 
     fn get_peak_memory(&self) -> io::Result<u64> {
@@ -161,21 +177,4 @@ impl Drop for MemoryMonitor {
             let _ = fs::remove_dir(cgroup_path);
         }
     }
-}
-
-/// Convenience function to run a command with memory tracking
-pub fn run_command_with_memory_tracking(
-    program: &str,
-    args: &[String],
-) -> io::Result<(std::process::ExitStatus, u64)> {
-    let mut monitor = MemoryMonitor::new();
-    let program = program.to_string();
-    let args = args.to_vec();
-
-    let (peak_memory, exit_status) = monitor.run_with_memory_tracking(move || {
-        let status = Command::new(&program).args(&args).status()?;
-        Ok(status)
-    })?;
-
-    Ok((exit_status, peak_memory))
 }

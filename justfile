@@ -32,7 +32,6 @@ run-bench-risc0 benchmark arg verifier_iterations="1":
     set -euo pipefail
     cd risc0/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
         ../../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name risc0-{{benchmark}} \
         --bin target/release/host \
         --bench-arg {{arg}} \
@@ -44,7 +43,6 @@ run-bench-sp1 benchmark arg verifier_iterations="1":
     set -euo pipefail
     cd sp1/{{benchmark}} && sudo HOME=$HOME PATH=$PATH \
         ../../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name sp1-{{benchmark}} \
         --bin ../target/release/sp1-script \
         --bench-arg {{arg}} \
@@ -57,7 +55,6 @@ run-bench-jolt benchmark arg verifier_iterations="1":
     set -euo pipefail
     cd jolt && sudo HOME=$HOME PATH=$PATH \
         ../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name jolt-{{benchmark}} \
         --bin target/release/jolt-benchmarks \
         --bench-arg {{arg}} \
@@ -70,7 +67,6 @@ run-bench-stwo benchmark arg verifier_iterations="1":
     set -euo pipefail
     cd stwo && sudo HOME=$HOME PATH=$PATH \
         ../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name stwo-{{benchmark}} \
         --bin target/release/stwo-script \
         --bench-arg {{arg}} \
@@ -88,7 +84,6 @@ run-bench-stone benchmark arg verifier_iterations="1":
         SHARP_KEY_PASSWD=$SHARP_KEY_PASSWD \
         HOME=$HOME PATH=$PATH \
         ../../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name stone-{{benchmark}} \
         --bin target/release/stone \
         --bench-arg {{arg}} \
@@ -100,7 +95,6 @@ run-bench-openvm benchmark arg verifier_iterations="1":
     set -euo pipefail
     cd openvm && sudo HOME=$HOME PATH=$PATH \
         ../utils/target/release/utils \
-        --enable-memory-monitoring \
         --bench-name openvm-{{benchmark}} \
         --bin target/release/openvm-benchmarks \
         --bench-arg {{arg}} \
@@ -293,7 +287,7 @@ build-risc0: build-utils
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risc0/ec && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risc0/ec-precompile && \
-        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release    
+        RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risc0/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \

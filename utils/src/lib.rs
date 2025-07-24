@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use crate::memory::MemoryResult;
+
 pub mod memory;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -56,6 +58,14 @@ pub struct BenchmarkResult {
     pub peak_memory: Option<u64>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+pub struct BenchmarkResultWithMemory {
+    #[serde(flatten)]
+    pub result: BenchmarkResult,
+    #[serde(rename = "peak_memory_bytes")]
+    pub peak_memory: u64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkName {
     pub vm: VM,
@@ -84,8 +94,8 @@ impl std::fmt::Display for BenchmarkId {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BenchmarkStatus {
-    Success(BenchmarkResult),
-    Failure { status: i32 },
+    Success(BenchmarkResultWithMemory),
+    Failure(MemoryResult),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -5,6 +5,9 @@ export PATH := env_var('HOME') + "/.rustup:" + \
     env_var('HOME') + "/.local/bin:" + \
     env_var('PATH')
 
+# Number of times to run the verifier for each benchmark
+VERIFIER_ITERATIONS := "20"
+
 FIB_ARG_LOCAL := "4096 8192 16384 32768 65536 131072"
 SHA2_ARG_LOCAL := "256 512 1024 2048 4096 8192"
 SHA2_CHAIN_ARG_LOCAL := "64 128 256 512 1024 2048 4096"
@@ -144,13 +147,13 @@ build-jolt: build-utils
 # bench-all takes arguments for all benchmarks
 bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-jolt
-    just bench-jolt-fib "{{fib_args}}"
-    just bench-jolt-sha2 "{{sha2_args}}"
-    just bench-jolt-sha2-chain "{{sha2_chain_args}}"
-    just bench-jolt-sha3 "{{sha3_args}}"
-    just bench-jolt-sha3-chain "{{sha3_chain_args}}"
-    just bench-jolt-mat-mul "{{matmul_args}}"
-    just bench-jolt-ec "{{ec_args}}"
+    just bench-jolt-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-jolt-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-jolt "fib" "$arg" "{{verifier_iterations}}"; done
@@ -201,17 +204,17 @@ build-sp1: build-utils
 
 bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-sp1
-    just bench-sp1-fib "{{fib_args}}"
-    just bench-sp1-sha2 "{{sha2_args}}"
-    just bench-sp1-sha2-chain "{{sha2_chain_args}}"
-    just bench-sp1-sha3 "{{sha3_args}}"
-    just bench-sp1-sha3-chain "{{sha3_chain_args}}"
-    just bench-sp1-mat-mul "{{matmul_args}}"
-    just bench-sp1-sha2-precompile "{{sha2_args}}"
-    just bench-sp1-sha2-chain-precompile "{{sha2_chain_args}}"
-    just bench-sp1-sha3-precompile "{{sha3_args}}"
-    just bench-sp1-sha3-chain-precompile "{{sha3_chain_args}}"
-    just bench-sp1-ec "{{ec_args}}"
+    just bench-sp1-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha2-precompile "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha2-chain-precompile "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha3-precompile "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-sha3-chain-precompile "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
     # just bench-sp1-ec-precompile "{{ec_args}}"
 
 bench-sp1-fib fib_args verifier_iterations="1":
@@ -292,18 +295,18 @@ build-risc0: build-utils
 
 bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-risc0
-    just bench-risc0-fib "{{fib_args}}"
-    just bench-risc0-sha2 "{{sha2_args}}"
-    just bench-risc0-sha2-chain "{{sha2_chain_args}}"
-    just bench-risc0-sha2-precompile "{{sha2_args}}"
-    just bench-risc0-sha2-chain-precompile "{{sha2_chain_args}}"
-    just bench-risc0-sha3 "{{sha3_args}}"
-    just bench-risc0-sha3-precompile "{{sha3_args}}"
-    just bench-risc0-sha3-chain "{{sha3_chain_args}}"
-    just bench-risc0-sha3-chain-precompile "{{sha3_chain_args}}"
-    just bench-risc0-mat-mul "{{matmul_args}}"
-    just bench-risc0-ec "{{ec_args}}"
-    just bench-risc0-ec-precompile "{{ec_args}}"
+    just bench-risc0-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha2-precompile "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha2-chain-precompile "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha3-precompile "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-sha3-chain-precompile "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-ec-precompile "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-risc0-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do \
@@ -382,15 +385,15 @@ build-stone: build-utils
 
 bench-stone fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-stone
-    just bench-stone-fib "{{fib_args}}"
-    just bench-stone-sha3 "{{sha3_args}}"
-    just bench-stone-sha3-chain "{{sha3_chain_args}}"
-    just bench-stone-sha3-builtin "{{sha3_args}}"
-    just bench-stone-sha3-chain-builtin "{{sha3_chain_args}}"
-    just bench-stone-mat "{{matmul_args}}"
-    just bench-stone-sha2 "{{sha2_args}}"
-    just bench-stone-sha2-chain "{{sha2_chain_args}}"
-    just bench-stone-ec "{{ec_args}}"
+    just bench-stone-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha3-builtin "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha3-chain-builtin "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-mat "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stone-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-stone-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-stone "fib" "$arg" "{{verifier_iterations}}"; done
@@ -439,13 +442,13 @@ build-stwo: build-utils
 
 bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-stwo
-    just bench-stwo-fib "{{fib_args}}"
-    just bench-stwo-sha2 "{{sha2_args}}"
-    just bench-stwo-sha2-chain "{{sha2_chain_args}}"
-    just bench-stwo-sha3 "{{sha3_args}}"
-    just bench-stwo-sha3-chain "{{sha3_chain_args}}"
-    just bench-stwo-mat-mul "{{matmul_args}}"
-    just bench-stwo-ec "{{ec_args}}"
+    just bench-stwo-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-stwo-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-stwo "fib" "$arg" "{{verifier_iterations}}"; done
@@ -485,18 +488,18 @@ build-openvm: build-utils
 
 bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-openvm
-    just bench-openvm-fib "{{fib_args}}"
-    just bench-openvm-sha2 "{{sha2_args}}"
-    just bench-openvm-sha2-chain "{{sha2_chain_args}}"
-    just bench-openvm-sha3 "{{sha3_args}}"
-    just bench-openvm-sha3-chain "{{sha3_chain_args}}"
-    just bench-openvm-sha2-precompile "{{sha2_args}}"
-    just bench-openvm-sha2-chain-precompile "{{sha2_chain_args}}"
-    just bench-openvm-sha3-precompile "{{sha3_args}}"
-    just bench-openvm-sha3-chain-precompile "{{sha3_chain_args}}"
-    just bench-openvm-mat-mul "{{matmul_args}}"
-    just bench-openvm-ec "{{ec_args}}"
-    just bench-openvm-ec-precompile "{{ec_args}}"
+    just bench-openvm-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha2-chain "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha3 "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha2-precompile "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha2-chain-precompile "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha3-precompile "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-sha3-chain-precompile "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-ec-precompile "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-openvm-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-openvm "fib" "$arg" "{{verifier_iterations}}"; done

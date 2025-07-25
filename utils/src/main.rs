@@ -63,12 +63,9 @@ fn main() {
     benchmark_args.extend(cli.args);
 
     // Run the benchmark binary in a seperate cgroup
-    let mem_usage = memory::MemoryMonitor::new()
-        .run_with_memory_tracking(&cli.bin, &benchmark_args)
-        .unwrap();
+    let mem_usage = memory::run_with_memory_tracking(&cli.bin, &benchmark_args).unwrap();
 
     // handle benchmark result (success or failure)
-
     let config = BenchmarkConfig {
         n: bench_arg,
         program: name.program.clone(),

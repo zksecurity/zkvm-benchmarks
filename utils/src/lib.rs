@@ -100,6 +100,8 @@ pub enum BenchmarkStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkConfigAndResult {
+    // virtual machine
+    pub vm: VM,
     // input to the benchmark run
     pub config: BenchmarkConfig,
     // output of the benchmark run

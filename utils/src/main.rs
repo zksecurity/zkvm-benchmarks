@@ -139,6 +139,7 @@ fn main() {
 
         // return successful benchmark result
         BenchmarkConfigAndResult {
+            vm: name.vm,
             config,
             result: BenchmarkStatus::Success(result),
         }
@@ -146,6 +147,7 @@ fn main() {
         // print error message
         eprintln!("Benchmark failed with: {:?}", mem_usage.result);
         BenchmarkConfigAndResult {
+            vm: name.vm,
             config,
             result: BenchmarkStatus::Failure(mem_usage.result),
         }

@@ -37,7 +37,12 @@ pub struct MemoryUsage {
 
 /// Run a command with memory monitoring and
 /// return the peak memory usage in bytes and exit status
-pub fn run_with_memory_tracking(program: &str, args: &[String]) -> io::Result<MemoryUsage> {
+pub fn run_with_memory_tracking(
+    allowed_exit_codes: &[i32],
+    allowed_signals: &[i32],
+    program: &str,
+    args: &[String],
+) -> io::Result<MemoryUsage> {
     // Check if we're running as root
     if !nix::unistd::geteuid().is_root() {
         return Err(io::Error::new(
@@ -129,17 +134,24 @@ pub fn run_with_memory_tracking(program: &str, args: &[String]) -> io::Result<Me
             // In parent process - wait for child and get peak memory
             match waitpid(child, None) {
                 Ok(WaitStatus::Exited(_, status)) => {
-                    if status == EXEC_FAILURE_EXIT_CODE {
+                    if allowed_exit_codes.contains(&status) {
+                        Ok(MemoryResult::Exited(status))
+                    } else {
                         Err(io::Error::new(
                             io::ErrorKind::Other,
-                            format!("Failed to execute program: {}", program),
+                            format!("Unexpected exit code: {}", status),
                         ))
-                    } else {
-                        Ok(MemoryResult::Exited(status))
                     }
                 }
                 Ok(WaitStatus::Signaled(_, signal, _core_dump)) => {
-                    Ok(MemoryResult::Signal(signal as i32))
+                    if allowed_signals.contains(&(signal as i32)) {
+                        Ok(MemoryResult::Signal(signal as i32))
+                    } else {
+                        Err(io::Error::new(
+                            io::ErrorKind::Other,
+                            format!("program killed with: {} (Signal: {})", program, signal),
+                        ))
+                    }
                 }
                 _ => Err(io::Error::new(io::ErrorKind::Other, "Child process failed")),
             }

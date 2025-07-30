@@ -442,7 +442,7 @@ bench-stone-ec ec_args verifier_iterations="1":
 build-stwo: build-utils
     cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args:
+bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
     build-stwo
     just bench-stwo-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-stwo-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"

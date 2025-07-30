@@ -1,8 +1,6 @@
 use clap::Parser;
 use methods::{FIBONACCI_ELF, FIBONACCI_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
-use std::io::Write;
-use std::time::Duration;
 use utils::{size, BenchmarkConfig, BenchmarkResult};
 
 #[derive(Parser, Debug)]

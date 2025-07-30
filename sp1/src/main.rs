@@ -1,7 +1,4 @@
-use std::{
-    io::Write,
-    time::{Duration, Instant},
-};
+use std::time::Instant;
 
 use sp1_sdk::{include_elf, utils as sp1_utils, ProverClient, SP1Stdin};
 use utils::{size, BenchmarkConfig, BenchmarkResult};

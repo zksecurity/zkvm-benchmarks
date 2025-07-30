@@ -1,7 +1,6 @@
 use clap::Parser;
 use ecadd::{ECADD_ELF, ECADD_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
-use std::time::Duration;
 use utils::{size, BenchmarkConfig, BenchmarkResult};
 
 #[derive(Parser, Debug)]

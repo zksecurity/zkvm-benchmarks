@@ -1,7 +1,6 @@
 use clap::Parser;
 use methods::{SHA2_CHAIN_BENCH_ELF, SHA2_CHAIN_BENCH_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
-use std::time::Duration;
 use utils::{size, BenchmarkConfig, BenchmarkResult};
 
 #[derive(Parser, Debug)]

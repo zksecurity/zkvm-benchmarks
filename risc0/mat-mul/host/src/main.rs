@@ -1,7 +1,6 @@
 use clap::Parser;
 use methods::{MAT_MUL_ELF, MAT_MUL_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
-use std::time::Duration;
 use utils::{size, BenchmarkConfig, BenchmarkResult};
 
 #[derive(Parser, Debug)]

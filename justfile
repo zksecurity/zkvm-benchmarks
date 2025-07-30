@@ -38,7 +38,8 @@ run-bench-risc0 benchmark arg verifier_iterations="1":
         --bench-name risc0-{{benchmark}} \
         --bin target/release/host \
         --bench-arg {{arg}} \
-        --verifier-iterations {{verifier_iterations}}
+        --verifier-iterations {{verifier_iterations}} \
+        -- --program {{benchmark}}
 
 # Run sp1 benchmark with memory monitoring
 run-bench-sp1 benchmark arg verifier_iterations="1":
@@ -68,6 +69,7 @@ run-bench-jolt benchmark arg verifier_iterations="1":
 run-bench-stwo benchmark arg verifier_iterations="1":
     #!/usr/bin/env bash
     set -euo pipefail
+    source "$HOME/bench-venv/bin/activate"
     cd stwo && sudo HOME=$HOME PATH=$PATH \
         ../utils/target/release/utils \
         --bench-name stwo-{{benchmark}} \

@@ -28,11 +28,11 @@ struct Cli {
     verifier_iterations: u32,
 
     /// Allowed exit codes for the benchmark binary (default: 0)
-    #[arg(long, required = false, default_value = "0")]
+    #[arg(long, required = false, default_value = "0", value_delimiter = ',')]
     allowed_exit_codes: Vec<i32>,
 
     /// Allowed signals that the benchmark binary can receive, by default SIGKILL (9) for OOM
-    #[arg(long, required = false, default_value = "9")]
+    #[arg(long, required = false, default_value = "9", value_delimiter = ',')]
     allowed_signals: Vec<i32>,
 
     /// Arguments to pass to the benchmark binary

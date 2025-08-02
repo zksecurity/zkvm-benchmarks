@@ -63,7 +63,7 @@ run-bench-jolt benchmark arg verifier_iterations="1":
         --bin target/release/jolt-benchmarks \
         --bench-arg {{arg}} \
         --verifier-iterations {{verifier_iterations}} \
-        --allowed_exit_codes 0 101 \
+        --allowed-exit-codes 0,101 \
         -- --program {{benchmark}}
 
 # Run stwo benchmark with memory monitoring
@@ -77,7 +77,7 @@ run-bench-stwo benchmark arg verifier_iterations="1":
         --bin target/release/stwo-script \
         --bench-arg {{arg}} \
         --verifier-iterations {{verifier_iterations}} \
-        --allowed_exit_codes 0 101 \
+        --allowed-exit-codes 0,101 \
         -- --program {{benchmark}}
 
 # Run stone benchmark with memory monitoring

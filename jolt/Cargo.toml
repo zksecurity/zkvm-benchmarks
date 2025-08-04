@@ -11,7 +11,9 @@ members = [
     "sha3",
     "fib",
     "mat-mul",
-    "ec"
+    "ec",
+    "blake",
+    "blake-chain"
 ]
 
 [profile.release]
@@ -30,8 +32,11 @@ sha3-guest = { path = "./sha3" }
 fibonacci-guest = { path = "./fib" }
 mat-mul-guest = { path = "./mat-mul" }
 ec-guest = { path = "./ec" }
+blake-guest = { path = "./blake" }
+blake-chain-guest = { path = "./blake-chain" }
 
-clap = { version = "4.5.26", features = ["derive"] } 
+clap = { version = "4.5.26", features = ["derive"] }
+ark-serialize = { version = "0.5.0" } 
 
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "v0.5.0-optimize-mul-u64" }

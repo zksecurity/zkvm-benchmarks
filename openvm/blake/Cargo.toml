@@ -1,0 +1,12 @@
+[package]
+name = "blake"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { workspace = true }
+blake2 = { version = "0.10.6", default-features = false }
+
+[features]
+default = []
+std = ["openvm/std"]

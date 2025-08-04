@@ -5,5 +5,5 @@ name = "ec"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = "5.0.0"
+sp1-zkvm = "5.1.1"
 k256 = { version = "0.13.4", features = ["arithmetic"], default-features = false }

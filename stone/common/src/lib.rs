@@ -5,6 +5,7 @@ use std::process::Command;
 use std::time::Duration;
 use clap::{arg, Parser};
 use std::env;
+use utils::{BenchmarkConfig, BenchmarkResult};
 
 /// A tool to build and optionally benchmark a cargo project
 #[derive(Parser, Debug)]
@@ -12,6 +13,10 @@ use std::env;
 pub struct Cli {
     #[arg(long)]
     pub n: u32,
+    #[arg(long, default_value = "")]
+    pub program: String,
+    #[arg(long, default_value = "1")]
+    pub verifier_iterations: u32,
 }
 
 pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> (usize, Duration, Duration)  {
@@ -95,6 +100,109 @@ pub fn prove_and_verify(command: &str, args: Vec<&str>, output_file: String) -> 
     let duration = end.duration_since(start);
     let verifier_duration = verify_end.duration_since(verify_start);
     (proof_bytes, duration, verifier_duration)
+}
+
+pub fn bench(config: BenchmarkConfig, program_path: &str, program_input: &str, parameter_file: &str) -> BenchmarkResult {
+    // Compile Cairo code
+    let program_name = std::path::Path::new(program_path)
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+    let output_path = format!("programs/{}.json", program_name);
+    let status = Command::new("cairo-compile")
+        .arg(&program_path)
+        .arg("--output")
+        .arg(&output_path)
+        .arg("--proof_mode")
+        .status();
+
+    match status {
+        Ok(status) if status.success() => {
+            println!("Compilation successful! Compiled file saved to: {}", output_path);
+        }
+        Ok(status) => {
+            eprintln!("Compilation failed with exit code: {}", status.code().unwrap_or(-1));
+        }
+        Err(err) => {
+            eprintln!("Failed to run cairo-compile: {}", err);
+        }
+    }
+
+    // compute cycle count
+    let steps_command = format!("cairo-run --program={} --cairo_layout_params_file=../configs/cairo_layout_params_file.json --cairo_pie_output=get_steps.zip --layout=dynamic --program_input={}", output_path, program_input);
+    let cycle_count = compute_cycle_count(&steps_command);
+    
+    // prove and verify command
+    let command = "stone-cli";
+    let output_file = format!("proof_{}.json", config.n);
+    let layout = "automatic".to_string();
+    let prover_config_file = "../configs/prover_config.json".to_string();
+
+    let args = vec![
+        "prove",
+        "--cairo_version",
+        "cairo0",
+        "--cairo_program",
+        &output_path,
+        "--layout",
+        &layout,
+        "--program_input_file",
+        program_input,
+        "--output",
+        &output_file,
+        "--parameter_file",
+        &parameter_file,
+        "--prover_config_file",
+        &prover_config_file,
+        "--stone_version",
+        "v6",
+    ];
+
+    // prove and verify
+    let (proof_bytes, duration, _) = prove_and_verify(command, args.to_vec(), output_file.clone());
+    
+    // Run multiple verifier iterations
+    let mut verifier_durations = Vec::new();
+    for _ in 0..config.verifier_iterations {
+        let verify_command = "stone-cli";
+        let verify_args = ["verify", "--proof", &output_file];
+
+        println!(
+            "Running Verify command: {} {}",
+            verify_command,
+            verify_args.join(" ")
+        );
+
+        let verify_start = Instant::now();
+
+        let verify_output = Command::new(verify_command)
+            .args(verify_args)
+            .output()
+            .expect("Failed to execute the Verify command");
+
+        let verify_end = Instant::now();
+
+        if verify_output.status.success() {
+            println!("Verify Command completed successfully.");
+        } else {
+            println!("Verify Command failed with exit code: {}", verify_output.status);
+            println!(
+                "Standard Error:\n{}",
+                String::from_utf8_lossy(&verify_output.stderr)
+            );
+        }
+
+        verifier_durations.push(verify_end.duration_since(verify_start));
+    }
+
+    BenchmarkResult {
+        proof_size: proof_bytes,
+        prover_durations: vec![duration],
+        verifier_durations,
+        cycle_count: cycle_count as usize,
+        ..Default::default()
+    }
 }
 
 pub fn compute_cycle_count(steps_command: &str) -> u64 {

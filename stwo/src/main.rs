@@ -1,7 +1,6 @@
 use clap::Parser;
-use std::io::Write;
 use std::fs;
-use std::time::Duration;
+use utils::{BenchmarkConfig, BenchmarkResult};
 
 pub mod util;
 use util::prove_and_verify;
@@ -17,47 +16,39 @@ pub struct Cli {
     /// Run the benchmark under heaptrack for memory profiling
     #[arg(long)]
     pub program: String,
+    
+    #[arg(long, default_value = "1")]
+    pub verifier_iterations: u32,
 }
 
 
 fn main() {
-
     let cli = Cli::parse();
+    
+    let config = BenchmarkConfig {
+        n: cli.n,
+        program: cli.program.clone(),
+        verifier_iterations: cli.verifier_iterations,
+    };
 
-    let (duration, proof_size, verifier_duration, cycle_count) = match cli.program.as_str() {
-        "fib" => {
-            bench_fibonacci(cli.n)
-        },
-        "sha2" => {
-            bench_sha2(cli.n)
-        },
-        "sha3" => {
-            bench_sha3(cli.n)
-        },
-        "sha3-chain" => {
-            bench_sha3_chain(cli.n)
-        },
-        "sha2-chain" => {
-            bench_sha2_chain(cli.n)
-        },
-        "mat-mul" => {
-            bench_mat_mul(cli.n)
-        },
-        "ec" => {
-            bench_ec(cli.n)
-        },
+    let result = match cli.program.as_str() {
+        "fib" => bench_fibonacci(&config),
+        "sha2" => bench_sha2(&config),
+        "sha3" => bench_sha3(&config),
+        "blake-precompile" => bench_blake_precompile(&config),
+        "sha3-chain" => bench_sha3_chain(&config),
+        "sha2-chain" => bench_sha2_chain(&config),
+        "blake-chain-precompile" => bench_blake_chain_precompile(&config),
+        "mat-mul" => bench_mat_mul(&config),
+        "ec" => bench_ec(&config),
         _ => unreachable!()
-
     };
     
-    let mut file = std::fs::File::create("results.json").unwrap();
-    file.write_all(format!("{{\"proof_size\": {}, \"duration\": {}, \"verifier_duration\": {}, \"cycle_count\": {}}}", proof_size, duration.as_millis(), verifier_duration.as_millis(), cycle_count).as_bytes()).unwrap();
-
+    std::fs::write("results.json", result.to_json()).unwrap();
 }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_fibonacci(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./fib/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -70,12 +61,11 @@ fn bench_fibonacci(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./fib/memory.bin".to_string();
 
     let out_dir = "./fib".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
-fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_mat_mul(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./mat_mul/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -88,12 +78,11 @@ fn bench_mat_mul(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./mat_mul/memory.bin".to_string();
 
     let out_dir = "./mat_mul".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
-fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_sha2(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./sha2/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -106,12 +95,11 @@ fn bench_sha2(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./sha2/memory.bin".to_string();
 
     let out_dir = "./sha2".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
-fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_sha2_chain(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./sha2-chain/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -124,13 +112,12 @@ fn bench_sha2_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./sha2-chain/memory.bin".to_string();
 
     let out_dir = "./sha2-chain".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
 
-fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_sha3(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./sha3/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -143,12 +130,11 @@ fn bench_sha3(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./sha3/memory.bin".to_string();
 
     let out_dir = "./sha3".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
-fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_sha3_chain(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./sha3-chain/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -161,12 +147,11 @@ fn bench_sha3_chain(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./sha3-chain/memory.bin".to_string();
 
     let out_dir = "./sha3-chain".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }
 
-fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
-
-    let input = format!("{{\"iterations\": {}}}", n);
+fn bench_ec(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
     let program_input = "./ec/input.json".to_string();
     fs::write(&program_input, input).expect("Failed to write input file");
 
@@ -179,5 +164,39 @@ fn bench_ec(n: u32) -> (Duration, usize, Duration, usize) {
     let memory = "./ec/memory.bin".to_string();
 
     let out_dir = "./ec".to_string();
-    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir)
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
+}
+
+fn bench_blake_precompile(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
+    let program_input = "./blake-precompile/input.json".to_string();
+    fs::write(&program_input, input).expect("Failed to write input file");
+
+    let program_path = "./blake-precompile/blake.cairo".to_string();
+    let output_path = "./blake-precompile/blake-precompile.json".to_string();
+
+    let public_input = "./blake-precompile/public_input.json".to_string();
+    let private_input = "./blake-precompile/private_input.json".to_string();
+    let trace = "./blake-precompile/trace.bin".to_string();
+    let memory = "./blake-precompile/memory.bin".to_string();
+
+    let out_dir = "./blake-precompile".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
+}
+
+fn bench_blake_chain_precompile(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
+    let program_input = "./blake-chain-precompile/input.json".to_string();
+    fs::write(&program_input, input).expect("Failed to write input file");
+
+    let program_path = "./blake-chain-precompile/blake_chain.cairo".to_string();
+    let output_path = "./blake-chain-precompile/blake_chain_precompile.json".to_string();
+
+    let public_input = "./blake-chain-precompile/public_input.json".to_string();
+    let private_input = "./blake-chain-precompile/private_input.json".to_string();
+    let trace = "./blake-chain-precompile/trace.bin".to_string();
+    let memory = "./blake-chain-precompile/memory.bin".to_string();
+
+    let out_dir = "./blake-chain-precompile".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }

@@ -1,0 +1,18 @@
+#![cfg_attr(feature = "guest", no_std)]
+#![no_main]
+
+use blake2::{Blake2s256, Digest};
+use core::hint::black_box;
+
+#[jolt::provable]
+fn blake_chain(input: [u8; 32], num_iters: u32) -> [u8; 32] {
+    let mut hash = input;
+    for _ in 0..num_iters {
+        let mut hasher = Blake2s256::new();
+        hasher.update(&black_box(hash));
+        let res = &hasher.finalize();
+        hash = Into::<[u8; 32]>::into (*res);
+    }
+
+    hash
+}

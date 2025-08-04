@@ -22,7 +22,7 @@ The benchmark results will be saved in CSV format in the `benchmark_outputs` dir
 
 To generate a local HTML report from the benchmark results, run:
 ```bash
-./scripts/analyze.sh local
+./scripts/analyze.sh
 ```
 
 The report will be generated at:  `./report/index.html`.

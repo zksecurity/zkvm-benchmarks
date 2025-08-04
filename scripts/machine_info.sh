@@ -55,5 +55,5 @@ echo "$LATEST_COMMIT" > $REPORT_INFO_DIR/latest_commit.txt
 echo "Latest commit hash saved to $REPORT_INFO_DIR/latest_commit.txt: $LATEST_COMMIT"
 
 # Capture human-readable timestamp
-date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/time_stamp.txt"
-echo "Timestamp saved to $REPORT_INFO_DIR/time_stamp.txt"
+date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/timestamp.txt"
+echo "Timestamp saved to $REPORT_INFO_DIR/timestamp.txt"

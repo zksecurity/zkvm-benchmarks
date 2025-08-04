@@ -5,4 +5,4 @@ name = "fib"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = "5.0.0"
+sp1-zkvm = "5.1.1"

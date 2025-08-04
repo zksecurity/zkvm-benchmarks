@@ -17,23 +17,13 @@ on:
         required: false
         default: "32768 65536"
         type: string
-      arg-sha2:
-        description: "SHA2 benchmark arguments"
+      arg-hash:
+        description: "Hash benchmark arguments"
         required: false
         default: "256 512"
         type: string
-      arg-sha2-chain:
-        description: "SHA2 chain benchmark arguments"
-        required: false
-        default: "8 16"
-        type: string
-      arg-sha3:
-        description: "SHA3 benchmark arguments"
-        required: false
-        default: "256 512"
-        type: string
-      arg-sha3-chain:
-        description: "SHA3 chain benchmark arguments"
+      arg-hash-chain:
+        description: "Hash chain benchmark arguments"
         required: false
         default: "8 16"
         type: string
@@ -46,16 +36,6 @@ on:
         description: "Elliptic curve suite arguments"
         required: false
         default: "256 512"
-        type: string
-      arg-blake:
-        description: "BLAKE suite arguments"
-        required: false
-        default: "256 512"
-        type: string
-      arg-blake-chain:
-        description: "BLAKE chain suite arguments"
-        required: false
-        default: "8 16"
         type: string
       machine_type:
         description: "Hetzner Cloud server type (e.g. cx42, ccx63)"
@@ -76,14 +56,14 @@ concurrency:
 
 env:
   FIB_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '32768 65536 131072 262144 524288 1048576 2097152 4194304' || inputs.arg-fib }}
-  SHA2_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-sha2 }}
-  SHA2_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-sha2-chain }}
-  SHA3_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-sha3 }}
-  SHA3_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-sha3-chain }}
+  SHA2_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-hash }}
+  SHA2_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-hash-chain }}
+  SHA3_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-hash }}
+  SHA3_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-hash-chain }}
   MATMUL_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '4 8 16 32 64 128' || inputs.arg-matmul }}
   EC_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-ec }}
-  BLAKE_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-blake }}
-  BLAKE_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-blake-chain }}
+  BLAKE_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-hash }}
+  BLAKE_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-hash-chain }}
 
 
 jobs:

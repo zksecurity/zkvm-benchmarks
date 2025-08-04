@@ -35,8 +35,10 @@ fn main() {
         "fib" => bench_fibonacci(&config),
         "sha2" => bench_sha2(&config),
         "sha3" => bench_sha3(&config),
+        "blake-precompile" => bench_blake_precompile(&config),
         "sha3-chain" => bench_sha3_chain(&config),
         "sha2-chain" => bench_sha2_chain(&config),
+        "blake-chain-precompile" => bench_blake_chain_precompile(&config),
         "mat-mul" => bench_mat_mul(&config),
         "ec" => bench_ec(&config),
         _ => unreachable!()
@@ -162,5 +164,39 @@ fn bench_ec(config: &BenchmarkConfig) -> BenchmarkResult {
     let memory = "./ec/memory.bin".to_string();
 
     let out_dir = "./ec".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
+}
+
+fn bench_blake_precompile(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
+    let program_input = "./blake-precompile/input.json".to_string();
+    fs::write(&program_input, input).expect("Failed to write input file");
+
+    let program_path = "./blake-precompile/blake.cairo".to_string();
+    let output_path = "./blake-precompile/blake-precompile.json".to_string();
+
+    let public_input = "./blake-precompile/public_input.json".to_string();
+    let private_input = "./blake-precompile/private_input.json".to_string();
+    let trace = "./blake-precompile/trace.bin".to_string();
+    let memory = "./blake-precompile/memory.bin".to_string();
+
+    let out_dir = "./blake-precompile".to_string();
+    prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
+}
+
+fn bench_blake_chain_precompile(config: &BenchmarkConfig) -> BenchmarkResult {
+    let input = format!("{{\"iterations\": {}}}", config.n);
+    let program_input = "./blake-chain-precompile/input.json".to_string();
+    fs::write(&program_input, input).expect("Failed to write input file");
+
+    let program_path = "./blake-chain-precompile/blake_chain.cairo".to_string();
+    let output_path = "./blake-chain-precompile/blake_chain_precompile.json".to_string();
+
+    let public_input = "./blake-chain-precompile/public_input.json".to_string();
+    let private_input = "./blake-chain-precompile/private_input.json".to_string();
+    let trace = "./blake-chain-precompile/trace.bin".to_string();
+    let memory = "./blake-chain-precompile/memory.bin".to_string();
+
+    let out_dir = "./blake-chain-precompile".to_string();
     prove_and_verify(program_input, program_path, output_path, public_input, private_input, trace, memory, out_dir, config.verifier_iterations)
 }

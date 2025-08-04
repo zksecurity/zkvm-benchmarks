@@ -1,0 +1,11 @@
+[package]
+name = "blake-guest"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+guest = []
+
+[dependencies]
+jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt" }
+blake2 = { version = "0.10.6", default-features = false }

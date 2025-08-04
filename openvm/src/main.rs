@@ -48,6 +48,8 @@ fn main() {
         "mat-mul" => benchmark_mat_mul(&config),
         "ec" => benchmark_ec(&config),
         "ec-precompile" => benchmark_ec_precompile(&config),
+        "blake" => benchmark_blake(&config),
+        "blake-chain" => benchmark_blake_chain(&config),
         _ => unreachable!(),
     };
     std::fs::write("results.json", result.to_json()).unwrap();
@@ -399,6 +401,51 @@ fn benchmark_ec_precompile(config: &BenchmarkConfig) -> BenchmarkResult {
             SECP256K1_CONFIG.scalar.clone(),
         ]))
         .ecc(WeierstrassExtension::new(vec![SECP256K1_CONFIG.clone()]))
+        .build();
+
+    prove_and_verify(
+        target_path,
+        &mut stdin,
+        vm_config,
+        config.verifier_iterations,
+    )
+}
+
+fn benchmark_blake(config: &BenchmarkConfig) -> BenchmarkResult {
+    let target_path = "blake";
+
+    let input = vec![5u8; config.n as usize];
+    let mut stdin = StdIn::default();
+    stdin.write(&input);
+
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
+        .build();
+
+    prove_and_verify(
+        target_path,
+        &mut stdin,
+        vm_config,
+        config.verifier_iterations,
+    )
+}
+
+fn benchmark_blake_chain(config: &BenchmarkConfig) -> BenchmarkResult {
+    let target_path = "blake-chain";
+
+    let input = vec![5u8; 32];
+    let mut stdin = StdIn::default();
+    stdin.write(&config.n);
+    stdin.write(&input);
+
+    let vm_config = SdkVmConfig::builder()
+        .system(Default::default())
+        .rv32i(Default::default())
+        .rv32m(Default::default())
+        .io(Default::default())
         .build();
 
     prove_and_verify(

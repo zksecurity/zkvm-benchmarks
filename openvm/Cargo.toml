@@ -17,6 +17,8 @@ members = [
     "mat-mul", 
     "ec", 
     "ec-precompile", 
+    "blake",
+    "blake-chain"
 ]
 
 [workspace.dependencies]

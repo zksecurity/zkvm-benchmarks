@@ -47,6 +47,16 @@ on:
         required: false
         default: "256 512"
         type: string
+      arg-blake:
+        description: "BLAKE suite arguments"
+        required: false
+        default: "256 512"
+        type: string
+      arg-blake-chain:
+        description: "BLAKE chain suite arguments"
+        required: false
+        default: "8 16"
+        type: string
       machine_type:
         description: "Hetzner Cloud server type (e.g. cx42, ccx63)"
         required: false
@@ -72,6 +82,9 @@ env:
   SHA3_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-sha3-chain }}
   MATMUL_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '4 8 16 32 64 128' || inputs.arg-matmul }}
   EC_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-ec }}
+  BLAKE_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288' || inputs.arg-blake }}
+  BLAKE_CHAIN_ARG: ${{ startsWith(github.ref, 'refs/tags/bench-') && '8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768' || inputs.arg-blake-chain }}
+
 
 jobs:
   create-runner:
@@ -184,7 +197,9 @@ jobs:
               "${{ env.SHA3_ARG }}" \
               "${{ env.SHA3_CHAIN_ARG }}" \
               "${{ env.MATMUL_ARG }}" \
-              "${{ env.EC_ARG }}"
+              "${{ env.EC_ARG }}" \
+              "${{ env.BLAKE_ARG }}" \
+              "${{ env.BLAKE_CHAIN_ARG }}"
           fi
 
       - name: Upload ${{ matrix.zkvm }} results

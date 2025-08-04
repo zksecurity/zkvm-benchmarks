@@ -15,6 +15,8 @@ SHA3_ARG_LOCAL := "256 512 1024 2048 4096 8192"
 SHA3_CHAIN_ARG_LOCAL := "64 128 256 512 1024 2048 4096"
 MATMUL_ARG_LOCAL := "4 8 16 32 64"
 EC_ARG_LOCAL := "16 32 64 128 256 512 1024 2048"
+BLAKE_ARG_LOCAL := "256 512 1024 2048 4096 8192"
+BLAKE_CHAIN_ARG_LOCAL := "64 128 256 512 1024 2048 4096"
 
 # Default recipe
 default:
@@ -114,31 +116,36 @@ bench-local: build-utils machine-info
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}" \
+        "{{BLAKE_ARG_LOCAL}}" "{{BLAKE_CHAIN_ARG_LOCAL}}"
 
     just bench-jolt \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}" \
+        "{{BLAKE_ARG_LOCAL}}" "{{BLAKE_CHAIN_ARG_LOCAL}}"
 
     just bench-sp1 \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}" \
+        "{{BLAKE_ARG_LOCAL}}" "{{BLAKE_CHAIN_ARG_LOCAL}}"
 
     just bench-risc0 \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}" \
+        "{{BLAKE_ARG_LOCAL}}" "{{BLAKE_CHAIN_ARG_LOCAL}}"
 
     just bench-openvm \
         "{{FIB_ARG_LOCAL}}" \
         "{{SHA2_ARG_LOCAL}}" "{{SHA2_CHAIN_ARG_LOCAL}}" \
         "{{SHA3_ARG_LOCAL}}" "{{SHA3_CHAIN_ARG_LOCAL}}" \
-        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}"
+        "{{MATMUL_ARG_LOCAL}}" "{{EC_ARG_LOCAL}}" \
+        "{{BLAKE_ARG_LOCAL}}" "{{BLAKE_CHAIN_ARG_LOCAL}}"
 
 #####
 # jolt
@@ -149,7 +156,7 @@ build-jolt: build-utils
     cd jolt && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
 # bench-all takes arguments for all benchmarks
-bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args blake_args blake_chain_args: \
     build-jolt
     just bench-jolt-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-jolt-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
@@ -158,6 +165,8 @@ bench-jolt fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_a
     just bench-jolt-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-jolt-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-jolt-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-blake "{{blake_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-jolt-blake-chain "{{blake_chain_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-jolt-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-jolt "fib" "$arg" "{{verifier_iterations}}"; done
@@ -186,6 +195,14 @@ bench-jolt-mat-mul matmul_args verifier_iterations="1":
 bench-jolt-ec ec_args verifier_iterations="1":
     for arg in {{ec_args}}; do just run-bench-jolt "ec" "$arg" "{{verifier_iterations}}"; done
 
+bench-jolt-blake blake_args verifier_iterations="1":
+    for arg in {{blake_args}}; do just run-bench-jolt "blake" "$arg" "{{verifier_iterations}}"; done
+
+bench-jolt-blake-chain blake_chain_args verifier_iterations="1":
+    for arg in {{blake_chain_args}}; do \
+        just run-bench-jolt "blake-chain" "$arg" "{{verifier_iterations}}"; \
+    done
+
 
 #####
 # sp1
@@ -204,9 +221,11 @@ build-sp1: build-utils
 	cd sp1/sha3-chain-precompile && cargo prove build
 	cd sp1/ec && cargo prove build
 	cd sp1/ec-precompile && cargo prove build
+	cd sp1/blake && cargo prove build
+	cd sp1/blake-chain && cargo prove build
 	cd sp1 && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args blake_args blake_chain_args: \
     build-sp1
     just bench-sp1-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-sp1-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
@@ -218,6 +237,8 @@ bench-sp1 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_ar
     just bench-sp1-sha2-chain-precompile "{{sha2_chain_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-sp1-sha3-precompile "{{sha3_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-sp1-sha3-chain-precompile "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-blake "{{blake_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-sp1-blake-chain "{{blake_chain_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-sp1-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
     # just bench-sp1-ec-precompile "{{ec_args}}"
 
@@ -273,6 +294,14 @@ bench-sp1-ec-precompile ec_args verifier_iterations="1":
         just run-bench-sp1 "ec-precompile" "$arg" "{{verifier_iterations}}"; \
     done
 
+bench-sp1-blake blake_args verifier_iterations="1":
+    for arg in {{blake_args}}; do just run-bench-sp1 "blake" "$arg" "{{verifier_iterations}}"; done
+
+bench-sp1-blake-chain blake_chain_args verifier_iterations="1":
+    for arg in {{blake_chain_args}}; do \
+        just run-bench-sp1 "blake-chain" "$arg" "{{verifier_iterations}}"; \
+    done
+
 
 #####
 # risc0
@@ -296,8 +325,10 @@ build-risc0: build-utils
     cd risc0/ec-precompile && \
         RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
     cd risc0/mat-mul && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/blake && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+    cd risc0/blake-chain && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args blake_args blake_chain_args: \
     build-risc0
     just bench-risc0-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-risc0-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
@@ -311,6 +342,8 @@ bench-risc0 fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_
     just bench-risc0-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-risc0-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-risc0-ec-precompile "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-blake "{{blake_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-risc0-blake-chain "{{blake_chain_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-risc0-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do \
@@ -369,6 +402,15 @@ bench-risc0-ec-precompile ec_args verifier_iterations="1":
     for arg in {{ec_args}}; do \
         just run-bench-risc0 "ec-precompile" "$arg" "{{verifier_iterations}}"; \
     done
+
+bench-risc0-blake blake_args verifier_iterations="1":
+    for arg in {{blake_args}}; do just run-bench-risc0 "blake" "$arg" "{{verifier_iterations}}"; done
+
+bench-risc0-blake-chain blake_chain_args verifier_iterations="1":
+    for arg in {{blake_chain_args}}; do \
+        just run-bench-risc0 "blake-chain" "$arg" "{{verifier_iterations}}"; \
+    done
+
 
 #####
 # Stone
@@ -444,7 +486,7 @@ bench-stone-ec ec_args verifier_iterations="1":
 build-stwo: build-utils
     cd stwo && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args blake_args blake_chain_args: \
     build-stwo
     just bench-stwo-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-stwo-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
@@ -453,6 +495,8 @@ bench-stwo fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_a
     just bench-stwo-sha3-chain "{{sha3_chain_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-stwo-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-stwo-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-blake-precompile "{{blake_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-stwo-blake-chain-precompile "{{blake_chain_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-stwo-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-stwo "fib" "$arg" "{{verifier_iterations}}"; done
@@ -481,6 +525,14 @@ bench-stwo-mat-mul matmul_args verifier_iterations="1":
 bench-stwo-ec ec_args verifier_iterations="1":
     for arg in {{ec_args}}; do just run-bench-stwo "ec" "$arg" "{{verifier_iterations}}"; done
 
+bench-stwo-blake-precompile blake_args verifier_iterations="1":
+    for arg in {{blake_args}}; do just run-bench-stwo "blake-precompile" "$arg" "{{verifier_iterations}}"; done
+
+bench-stwo-blake-chain-precompile blake_chain_args verifier_iterations="1":
+    for arg in {{blake_chain_args}}; do \
+        just run-bench-stwo "blake-chain-precompile" "$arg" "{{verifier_iterations}}"; \
+    done
+
 
 #####
 # openvm
@@ -490,7 +542,7 @@ build-openvm: build-utils
     cd openvm && rustup install
     cd openvm && RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
 
-bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args: \
+bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul_args ec_args blake_args blake_chain_args: \
     build-openvm
     just bench-openvm-fib "{{fib_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-openvm-sha2 "{{sha2_args}}" "{{VERIFIER_ITERATIONS}}"
@@ -504,6 +556,8 @@ bench-openvm fib_args sha2_args sha2_chain_args sha3_args sha3_chain_args matmul
     just bench-openvm-mat-mul "{{matmul_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-openvm-ec "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
     just bench-openvm-ec-precompile "{{ec_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-blake "{{blake_args}}" "{{VERIFIER_ITERATIONS}}"
+    just bench-openvm-blake-chain "{{blake_chain_args}}" "{{VERIFIER_ITERATIONS}}"
 
 bench-openvm-fib fib_args verifier_iterations="1":
     for arg in {{fib_args}}; do just run-bench-openvm "fib" "$arg" "{{verifier_iterations}}"; done
@@ -560,3 +614,9 @@ bench-openvm-ec-precompile ec_args verifier_iterations="1":
     for arg in {{ec_args}}; do \
         just run-bench-openvm "ec-precompile" "$arg" "{{verifier_iterations}}"; \
     done
+
+bench-openvm-blake blake_args verifier_iterations="1":
+	for arg in {{blake_args}}; do just run-bench-openvm "blake" "$arg" "{{verifier_iterations}}"; done
+
+bench-openvm-blake-chain blake_chain_args verifier_iterations="1":
+	for arg in {{blake_chain_args}}; do just run-bench-openvm "blake-chain" "$arg" "{{verifier_iterations}}"; done

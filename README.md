@@ -13,7 +13,7 @@ Run the setup script to install all dependencies:
 
 To run all benchmarks, use:
 ```bash
-./scripts/bench local
+just bench-local
 ```
 
 The benchmark results will be saved in CSV format in the `benchmark_outputs` directory.

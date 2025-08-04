@@ -15,6 +15,8 @@ const SHA3_PRECOMPILE_ELF: &[u8] = include_elf!("sha3-precompile");
 const MATMUL_ELF: &[u8] = include_elf!("mat-mul");
 const ECADD_ELF: &[u8] = include_elf!("ec");
 const ECADD_PRECOMPILE_ELF: &[u8] = include_elf!("ec-precompile");
+const BLAKE_ELF: &[u8] = include_elf!("blake");
+const BLAKE_CHAIN_ELF: &[u8] = include_elf!("blake-chain");
 
 use clap::Parser;
 
@@ -55,6 +57,8 @@ fn main() {
         "mat-mul" => bench_mat_mul(&config),
         "ec" => bench_ecadd(&config),
         "ec-precompile" => bench_ecadd_precompile(&config),
+        "blake" => bench_blake(&config),
+        "blake-chain" => bench_blake_chain(&config),
         _ => unreachable!(),
     };
     
@@ -176,4 +180,19 @@ fn bench_mat_mul(config: &BenchmarkConfig) -> BenchmarkResult {
     let mut stdin = SP1Stdin::new();
     stdin.write(&config.n);
     prove_and_verify(&mut stdin, MATMUL_ELF, config.verifier_iterations)
+}
+
+fn bench_blake(config: &BenchmarkConfig) -> BenchmarkResult {
+    let mut stdin = SP1Stdin::new();
+    let input = vec![5u8; config.n as usize];
+    stdin.write(&input);
+    prove_and_verify(&mut stdin, BLAKE_ELF, config.verifier_iterations)
+}
+
+fn bench_blake_chain(config: &BenchmarkConfig) -> BenchmarkResult {
+    let mut stdin = SP1Stdin::new();
+    let input = [5u8; 32];
+    stdin.write(&input);
+    stdin.write(&config.n);
+    prove_and_verify(&mut stdin, BLAKE_CHAIN_ELF, config.verifier_iterations)
 }

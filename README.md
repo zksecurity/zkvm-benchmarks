@@ -16,7 +16,7 @@ To run all benchmarks, use:
 just bench-local
 ```
 
-The benchmark results will be saved in CSV format in the `benchmark_outputs` directory.
+The benchmark results will be saved in JSON format in the `benchmark_results` directory.
 
 ## Generating a Report
 

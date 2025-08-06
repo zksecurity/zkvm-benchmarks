@@ -57,3 +57,21 @@ echo "Latest commit hash saved to $REPORT_INFO_DIR/latest_commit.txt: $LATEST_CO
 # Capture human-readable timestamp
 date +"%A, %B %d, %Y %H:%M:%S %Z" > "$REPORT_INFO_DIR/timestamp.txt"
 echo "Timestamp saved to $REPORT_INFO_DIR/timestamp.txt"
+
+# Copy all files from REPORT_INFO_DIR to benchmark_results directory
+BENCHMARK_RESULTS_DIR="./benchmark_results"
+mkdir -p "$BENCHMARK_RESULTS_DIR"
+
+# Fix ownership and permissions if directory exists
+if [ -d "$BENCHMARK_RESULTS_DIR" ]; then
+    sudo chown -R $(whoami):$(whoami) "$BENCHMARK_RESULTS_DIR"
+    chmod -R 755 "$BENCHMARK_RESULTS_DIR"
+fi
+
+echo "Copying machine info files to benchmark_results directory..."
+if [ -d "$REPORT_INFO_DIR" ]; then
+    cp "$REPORT_INFO_DIR"/* "$BENCHMARK_RESULTS_DIR/"
+    echo "Machine info files copied to $BENCHMARK_RESULTS_DIR"
+else
+    echo "Warning: $REPORT_INFO_DIR directory not found"
+fi

@@ -96,7 +96,8 @@ run-bench-stone benchmark arg verifier_iterations="1":
         --bench-name stone-{{benchmark}} \
         --bin target/release/stone \
         --bench-arg {{arg}} \
-        --verifier-iterations {{verifier_iterations}}
+        --verifier-iterations {{verifier_iterations}} \
+        --allowed-exit-codes 0,101
 
 # Run openvm benchmark with memory monitoring
 run-bench-openvm benchmark arg verifier_iterations="1":

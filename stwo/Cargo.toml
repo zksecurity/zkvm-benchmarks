@@ -6,11 +6,14 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.0.5", features = ["derive"] }
 utils = { path = "../utils" }
-stwo-cairo-adapter = { git = "https://github.com/starkware-libs/stwo-cairo", features = ["std"] }
-stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo" }
-cairo-air = { git = "https://github.com/starkware-libs/stwo-cairo" }
+stwo-cairo-adapter = { git = "https://github.com/varunthakore/stwo-cairo", branch = "stwo-version", features = ["std"] }
+stwo_cairo_prover = { git = "https://github.com/varunthakore/stwo-cairo", branch = "stwo-version" }
+cairo-air = { git = "https://github.com/varunthakore/stwo-cairo", branch = "stwo-version" }
+stwo = { git = "https://github.com/varunthakore/stwo", branch = "verifier-logs" }
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = ["mod_builtin", "std"], default-features = false }
 serde_json = "1"
 bincode = { version = "2.0.0-rc.3", default-features = false, features = [
     "serde",
 ] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] } 

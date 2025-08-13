@@ -23,6 +23,14 @@ pub struct Cli {
 
 
 fn main() {
+
+    tracing_subscriber::fmt()
+        .with_env_filter("stwo::core::verifier=trace,stwo::core::pcs::verifier=trace")
+        .init();
+    
+    // // Bridge log crate to tracing so log::info!() appears in tracing output
+    // tracing_log::LogTracer::init().expect("Failed to set logger");
+    
     let cli = Cli::parse();
     
     let config = BenchmarkConfig {

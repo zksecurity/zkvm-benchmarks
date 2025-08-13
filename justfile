@@ -74,6 +74,7 @@ run-bench-stwo benchmark arg verifier_iterations="1":
     set -euo pipefail
     source "$HOME/bench-venv/bin/activate"
     cd stwo && sudo HOME=$HOME PATH=$PATH \
+        RUST_LOG=stwo::core::verifier=trace,stwo::core::pcs::verifier=trace \
         ../utils/target/release/utils \
         --bench-name stwo-{{benchmark}} \
         --bin target/release/stwo-script \

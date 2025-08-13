@@ -1,9 +1,13 @@
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+// use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::pcs::PcsConfig;
+use stwo::core::fri::FriConfig;
+
 use stwo_cairo_adapter::vm_import::adapt_vm_output;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::prove_cairo;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
+// use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
+// use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
 use cairo_air::verifier::verify_cairo;
 use cairo_air::PreProcessedTraceVariant;
 
@@ -91,7 +95,7 @@ pub fn prove_and_verify(
     // For multiple iterations, we repeat the timing but reuse the same verification
     if verifier_iterations > 0 {
         let verifier_start = Instant::now();
-        verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace).unwrap();
         let verifier_end = Instant::now();
         let single_verification_duration = verifier_end.duration_since(verifier_start);
         

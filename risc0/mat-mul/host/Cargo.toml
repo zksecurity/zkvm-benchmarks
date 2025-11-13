@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
 methods = { path = "../methods" }
-risc0-zkvm = { version = "2.3.1" }
+risc0-zkvm = { version = "3.0.3" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 serde = "1.0"
 utils = { path = "../../../utils" }
